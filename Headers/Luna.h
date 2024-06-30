@@ -2,8 +2,6 @@
 #include <Windows.h>
 #include <iostream>
 
-
-
 namespace Luna
 {
 

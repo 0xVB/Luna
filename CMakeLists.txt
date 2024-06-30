@@ -7,7 +7,7 @@ endif()
 
 project ("Luna")
 
-add_library (Luna SHARED "Source/Luna.cpp" "Headers/Luna.h")
+add_library (Luna SHARED "Source/Luna.cpp" "Headers/Luna.h" "Headers/Lunacy/ForwardDefinitions.h" "Headers/Lunacy/SexyApp.h" "Headers/Lunacy/PopStructs.h" "Headers/Lunacy/Listeners.h")
 # add_executable (Luna "Source/Luna.cpp" "Headers/Luna.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
