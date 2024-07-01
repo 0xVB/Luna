@@ -1,7 +1,9 @@
 #pragma once
 #include <Windows.h>
 #include "PopStructs.h"
+#include "CGeometry.h"
 #include "Listeners.h"
+#include "Buffer.h"
 
 class Sexy::SexyAppBase : Sexy::ButtonListener, Sexy::DialogListener
 {
@@ -327,4 +329,6 @@ public:
 	bool mTimedOut;
 
 	size_t mSexyAppSize = sizeof(SexyApp);
+
+	virtual ~SexyApp();
 };

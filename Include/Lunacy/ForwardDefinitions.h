@@ -1,8 +1,6 @@
 #pragma once
 // Defines all classes and structures needed
-
-// Classes exported:
-// TRect, Vector2, Vector3, Matrix, Ratio, Padding, Color, Transform, Transform2D, Span, TriVertex, Edge
+#include "ConstEnums.h"
 
 #pragma region PopStructs
 class PopString;
@@ -24,51 +22,28 @@ template <typename K, typename V>
 class PopPair;
 #pragma endregion
 
-#pragma region General
-template <typename N>
-class Rect;
-
-template <typename N>
-class Vector2;
-
-template <typename N>
-class Vector3;
-
-template <typename N>
-class Padding;
-
-template <typename N>
-class RGBA;
-
-class Ratio;
-class Matrix3;
-class Transform;
-class Transform2D;
-class Span;
-class TriVertex;
-class Edge;
-
-#define Color RGBA<int>
-#define iRGBA RGBA<int>
-#define cRGBA RGBA<unsigned char>
-
-#define IRect Rect<int>
-#define FRect Rect<float>
-#define DRect Rect<double>
-
-#define IVector2 Vector2<int>
-#define FVector2 Vector2<float>
-#define DVector2 Vector2<double>
-
-#define IVector3 Vector3<int>
-#define IVector3 Vector3<float>
-#define IVector3 Vector3<double>
-
-#define Pad Padding<int>
-#pragma endregion
-
 namespace Sexy
 {
+	// General
+	template <typename N>
+	class Rect;
+	
+	template <typename N>
+	class Vector2;
+
+	template <typename N>
+	class Vector3;
+
+	class Color;
+	class Padding;
+	class Matrix3;
+	class Ratio;
+	class Transform;
+	class Transform2D;
+	class Span;
+	class Edge;
+	class TriVertex;
+
 	class SexyAppBase;
 	class SexyApp;
 
@@ -81,6 +56,7 @@ namespace Sexy
 	class UIRoot;
 	class UIDialog;
 	class UITextbox;
+	class UIButton;
 	class UIScrollBar;
 	class UISafeDeleteInfo;
 	class UIHyperlink;
@@ -189,3 +165,24 @@ class SeedPacket;
 class SeedBank;
 class HitResult;
 #pragma endregion
+
+class TypingCheck;
+class PopDRM;
+class Music;
+class LevelStats;
+class UserData;
+class ProfileManager;
+class ReanimatorCache;
+class EffectSystem;
+class ZenGarden;
+class PoolEffect;
+class Lawn;
+class LoadingScreen;
+class MainMenu;
+class SeedChooser;
+class AwardScreen;
+class CreditScreen;
+class ChallengeScreen;
+class SoundSystem;
+class Reanimation;
+class ParticleSystem;

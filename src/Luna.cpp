@@ -7,5 +7,7 @@ BOOL APIENTRY DllMain(
     LPVOID Reserved
 )
 {
+    auto App = LawnApp::GetApp();
+    App->mEasyPlantingCheat = true;
     return TRUE;
 }
