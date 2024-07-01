@@ -7,16 +7,19 @@ endif()
 
 project ("Luna")
 
-add_library (Luna SHARED "Source/Luna.cpp" "Headers/Luna.h" "Headers/Lunacy/ForwardDefinitions.h" "Headers/Lunacy/SexyApp.h" "Headers/Lunacy/PopStructs.h" "Headers/Lunacy/Listeners.h")
-# add_executable (Luna "Source/Luna.cpp" "Headers/Luna.h")
+file(GLOB_RECURSE SRC_FILES "src/*.cpp")
+file(GLOB_RECURSE HEADER_FILES "include/*.h" "include/*.hpp")
+
+add_library (Luna SHARED
+  ${SRC_FILES} ${HEADER_FILES}
+)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Luna PROPERTY CXX_STANDARD 20)
 endif()
 
 target_include_directories(Luna PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/Headers
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # target_link_libraries(Luna PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/lua54.lib)
