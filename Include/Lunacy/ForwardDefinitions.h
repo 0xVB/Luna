@@ -24,6 +24,9 @@ class PopPair;
 
 namespace Sexy
 {
+	float ClampAngle(float Angle);
+	float Clamp(float Value, float Min, float Max);
+
 	// General
 	template <typename N>
 	class Rect;
