@@ -1,4 +1,3 @@
 #pragma once
-
-#include "Lunacy/PopStructs.h"
-#include "Lunacy/LawnApp.h"
+#include "Graphics.h"
+#include "LawnApp.h"
