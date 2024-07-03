@@ -16,10 +16,16 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4.1.7
+              
             - name: Setup Ninja
               uses: seanmiddleditch/gha-setup-ninja@v5
-            - name: Configure and Build Project
-              uses: threeal/cmake-action@main
+      
+            - name: Configure Project
+              id: cmake-action
+              uses: ./cmake-action
               with:
-                cxx-compiler: cl
-                args: --preset x86-release
+                generator: Ninja
+                run-build: false
+      
+            - name: Build Project
+              run: ninja -C ${{ steps.cmake-action.outputs.build-dir }}
