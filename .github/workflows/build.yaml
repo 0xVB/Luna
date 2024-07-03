@@ -27,4 +27,4 @@ jobs:
               uses: threeal/cmake-action@main
               with:
                 args: --preset x86-release
-                build-args: --preset x86-release
+                build-args: -A Win32
