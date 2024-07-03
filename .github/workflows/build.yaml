@@ -23,9 +23,7 @@ jobs:
               uses: actions/checkout@v4.1.7
             - name: Setup MSVC Dev Cmd
               uses: ilammy/msvc-dev-cmd@v1
-            - name: Run CMake
-              run: |
-                cmake -S . --preset=x86-release
-            - name: Build
-              run: |
-                cmake --build . --preset x86-release
+            - name: Configure and Build Project
+              uses: threeal/cmake-action@main
+              with:
+                args: --preset x86-release
