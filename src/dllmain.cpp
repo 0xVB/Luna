@@ -23,6 +23,8 @@ BOOL APIENTRY DllMain(
         return FALSE;
     };
 
+    app.getLogger()->log(Luna::IO::LogLevel::info, "What is VB doing under Uniq desk?");
+
     auto pvzApp = LawnApp::GetApp();
     pvzApp->mEasyPlantingCheat = true;
 
