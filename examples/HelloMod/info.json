@@ -1,0 +1,9 @@
+{
+    "name": "HelloMod",
+    "icon": "icon.png",
+    "majorVersion": 1,
+    "minorVersion": 0,
+    "patchVersion": 0,
+    "description": "A simple mod that says hello",
+    "author": "Your Name"
+}

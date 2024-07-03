@@ -27,4 +27,17 @@ target_link_libraries(Luna PRIVATE kiero)
 
 add_definitions(-DLUNA_VERSION="${PROJECT_VERSION}")
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+   target_compile_options(Luna PRIVATE /Zi)
+
+   # Tell linker to include symbol data
+   target_link_options(Luna PUBLIC "/DEBUG")
+
+    # Set file name & location
+    set_target_properties(Luna PROPERTIES 
+        COMPILE_PDB_NAME Luna
+        COMPILE_PDB_OUTPUT_DIR ${CMAKE_BINARY_DIR}
+    )
+endif()
+
 # target_link_libraries(Luna PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/lua54.lib)
