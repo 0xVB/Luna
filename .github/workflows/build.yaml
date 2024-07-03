@@ -21,4 +21,5 @@ jobs:
             - name: Configure and Build Project
               uses: threeal/cmake-action@main
               with:
+                cxx-compiler: cl
                 args: --preset x86-release
