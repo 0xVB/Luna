@@ -1,6 +1,5 @@
 #pragma once
-#ifndef  SEXYRECT_DEFINED
-#define SEXYRECT_DEFINED
+
 #include "Vector3.h"
 template <typename N>
 class Sexy::Rect
@@ -216,4 +215,3 @@ Sexy::Vector2<N>::operator Sexy::Rect<T>() const
 {
 	return Sexy::Rect<T>((T)mX, (T)mY, 0, 0);
 }
-#endif // ! SEXYRECT_DEFINED

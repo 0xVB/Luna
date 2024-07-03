@@ -1,8 +1,6 @@
 #pragma once
 #include "ForwardDefinitions.h"
 
-#ifndef CGEOMETRY_DEFINED
-#define CGEOMETRY_DEFINED
 #define Z_INVERTED 1
 
 #define IVector2 Vector2<int>
@@ -124,4 +122,3 @@ public:
 
 	TriVertex();
 };
-#endif // !CGEOMETRY_DEFINED

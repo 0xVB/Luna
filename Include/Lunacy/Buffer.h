@@ -1,7 +1,5 @@
 #pragma once
 
-#ifndef SEXY_BUFFER_DEF
-#define SEXY_BUFFER_DEF
 #include "ForwardDefinitions.h"
 
 class Sexy::Buffer
@@ -14,6 +12,3 @@ public:
 
 	virtual ~Buffer() {};
 };
-
-
-#endif // !SEXY_BUFFER_DEF

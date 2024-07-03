@@ -1,6 +1,4 @@
 #pragma once
-#ifndef SEXYVECTOR2_DEFINED
-#define SEXYVECTOR2_DEFINED
 
 #include <corecrt_math_defines.h>
 #include "ForwardDefinitions.h"
@@ -210,4 +208,3 @@ public:
 	template <typename T>
 	operator Rect<T>() const;
 };
-#endif // !SEXYVECTOR2_DEFINED

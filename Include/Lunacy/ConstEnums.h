@@ -1,6 +1,5 @@
 #pragma once
-#ifndef LUNACY_ENUMS_DEFIEND
-#define LUNACY_ENUMS_DEFINED
+
 enum ReanimationID { REANIMID_NULL };
 enum PlantID { PLANTID_NULL };
 enum ZombieID { ZOMBIEID_NULL };
@@ -370,4 +369,3 @@ enum ReanimationType
 	REANIM_CREDITS_DISCOLIGHTS = 0x8D,
 	NUM_REANIMS = 0x8E,
 };
-#endif // !LUNACY_ENUMS_DEFIEND

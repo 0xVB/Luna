@@ -1,6 +1,5 @@
 #pragma once
-#ifndef SEXYVECTOR3_DEFINED
-#define SEXYVECTOR3_DEFINED
+
 #include "Vector2.h"
 
 template <typename N>
@@ -219,4 +218,3 @@ Sexy::Vector2<N>::operator Sexy::Vector3<T>() const
 {
 	return Sexy::Vector3<T>((T)mX, (T)mY, 0);
 }
-#endif // !SEXYVECTOR3_DEFINED

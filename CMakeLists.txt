@@ -22,4 +22,7 @@ target_include_directories(Luna PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+add_subdirectory(libs/kiero)
+target_link_libraries(Luna PRIVATE kiero)
+
 # target_link_libraries(Luna PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/lua54.lib)
