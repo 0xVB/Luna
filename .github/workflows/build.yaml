@@ -22,5 +22,4 @@ jobs:
             - name: Configure and Build Project
               uses: threeal/cmake-action@main
               with:
-                generator: Ninja
                 options: CMAKE_GENERATOR_PLATFORM=x86 CMAKE_BUILD_TYPE=Release
