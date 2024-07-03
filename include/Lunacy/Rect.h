@@ -1,5 +1,5 @@
 #pragma once
-
+#include <Windows.h>
 #include "Vector3.h"
 template <typename N>
 class Sexy::Rect

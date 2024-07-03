@@ -46,7 +46,7 @@ void __declspec(naked) Graphics::PopState()
 	}
 }
 
-void __declspec(naked) Graphics::Create()
+__declspec(naked) Graphics* Graphics::Create()
 {
 	__asm
 	{
@@ -136,7 +136,7 @@ void __declspec(naked) Graphics::DrawImage(Image*, int, int, int, int)
 		mov edi, [esp + 0x8]
 		push [esp + 0x18]
 		push [esp + 0x18]
-		psuh [esp + 0x18]
+		push [esp + 0x18]
 		push [esp + 0x18]
 		call DRAWIMAGESCALED
 
@@ -195,7 +195,7 @@ void __declspec(naked) Graphics::DrawString(const PopString&, int, int)
 	}
 }
 
-void __declspec(naked) Graphics::WriteWordWrapped(const PopString&, const IRect&, int, Alignment)
+__declspec(naked) int Graphics::WriteWordWrapped(const PopString&, const IRect&, int, Alignment)
 {
 	__asm
 	{
@@ -209,7 +209,7 @@ void __declspec(naked) Graphics::WriteWordWrapped(const PopString&, const IRect&
 	}
 }
 
-void __declspec(naked) Graphics::GetWrappedWordHeight(const PopString&, int, int)
+__declspec(naked) int Graphics::GetWrappedWordHeight(const PopString&, int, int)
 {
 	__asm
 	{
