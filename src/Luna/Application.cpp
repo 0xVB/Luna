@@ -1,5 +1,6 @@
 #include "Luna/Application.hpp"
 #include "Luna/IO/ConsoleLogger.hpp"
+#include "Luna/LocalModExplorer.hpp"
 #include <kiero.h>
 
 using namespace Luna;
@@ -8,6 +9,7 @@ using namespace Luna;
 Application::Application()
 {
     logger = std::make_shared<IO::ConsoleLogger>();
+    localModExplorer = std::make_shared<LocalModExplorer>("mods");
 }
 
 Application::~Application()
