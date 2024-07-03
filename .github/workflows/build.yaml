@@ -25,4 +25,4 @@ jobs:
               uses: ilammy/msvc-dev-cmd@v1
             - name: Run CMake
               run: |
-                cmake --build --preset=x86-release
+                cmake -S . --preset=x86-release
