@@ -19,4 +19,4 @@ jobs:
             - name: Configure and Build Project
               uses: threeal/cmake-action@main
               with:
-                options: CMAKE_GENERATOR_PLATFORM=x86
+                args: --preset x86-release
