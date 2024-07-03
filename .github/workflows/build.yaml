@@ -27,3 +27,4 @@ jobs:
               uses: threeal/cmake-action@main
               with:
                 generator: Ninja
+                cxx-compiler: clang++
