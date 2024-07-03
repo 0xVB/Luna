@@ -10,9 +10,8 @@ BOOL APIENTRY DllMain(
     LPVOID Reserved
 )
 {
-    if (CallReason != DLL_PROCESS_ATTACH) {
+    if (CallReason != DLL_PROCESS_ATTACH)
         return TRUE;
-    }
 
     Application app = Application();
     try {
