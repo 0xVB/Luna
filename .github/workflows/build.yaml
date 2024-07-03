@@ -16,7 +16,9 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4.1.7
-            - name: Configure and Build Project
-              uses: threeal/cmake-action@main
+            - name: Install CMake
+              uses: lukka/get-cmake@latest
+            - name: Run CMake consuming CMakePreset.json and run vcpkg to build packages
+              uses: lukka/run-cmake@v10
               with:
-                args: --preset x86-release
+                buildPresetAdditionalArgs: "['--preset x86-release']"
