@@ -25,4 +25,6 @@ target_include_directories(Luna PUBLIC
 add_subdirectory(libs/kiero)
 target_link_libraries(Luna PRIVATE kiero)
 
+add_definitions(-DLUNA_VERSION="${PROJECT_VERSION}")
+
 # target_link_libraries(Luna PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/lua54.lib)
