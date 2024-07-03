@@ -1,7 +1,7 @@
 #include "Luna/Application.hpp"
 #include "Luna/IO/ConsoleLogger.hpp"
 #include "Luna/LocalModExplorer.hpp"
-#include <kiero.h>
+#include <MinHook.h>
 
 using namespace Luna;
 
@@ -23,6 +23,9 @@ std::shared_ptr<IO::ILogger> Application::getLogger()
 
 bool Application::initialize()
 {
-    if(kiero::init(kiero::RenderType::Auto) != kiero::Status::Success) return false;
+    if (MH_Initialize() != MH_OK) {
+        logger->log(LogLevel::error, "Failed to initialize MinHook");
+        return false;
+    }
     return true;
 }

@@ -10,12 +10,13 @@ BOOL APIENTRY DllMain(
     LPVOID Reserved
 )
 {
-    Application app = Application();
+    if (CallReason != DLL_PROCESS_ATTACH) {
+        return TRUE;
+    }
 
+    Application app = Application();
     try {
-        if (!app.initialize()) {
-            return FALSE;
-        }
+        if (!app.initialize()) return FALSE;
     }
     catch (const std::exception& e) {
         // TODO: Exception Handler & Logger
@@ -23,14 +24,15 @@ BOOL APIENTRY DllMain(
         return FALSE;
     };
 
-    app.getLogger()->log(Luna::IO::LogLevel::info, "What is VB doing under Uniq desk?");
+    app.getLogger()->log(LogLevel::none, "Luna %s has been initialized.", LUNA_VERSION);
 
-    auto pvzApp = LawnApp::GetApp();
+    /*auto pvzApp = LawnApp::GetApp();
     pvzApp->mEasyPlantingCheat = true;
 
     using namespace Sexy;
     IVector2 I = IVector2();
     FRect F = I;
+    */
 
     return TRUE;
 }

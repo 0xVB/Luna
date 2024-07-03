@@ -64,6 +64,9 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "filesystem": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "forward_list": "cpp",
+        "fstream": "cpp",
+        "iomanip": "cpp"
     }
 }

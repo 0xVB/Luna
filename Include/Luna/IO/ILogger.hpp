@@ -1,7 +1,8 @@
 #pragma once
 
+enum class LogLevel { none, info, warn, error };
+
 namespace Luna::IO {
-    enum class LogLevel { none, info, warn, error };
 
     class ILogger {
     public:
