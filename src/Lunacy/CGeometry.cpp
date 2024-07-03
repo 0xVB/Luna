@@ -1,9 +1,12 @@
 #include "Lunacy/ForwardDefinitions.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 float Sexy::ClampAngle(float Angle)
 {
-	while (Angle > M_PI) Angle -= 2 * M_PI;
-	while (Angle <= -M_PI) Angle += 2 * M_PI;
+	while (Angle > M_PI) Angle -= static_cast<float>(2 * M_PI);
+	while (Angle <= -M_PI) Angle += static_cast<float>(2 * M_PI);
 	return Angle;
 }
 
