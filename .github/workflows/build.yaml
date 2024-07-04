@@ -23,6 +23,8 @@ jobs:
               uses: actions/checkout@v4.1.7
             - name: Setup MSVC Dev Cmd
               uses: ilammy/msvc-dev-cmd@v1
+              with:
+                arch: x86
             - name: Configure and Build Project
               uses: threeal/cmake-action@main
               with:
