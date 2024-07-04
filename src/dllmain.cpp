@@ -1,7 +1,4 @@
 ﻿#include "Luna/Luna.h"
-#include "Luna/Application.hpp"
-#include "Lunacy/Lunacy.hpp"
-
 using Luna::Application;
 
 BOOL APIENTRY DllMain(
@@ -12,8 +9,8 @@ BOOL APIENTRY DllMain(
 {
     if (CallReason != DLL_PROCESS_ATTACH)
         return TRUE;
-
     Application app = Application();
+
     try {
         if (!app.initialize()) return FALSE;
     }
@@ -24,14 +21,7 @@ BOOL APIENTRY DllMain(
     };
 
     app.getLogger()->log(LogLevel::none, "Luna %s has been initialized.", LUNA_VERSION);
-
-    /*auto pvzApp = LawnApp::GetApp();
-    pvzApp->mEasyPlantingCheat = true;
-
-    using namespace Sexy;
-    IVector2 I = IVector2();
-    FRect F = I;
-    */
-
+    Luna::InitiateLunaState();
+    std::cout << Luna::gLuaState << "\n";
     return TRUE;
 }
