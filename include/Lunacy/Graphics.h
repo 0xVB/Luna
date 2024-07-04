@@ -21,7 +21,7 @@ public:
 };
 
 
-class Sexy::Graphics : Sexy::GraphicsState
+class Sexy::Graphics : public Sexy::GraphicsState
 {
 public:
 	Edge* mPFActiveEdgeList;
@@ -50,7 +50,7 @@ public:
 	void FillRect(const IRect&);
 	void DrawRect(const IRect&);
 
-	void DrawImage(Image*, const IRect& Source, const IRect& Destination, bool Mirrored, float Rotation);
+	void DrawImage(Image*, int X, int Y, const IRect& Src, double Rotation, const IRect& Clip, Color* Color, int RotCenterX, int RotCenterY);
 	void DrawImage(Image*, int X, int Y, const IRect& SourceRect);
 	void DrawImage(Image*, int X, int Y, int Width, int Height);
 	void DrawImage(Image*, int X, int Y);

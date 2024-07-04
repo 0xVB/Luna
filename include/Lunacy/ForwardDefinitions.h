@@ -22,6 +22,7 @@ template <typename K, typename V>
 class PopPair;
 #pragma endregion
 
+#pragma region Sexy
 namespace Sexy
 {
 	float ClampAngle(float Angle);
@@ -148,6 +149,14 @@ namespace Sexy
 	class PerfInfo;
 	class PerfTimer;
 }
+#pragma endregion
+
+#pragma region MSD3D
+class IDirectDrawSurface;
+class _DDSURFACEDESC;
+class _DDSURFACEDESC2;
+#pragma endregion
+
 
 // PvZ Specific Stuff
 class LawnApp;

@@ -16,7 +16,7 @@ file(GLOB_RECURSE HEADER_FILES "include/*.h" "include/*.hpp")
 
 add_library (Luna SHARED
   ${SRC_FILES} ${HEADER_FILES}
-)
+ "src/Lunacy/Image.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Luna PROPERTY CXX_STANDARD 20)

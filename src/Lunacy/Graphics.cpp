@@ -1,4 +1,5 @@
 #include "Lunacy/Graphics.h"
+#include "Lunacy/Image.h"
 #define FUNCTION const unsigned int
 
 // Function Addresses
@@ -144,10 +145,11 @@ void __declspec(naked) Graphics::DrawImage(Image*, int, int, int, int)
 	}
 }
 
-void Graphics::DrawImage(Image* Img, const IRect& Source, const IRect& Destination, bool Mirrored, float Rotation)
+void Graphics::DrawImage(Image* Img, int X, int Y, const IRect& Src, double Rotation, const IRect& Clip, Color* Col, int RotCenterX, int RotCenterY)
 {
 	// TODO: Implement this function. There is no default function for this.
 	// We need to implement Images before we can implement this.
+	mDestImage->BltRotated(Img, X, Y, Src, Clip, *Col, 1, Rotation, RotCenterX, RotCenterY);
 }
 
 void __declspec(naked) Graphics::DrawTriangles(Image*, const TriVertex&, int)
