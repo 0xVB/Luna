@@ -1,1 +1,32 @@
 
+name: build
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths-ignore:
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - '*.md'
+
+jobs:
+    build:
+        runs-on: windows-latest
+        strategy:
+          fail-fast: false
+          matrix:
+            os: [windows]
+            arch: [x86]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4.1.7
+            - name: Setup MSVC Dev Cmd
+              uses: ilammy/msvc-dev-cmd@v1
+              with:
+                arch: x86
+            - name: Configure and Build Project
+              uses: threeal/cmake-action@main
+              with:
+                args: --preset x86-release
