@@ -29,7 +29,12 @@ target_include_directories(Luna PUBLIC
 add_subdirectory(libs/minhook)
 target_link_libraries(Luna PRIVATE minhook)
 
+# toggle off some of the Luau build options
+set(LUAU_BUILD_CLI OFF CACHE BOOL "")
+set(LUAU_BUILD_TESTS OFF CACHE BOOL "")
+set(LUAU_BUILD_WEB OFF CACHE BOOL "")
 add_subdirectory(libs/luau)
+
 target_link_libraries(Luna PRIVATE Luau.Compiler)
 target_link_libraries(Luna PRIVATE Luau.Ast)
 target_link_libraries(Luna PRIVATE isocline)
