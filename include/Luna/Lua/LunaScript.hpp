@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Luna/ModInfo.hpp"
+#include "Luna/Mod/ModInfo.hpp"
 #include <string>
 
 

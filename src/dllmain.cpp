@@ -12,17 +12,10 @@ BOOL APIENTRY DllMain(
 {
     if (CallReason != DLL_PROCESS_ATTACH)
         return TRUE;
-    Application app = Application();
 
-    try {
-        if (!app.initialize()) return FALSE;
-    }
-    catch (const std::exception& e) {
-        // TODO: Exception Handler & Logger
-        std::cerr << e.what() << std::endl;
-        return FALSE;
-    };
+    const auto app = Application::getSingleton();
+    if (!app->initialize()) return FALSE;
 
-    app.getLogger()->log(LogLevel::none, "Luna %s has been initialized.", LUNA_VERSION);
+    app->getLogger()->log(LogLevel::none, "Luna %s has been initialized.", LUNA_VERSION);
     return TRUE;
 }

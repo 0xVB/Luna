@@ -1,6 +1,5 @@
 #include "Luna/Lua/ScriptContext.hpp"
 #include "Luna/Lua/StateUserdata.hpp"
-#include <mutex>
 
 using namespace Luna::Lua;
 
@@ -24,9 +23,7 @@ bool ScriptContext::initialize()
     return true;
 }
 
-static std::mutex singleMtx;
 ScriptContext* ScriptContext::getSingleton() {
-    std::lock_guard<std::mutex> lock(singleMtx);
     static ScriptContext* sc = nullptr;
     if (sc == nullptr) sc = new ScriptContext();
     return sc;

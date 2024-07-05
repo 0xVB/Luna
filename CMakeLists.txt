@@ -16,7 +16,7 @@ file(GLOB_RECURSE HEADER_FILES "include/*.h" "include/*.hpp")
 
 add_library (Luna SHARED
   ${SRC_FILES} ${HEADER_FILES}
- "src/Lunacy/Image.cpp" "src/Luna/Luna.cpp")
+)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Luna PROPERTY CXX_STANDARD 20)
@@ -28,6 +28,9 @@ target_include_directories(Luna PUBLIC
 
 add_subdirectory(libs/minhook)
 target_link_libraries(Luna PRIVATE minhook)
+
+add_subdirectory(libs/json)
+target_link_libraries(Luna PRIVATE nlohmann_json)
 
 # toggle off some of the Luau build options
 set(LUAU_BUILD_CLI OFF CACHE BOOL "")

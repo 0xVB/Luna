@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IO/ILogger.hpp"
-#include "ModExplorer.hpp"
+#include "Mod/LocalModExplorer.hpp"
 #include <memory>
 
 namespace Luna
@@ -13,6 +13,8 @@ namespace Luna
 
         std::shared_ptr<IO::ILogger> getLogger();
 
+        static Application* getSingleton();
+        static void onLawnAppInitialized();
         bool initialize();
     private:
         std::shared_ptr<IO::ILogger> logger;

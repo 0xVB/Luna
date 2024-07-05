@@ -1,6 +1,6 @@
 #pragma once
 #include "ScriptIdentity.hpp"
-#include "Luna/ModInfo.hpp"
+#include "Luna/Mod/ModInfo.hpp"
 
 namespace Luna::Lua {
     class StateUserdata {

@@ -1,4 +1,4 @@
-#include "Luna/LocalModExplorer.hpp"
+#include "Luna/Mod/LocalModExplorer.hpp"
 
 using namespace Luna;
 
