@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 
 namespace Luna {
     class ModInfo {
@@ -13,5 +14,9 @@ namespace Luna {
         } version;
         std::string author;
         std::string description;
+
+        // TODO: must return the ModSource object (it can be a RemoteMod or LocalMod object, both inheriting from ModSource)
+        void getModSource(); 
     };
+    typedef std::shared_ptr<ModInfo> ModInfoPtr;
 }

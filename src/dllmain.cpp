@@ -1,4 +1,7 @@
-﻿#include "Luna/Luna.h"
+﻿#include "Luna/Application.hpp"
+#include <windows.h>
+#include <iostream>
+
 using Luna::Application;
 
 BOOL APIENTRY DllMain(
@@ -21,7 +24,5 @@ BOOL APIENTRY DllMain(
     };
 
     app.getLogger()->log(LogLevel::none, "Luna %s has been initialized.", LUNA_VERSION);
-    Luna::InitiateLunaState();
-    std::cout << Luna::gLuaState << "\n";
     return TRUE;
 }
