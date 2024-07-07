@@ -15,6 +15,7 @@ namespace Luna
 
         static Application* getSingleton();
         static void onLawnAppInitialized();
+        static void onGameUpdate();
         bool initialize();
     private:
         std::shared_ptr<IO::ILogger> logger;

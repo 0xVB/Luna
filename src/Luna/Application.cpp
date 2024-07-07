@@ -5,6 +5,9 @@
 #include <MinHook.h>
 #include "Lunacy/LawnApp.h"
 
+#define SEXY_FILE_EXISTS (LPVOID)0x5B0820
+#define GAME_UPDATE (LPVOID)0x539140
+
 using namespace Luna;
 
 Application::Application()
@@ -32,9 +35,9 @@ Application* Application::getSingleton()
     return &app;
 }
 
-#define SEXY_FILE_EXISTS (LPVOID)0x5B0820
+
 typedef bool (__cdecl* SexyFileExistsCC)(void*);
-SexyFileExistsCC sexyFileExists;
+SexyFileExistsCC sexyFileExists = nullptr;
 
 bool __cdecl sexyFileExistsHook(void* base) {
     auto res = sexyFileExists(base);
@@ -75,8 +78,29 @@ bool Application::initialize()
 }
 
 
-void Application::onLawnAppInitialized()
-{
+typedef bool (* gameUpdateCC)(void*);
+gameUpdateCC gameUpdate = nullptr;
+
+bool __declspec(naked) onUpdateHook(void* sexyWidgetManager) {
+    __asm {
+        call Application::onGameUpdate;
+        jmp[gameUpdate];
+    }
+}
+
+void Application::onLawnAppInitialized() {
     const auto app = Application::getSingleton();
     app->getLogger()->log(LogLevel::info, "Lawn application initialized %p", LawnApp::GetApp());
+    if (MH_CreateHook(GAME_UPDATE, onUpdateHook, (LPVOID*)&gameUpdate) != MH_OK) {
+        app->getLogger()->log(LogLevel::error, "Failed to create game update hook");
+        return;
+    }
+    if (MH_EnableHook(GAME_UPDATE) != MH_OK) {
+        app->getLogger()->log(LogLevel::error, "Failed to enable game update hook");
+    }
+}
+
+void Application::onGameUpdate() {
+    const auto app = getSingleton();
+    
 }
