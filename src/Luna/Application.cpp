@@ -67,7 +67,7 @@ bool Application::initialize()
         }
     } 
     else
-        // In this scenario LawnApp is already initialized proably due to luna begin bootstrapped in a non standard way
+        // In this scenario LawnApp is already initialized probably due to luna begin bootstrapped in a non standard way
         onLawnAppInitialized();
     
 
