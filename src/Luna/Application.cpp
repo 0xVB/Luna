@@ -56,14 +56,20 @@ bool Application::initialize()
     }
     logger->log(LogLevel::info, "Luna global state %p", sc->getGlobalState());
 
-    if (MH_CreateHook(SEXY_FILE_EXISTS, sexyFileExistsHook, (LPVOID*)&sexyFileExists) != MH_OK) {
-        logger->log(LogLevel::error, "Failed to create LawnApp hook");
-        return false;
-    }
-    if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK) {
-        logger->log(LogLevel::error, "Failed to enable LawnApp hook");
-        return false;
-    }
+    if (!LawnApp::GetApp()) {
+        if (MH_CreateHook(SEXY_FILE_EXISTS, sexyFileExistsHook, (LPVOID*)&sexyFileExists) != MH_OK) {
+            logger->log(LogLevel::error, "Failed to create LawnApp hook");
+            return false;
+        }
+        if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK) {
+            logger->log(LogLevel::error, "Failed to enable LawnApp hook");
+            return false;
+        }
+    } 
+    else
+        // In this scenario LawnApp is already initialized proably due to luna begin bootstrapped in a non standard way
+        onLawnAppInitialized();
+    
 
     return true;
 }
