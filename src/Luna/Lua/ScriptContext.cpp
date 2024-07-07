@@ -24,9 +24,8 @@ bool ScriptContext::initialize()
 }
 
 ScriptContext* ScriptContext::getSingleton() {
-    static ScriptContext* sc = nullptr;
-    if (sc == nullptr) sc = new ScriptContext();
-    return sc;
+    static ScriptContext sc;
+    return &sc;
 }
 
 int ScriptContext::startScript(LunaScriptPtr script)

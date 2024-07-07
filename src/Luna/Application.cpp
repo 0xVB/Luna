@@ -2,6 +2,7 @@
 #include "Luna/IO/ConsoleLogger.hpp"
 #include "Luna/IO/FileLogger.hpp"
 #include "Luna/Lua/ScriptContext.hpp"
+#include "Luna/Job/TaskScheduler.hpp"
 #include <MinHook.h>
 #include "Lunacy/LawnApp.h"
 
@@ -58,6 +59,8 @@ bool Application::initialize()
         return false;
     }
     logger->log(LogLevel::info, "Luna global state %p", sc->getGlobalState());
+    
+    TaskScheduler::getSingleton()->initialize();
 
     if (!LawnApp::GetApp()) {
         if (MH_CreateHook(SEXY_FILE_EXISTS, sexyFileExistsHook, (LPVOID*)&sexyFileExists) != MH_OK) {
@@ -101,6 +104,6 @@ void Application::onLawnAppInitialized() {
 }
 
 void Application::onGameUpdate() {
-    const auto app = getSingleton();
-    
+    //const auto app = getSingleton();
+    TaskScheduler::getSingleton()->update();
 }
