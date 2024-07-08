@@ -3,8 +3,8 @@
 #include "Luna/IO/FileLogger.hpp"
 #include "Luna/Lua/ScriptContext.hpp"
 #include "Luna/Job/TaskScheduler.hpp"
+#include "Lunacy/Lunacy.hpp"
 #include <MinHook.h>
-#include "Lunacy/LawnApp.h"
 
 #define SEXY_FILE_EXISTS (LPVOID)0x5B0820
 #define GAME_UPDATE (LPVOID)0x539140

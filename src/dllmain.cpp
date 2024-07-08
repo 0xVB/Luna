@@ -17,5 +17,6 @@ BOOL APIENTRY DllMain(
     if (!app->initialize()) return FALSE;
 
     app->getLogger()->log(LogLevel::none, "Luna %s has been initialized.", LUNA_VERSION);
+    
     return TRUE;
 }
