@@ -22,7 +22,8 @@ ZombieDefinition::ZombieDefinition(ZombieType Type, const char* Name)
 	mZombieName = Name;
 }
 
-ZombieDefinition* ZombieDefinition::_gDefArray = (ZombieDefinition*)0x69DA80;
+ZombieDefinition* const GLOBAL_DEFS = (ZombieDefinition*)0x69DA80;
+ZombieDefinition* ZombieDefinition::_gDefArray = GLOBAL_DEFS;
 ZombieDefinition* ZombieDefinition::_gDefArrayEnd = (ZombieDefinition*)0x69DE1C;
 unsigned int ZombieDefinition::_gUsedDefs = NUM_ZOMBIE_TYPES;
 unsigned int ZombieDefinition::_gMaxDefs = NUM_ZOMBIE_TYPES;
@@ -160,6 +161,9 @@ ZombieDefinition* ZombieDefinition::Reallocate(unsigned int NewCapacity)
 		*RefP = Ref;
 		VirtualProtect(RefP, 4, OldProt, &OldProt);
 	}
+
+	if (_gDefArray != GLOBAL_DEFS)
+		delete _gDefArray;
 
 	_gDefArray = NewArray;
 	_gDefArrayEnd = NewArray + NewCapacity;

@@ -82,6 +82,22 @@ public:
 	bool mIsFireBall;
 	ReanimationID mMoweredReanimID;
 	int mLastPortalX;
+
+	Zombie();
+
+	void ZombieInit(int Lane, ZombieType Type, unsigned char Variant, int FromWave = 0, Zombie* ParentZombie = nullptr);
+	void LoadReanim(ReanimationType);
+	void PickRandomSpeed();
+
+	void Update();
+	void Draw();
+	void Die();
+	void BossDie();
+
+	SetFuture(bool);
+	SetMustache(bool);
+
+	static PreloadResources(ZombieType);
 };
 
 class ZombieDefinition

@@ -208,6 +208,10 @@ __declspec(naked) int Graphics::WriteWordWrapped(const PopString&, const IRect&,
 		push [esp + 0x14]
 		push [esp + 0x14]
 		push [esp + 0x14]
+		call WRITEWORDWRAPPED
+
+		pop ebx
+		ret 0x10
 	}
 }
 
