@@ -22,7 +22,7 @@ public:
 	int mBlue;
 	int mAlpha;
 
-	Color(int, int, int, int);
+	Color(int = 0, int = 0, int = 0, int = 255);
 };
 
 class Sexy::Padding
@@ -93,9 +93,9 @@ public:
 class Sexy::Span
 {
 public:
-	int mY;
-	int mX;
-	int Width;
+	int mY = 0;
+	int mX = 0;
+	int mWidth = 0;
 
 	Span(int Y, int X, int W);
 };
@@ -103,22 +103,18 @@ public:
 class Sexy::Edge
 {
 public:
-	long double mX;
-	long double mDX;
-	int i;
-	long double b;
-
-	Edge();
+	long double mX = 0;
+	long double mDX = 0;
+	int i = 0;
+	long double b = 0;
 };
 
 class Sexy::TriVertex
 {
 public:
-	float x;
-	float y;
-	float u;
-	float v;
-	unsigned int color;
-
-	TriVertex();
+	float x = 0;
+	float y = 0;
+	float u = 0;
+	float v = 0;
+	unsigned int color = 0;
 };

@@ -29,8 +29,8 @@ PlantDefinition::PlantDefinition(SeedType Type, const char* Name)
 PlantDefinition* GLOBAL_DEFS = (PlantDefinition*)0x69F2B0;
 PlantDefinition* PlantDefinition::_gDefArray = GLOBAL_DEFS;
 PlantDefinition* PlantDefinition::_gDefArrayEnd = (PlantDefinition*)0x69FA24;
-unsigned int PlantDefinition::_gUsedDefs = NUM_SEED_TYPES;
-unsigned int PlantDefinition::_gMaxDefs = NUM_SEED_TYPES;
+unsigned int PlantDefinition::_gUsedDefs = BASE_NUM_SEED_TYPES;
+unsigned int PlantDefinition::_gMaxDefs = BASE_NUM_SEED_TYPES;
 size_t PlantDefinition::_gDefSize = 0x69FA24 - 0x69F2B0;
 
 unsigned int PlantDefinition::_aRefCount = 62;
@@ -101,12 +101,15 @@ unsigned int PlantDefinition::_aRefs[] = {
 
 PlantDefinition* PlantDefinition::AddPlant(const char* Name)
 {
+	if (_gMaxDefs == BASE_NUM_SEED_TYPES)
+		Reallocate(SEED_UNOCCUPIED_START * 2);
+
 	if (_gMaxDefs >= _gUsedDefs)
 		Reallocate(_gUsedDefs * 2);
 
 	PlantDefinition* NewPlant = _gDefArray + _gUsedDefs;
 
-	NewPlant->mSeedType = (SeedType)_gUsedDefs;
+	NewPlant->mSeedType = (SeedType)(BASE_NUM_SEED_TYPES - _gUsedDefs + SEED_UNOCCUPIED_START);
 	NewPlant->mReanimationType = REANIM_NONE;
 	NewPlant->mPlantImage = nullptr;
 	NewPlant->mPacketIndex = _gUsedDefs;
