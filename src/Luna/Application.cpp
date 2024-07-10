@@ -49,6 +49,8 @@ bool __cdecl sexyFileExistsHook(void* base) {
 
 bool Application::initialize()
 {
+    PopString a = std::string("");
+
     if (MH_Initialize() != MH_OK) {
         logger->log(LogLevel::error, "Failed to initialize MinHook");
         return false;
