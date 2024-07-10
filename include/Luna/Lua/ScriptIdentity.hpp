@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Luna::Lua {
+namespace Luna {
     enum ScriptIdentity {
         core,   // high api permission level
         mod,    // medium api permission level

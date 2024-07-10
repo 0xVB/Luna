@@ -2,6 +2,7 @@
 
 #include "IO/ILogger.hpp"
 #include "Mod/LocalModExplorer.hpp"
+#include "Mod/ModHandler.hpp"
 #include <memory>
 
 namespace Luna
@@ -17,8 +18,11 @@ namespace Luna
         static void onLawnAppInitialized();
         static void onGameUpdate();
         bool initialize();
+
+        std::vector<ModInfoPtr> getLoadedMods();
     private:
-        std::shared_ptr<IO::ILogger> logger;
+        std::shared_ptr<ModHandler> modHandler;
         std::shared_ptr<ModExplorer> localModExplorer;
+        std::shared_ptr<IO::ILogger> logger;
     };
 }

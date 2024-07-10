@@ -1,9 +1,10 @@
 #pragma once
 #include "Luna/IO/ConsoleLogger.hpp"
 #include "Luna/IO/FileLogger.hpp"
-#include "Luna/Lua/ScriptContext.hpp"
+#include <lua.h>
 
-namespace Luna::IO
+
+namespace Luna::Lua::Lib::IO
 {
-	void init(lua_State*);
+	void init(lua_State* state);
 }

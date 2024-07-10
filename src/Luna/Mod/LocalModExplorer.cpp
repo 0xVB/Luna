@@ -1,4 +1,6 @@
 #include "Luna/Mod/LocalModExplorer.hpp"
+#include "Luna/Mod/FolderModParser.hpp"
+#include "Luna/Mod/ModParserDetector.hpp"
 
 using namespace Luna;
 
@@ -9,13 +11,18 @@ LocalModExplorer::LocalModExplorer(std::filesystem::path path)
         std::filesystem::create_directory(modsPath);
 }
 
-std::vector<ModInfo> LocalModExplorer::getMods()
+std::vector<ModInfoPtr> LocalModExplorer::getMods()
 {
-    std::vector<ModInfo> mods;
+    std::vector<ModInfoPtr> mods;
     for(auto& p: std::filesystem::directory_iterator(modsPath))
     {
-        if(!p.is_directory()) continue;
-        // TODO: Implement ModParser
+        auto parser = ModParserDetector::detect(p);
+        if (!parser.get())
+            continue;
+        auto mod = parser->parse();
+        if (!mod.get())
+            continue;
+        mods.push_back(mod);
     }
     return mods;
 }

@@ -1,7 +1,7 @@
-#include "Luna/Lua/ScriptContext.hpp"
+#include "Luna/ScriptContext.hpp"
 #include "Luna/Lua/StateUserdata.hpp"
 
-using namespace Luna::Lua;
+using namespace Luna;
 
 static void* l_alloc(void* ud, void* ptr, size_t osize, size_t nsize)
 {

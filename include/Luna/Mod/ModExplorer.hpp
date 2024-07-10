@@ -9,6 +9,6 @@ namespace Luna {
         public: 
         ModExplorer() = default;
 
-        virtual std::vector<ModInfo> getMods() = 0;
+        virtual std::vector<ModInfoPtr> getMods() = 0;
     };
 }

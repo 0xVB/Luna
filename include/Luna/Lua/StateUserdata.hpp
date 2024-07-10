@@ -2,7 +2,7 @@
 #include "ScriptIdentity.hpp"
 #include "Luna/Mod/ModInfo.hpp"
 
-namespace Luna::Lua {
+namespace Luna {
     class StateUserdata {
     public:
         StateUserdata();

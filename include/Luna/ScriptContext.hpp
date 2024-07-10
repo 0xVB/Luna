@@ -2,9 +2,9 @@
 
 #include <lua.h>
 #include <lualib.h>
-#include "LunaScript.hpp"
+#include "Lua/LunaScript.hpp"
 
-namespace Luna::Lua {
+namespace Luna {
     class ScriptContext {
     public:
         ScriptContext() = default;

@@ -1,11 +1,14 @@
 #pragma once
 
 #include "ModInfo.hpp"
+#include <filesystem>
 
 namespace Luna {
     class ModParserInterface {
+        protected:
+        std::filesystem::path path;
         public:
-        virtual bool isMod(std::string path) = 0;
-        virtual ModInfo parse(std::string path) = 0;
+        ModParserInterface(std::filesystem::path path) : path(path) {};
+        virtual ModInfoPtr parse() = 0;
     };
 }

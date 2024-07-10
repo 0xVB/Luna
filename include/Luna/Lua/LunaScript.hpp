@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Luna/Mod/ModInfo.hpp"
+#include <memory>
 #include <string>
 
 
-
-namespace Luna::Lua {
+namespace Luna {
+    class ModInfo;
     class LunaScript {
     public:
         LunaScript();
@@ -13,7 +13,7 @@ namespace Luna::Lua {
     private:
         std::string _name;
         std::string _bytecode; // TODO: change this with ProtectedSource object
-        ModInfoPtr _modInfo;
+        std::shared_ptr<ModInfo> _modInfo;
     };
     typedef std::shared_ptr<LunaScript> LunaScriptPtr;
 }

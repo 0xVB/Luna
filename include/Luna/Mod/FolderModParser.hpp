@@ -6,9 +6,9 @@
 namespace Luna {
     class FolderModParser : public ModParserInterface {
         public:
-        FolderModParser() = default;
+        FolderModParser(std::filesystem::path path) : ModParserInterface(path) {};
 
-        ModInfo parse(std::string path) override;
-        bool isMod(std::string path) override;
+        static bool isMod(std::filesystem::path path);
+        ModInfoPtr parse() override;
     };
 }

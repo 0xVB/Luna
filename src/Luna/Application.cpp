@@ -1,7 +1,7 @@
 #include "Luna/Application.hpp"
+#include "Luna/ScriptContext.hpp"
 #include "Luna/IO/ConsoleLogger.hpp"
 #include "Luna/IO/FileLogger.hpp"
-#include "Luna/Lua/ScriptContext.hpp"
 #include "Luna/Job/TaskScheduler.hpp"
 #include "Lunacy/Lunacy.hpp"
 #include <MinHook.h>
@@ -19,6 +19,7 @@ Application::Application()
     logger = std::make_shared<IO::FileLogger>("luna.log");
     #endif
     localModExplorer = std::make_shared<LocalModExplorer>("mods");
+    modHandler = std::make_shared<ModHandler>();
 }
 
 Application::~Application()
@@ -55,7 +56,7 @@ bool Application::initialize()
         logger->log(LogLevel::error, "Failed to initialize MinHook");
         return false;
     }
-    const auto sc = Lua::ScriptContext::getSingleton();
+    const auto sc = ScriptContext::getSingleton();
     if (!sc->initialize()) {
         logger->log(LogLevel::error, "Failed to initialize ScriptContext");
         return false;
@@ -63,6 +64,8 @@ bool Application::initialize()
     logger->log(LogLevel::info, "Luna global state %p", sc->getGlobalState());
     
     TaskScheduler::getSingleton()->initialize();
+
+    modHandler->addMods(localModExplorer->getMods());
 
     if (!LawnApp::GetApp()) {
         if (MH_CreateHook(SEXY_FILE_EXISTS, sexyFileExistsHook, (LPVOID*)&sexyFileExists) != MH_OK) {
@@ -77,7 +80,6 @@ bool Application::initialize()
     else
         // In this scenario LawnApp is already initialized probably due to luna begin bootstrapped in a non standard way
         onLawnAppInitialized();
-    
 
     return true;
 }
@@ -108,4 +110,9 @@ void Application::onLawnAppInitialized() {
 void Application::onGameUpdate() {
     //const auto app = getSingleton();
     TaskScheduler::getSingleton()->update();
+}
+
+std::vector<ModInfoPtr> Application::getLoadedMods()
+{
+    return modHandler->getMods();
 }
