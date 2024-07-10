@@ -189,11 +189,7 @@ void __declspec(naked) Graphics::DrawString(const PopString&, int, int)
 	__asm
 	{
 		mov eax, ecx
-		push [esp + 0xC]
-		push [esp + 0xC]
-		push [esp + 0xC]
-		call DRAWSTRING
-		ret 0xC
+		jmp DRAWSTRING
 	}
 }
 
