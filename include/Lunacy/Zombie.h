@@ -94,10 +94,10 @@ public:
 	void Die();
 	void BossDie();
 
-	SetFuture(bool);
-	SetMustache(bool);
+	void SetFuture(bool);
+	void SetMustache(bool);
 
-	static PreloadResources(ZombieType);
+	static void PreloadResources(ZombieType);
 };
 
 class ZombieDefinition
