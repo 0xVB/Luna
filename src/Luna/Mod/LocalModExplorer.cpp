@@ -11,18 +11,15 @@ LocalModExplorer::LocalModExplorer(std::filesystem::path path)
         std::filesystem::create_directory(modsPath);
 }
 
-std::vector<ModInfoPtr> LocalModExplorer::getMods()
+std::vector<ModParserPtr> LocalModExplorer::getMods()
 {
-    std::vector<ModInfoPtr> mods;
+    std::vector<ModParserPtr> mods;
     for(auto& p: std::filesystem::directory_iterator(modsPath))
     {
         auto parser = ModParserDetector::detect(p);
         if (!parser.get())
             continue;
-        auto mod = parser->parse();
-        if (!mod.get())
-            continue;
-        mods.push_back(mod);
+        mods.push_back(parser);
     }
     return mods;
 }

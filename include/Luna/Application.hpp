@@ -19,7 +19,7 @@ namespace Luna
         static void onGameUpdate();
         bool initialize();
 
-        std::vector<ModInfoPtr> getLoadedMods();
+        std::vector<ModParserPtr> getLoadedMods();
     private:
         std::shared_ptr<ModHandler> modHandler;
         std::shared_ptr<ModExplorer> localModExplorer;

@@ -9,6 +9,7 @@ namespace Luna {
         FolderModParser(std::filesystem::path path) : ModParserInterface(path) {};
 
         static bool isMod(std::filesystem::path path);
-        ModInfoPtr parse() override;
+        ModInfoPtr parseInfo() override;
+        ModDataPtr parseModData() override;
     };
 }

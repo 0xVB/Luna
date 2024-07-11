@@ -9,6 +9,11 @@ namespace Luna {
         std::filesystem::path path;
         public:
         ModParserInterface(std::filesystem::path path) : path(path) {};
-        virtual ModInfoPtr parse() = 0;
+        ModInfoPtr getInfo();
+        ModDataPtr getModData();
+        private:
+        virtual ModInfoPtr parseInfo() = 0;
+        virtual ModDataPtr parseModData() = 0;
     };
+    typedef std::shared_ptr<ModParserInterface> ModParserPtr;
 }

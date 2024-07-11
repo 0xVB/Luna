@@ -110,7 +110,7 @@ void Application::onGameUpdate() {
     TaskScheduler::getSingleton()->update();
 }
 
-std::vector<ModInfoPtr> Application::getLoadedMods()
+std::vector<ModParserPtr> Application::getLoadedMods()
 {
     return modHandler->getMods();
 }
