@@ -30,5 +30,9 @@ ScriptContext* ScriptContext::getSingleton() {
 
 int ScriptContext::startScript(LunaScriptPtr script)
 {
+    // TODO: get appropriate state based on script authority
+    // TODO: make new thread with LunaUserdata
+    // TODO: luau_load script
+    
    return LUA_OK;
 }

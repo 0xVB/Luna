@@ -1,5 +1,7 @@
 #include "Luna/Mod/FolderModParser.hpp"
 #include "Luna/Mod/LocalModInfo.hpp"
+#include "Luna/Lua/ScriptCompiler.hpp"
+#include <fstream>
 
 using namespace Luna;
 
@@ -19,7 +21,13 @@ ModInfoPtr FolderModParser::parseInfo()
     return info;
 }
 
-ModDataPtr FolderModParser::parseModData()
+LunaScriptPtr FolderModParser::parseMainScript()
 {
-    return nullptr;
+    std::ifstream fileStream(path / "main.lua");
+    if (!fileStream.is_open())
+        return nullptr;
+    std::string fileContents((std::istreambuf_iterator<char>(fileStream)),
+                                std::istreambuf_iterator<char>());
+    fileStream.close();
+    return std::shared_ptr<LunaScript>(new LunaScript(shared_from_this(), ScriptCompiler::compileScript(fileContents)));
 }

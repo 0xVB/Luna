@@ -7,7 +7,7 @@ ModInfoPtr ModParserInterface::getInfo()
     return parseInfo();
 }
 
-ModDataPtr ModParserInterface::getModData()
+LunaScriptPtr ModParserInterface::getMainScript()
 {
-    return parseModData();
+    return parseMainScript();
 }

@@ -8,10 +8,7 @@ void ModInitJob::run(TaskScheduler* ts) {
     const auto app = Application::getSingleton();
     const auto sc = ScriptContext::getSingleton();
     for (const auto& mod : app->getLoadedMods()) {
-        auto modData = mod->getModData();
-        if (!modData.get())
-            continue;
-        auto mainScript = modData->getMainScript();
+        auto mainScript = mod->getMainScript();
         if (!mainScript.get())
             continue;
         sc->startScript(mainScript);

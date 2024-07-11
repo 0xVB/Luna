@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <memory>
-#include "ModData.hpp"
 
 namespace Luna {
     class ModInfo {
@@ -28,8 +27,6 @@ namespace Luna {
         inline void set_author(std::string _author) { this->_author = _author; }
         inline std::string get_description() { return _description; }
         inline void set_description(std::string _description) { this->_description = _description; }
-        // TODO: must return the ModSource object (it can be a RemoteMod or LocalMod object, both inheriting from ModSource)
-        virtual ModDataPtr getModData() = 0; 
     };
     typedef std::shared_ptr<ModInfo> ModInfoPtr;
 }
