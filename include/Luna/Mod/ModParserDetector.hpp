@@ -7,6 +7,6 @@
 namespace Luna {
     class ModParserDetector {
     public:
-        static std::shared_ptr<ModParserInterface> detect(std::filesystem::path path);
+        static ModParserPtr detect(std::filesystem::path path);
     };
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ModInfo.hpp"
+#include "ModParserInterface.hpp"
 #include <vector>
 
 
@@ -9,6 +9,6 @@ namespace Luna {
         public: 
         ModExplorer() = default;
 
-        virtual std::vector<ModInfoPtr> getMods() = 0;
+        virtual std::vector<ModParserPtr> getMods() = 0;
     };
 }

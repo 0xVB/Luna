@@ -3,20 +3,21 @@
 #include <vector>
 #include <filesystem>
 #include "ModInfo.hpp"
+#include "ModParserInterface.hpp"
 
 namespace Luna {
     class ModHandler {
         private:
-        std::vector<ModInfoPtr> mods;
+        std::vector<ModParserPtr> mods;
 
         public:
         ModHandler() = default;
 
-        void addMod(ModInfoPtr mod);
-        void removeMod(ModInfoPtr mod);
-        void addMods(std::vector<ModInfoPtr> mods);
+        void addMod(ModParserPtr mod);
+        void removeMod(ModParserPtr mod);
+        void addMods(std::vector<ModParserPtr> mods);
 
-        std::vector<ModInfoPtr> getMods();
+        std::vector<ModParserPtr> getMods();
 
     };
 }

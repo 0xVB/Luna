@@ -9,7 +9,7 @@ namespace Luna {
         public:
         LocalModExplorer(std::filesystem::path modsPath);
 
-        std::vector<ModInfoPtr> getMods() override;
+        std::vector<ModParserPtr> getMods() override;
         private:
         std::filesystem::path modsPath;
     };

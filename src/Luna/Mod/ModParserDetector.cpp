@@ -4,9 +4,9 @@
 
 using namespace Luna;
 
-std::shared_ptr<ModParserInterface> ModParserDetector::detect(std::filesystem::path path)
+ModParserPtr ModParserDetector::detect(std::filesystem::path path)
 {
     if (FolderModParser::isMod(path))
-        return std::make_shared<FolderModParser>(path);
+        return std::shared_ptr<ModParserInterface>(new FolderModParser(path));
     return nullptr;
 }
