@@ -176,7 +176,17 @@ class CursorPreview;
 class SeedPacket;
 class SeedBank;
 class HitResult;
+
+class Challenge;
+class CutScene;
 #pragma endregion
+
+#pragma region Extended UI
+class GameButton;
+class UIMessage;
+class UIToolTip;
+#pragma endregion
+
 
 class TypingCheck;
 class PopDRM;
