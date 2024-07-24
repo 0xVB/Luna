@@ -68,6 +68,7 @@ public:
 	void PlantingEffects();
 	void Die();
 	void Fire(Zombie* Target = NULL, int Lane = -1, bool IsSecondary = false);
+
 };
 
 class PlantDefinition

@@ -1,5 +1,7 @@
 #pragma once
 #include <Windows.h>
+#include <string>
+#include <map>
 /* Hi, VB here
 * DataArrays allocate a large block of memory and then reuses this memory block to	|
 * store classes of different types. The game uses DataArrays to store plants,		|
@@ -39,13 +41,22 @@ public:
 			// Return the lower 16 bits of ID
 			return (unsigned short)(ID);
 		}
+
+		bool IsAllocated()
+		{
+			return mID & 0xFFFF0000;
+		}
+
+		void Deallocate()
+		{
+			mID &= 0x0000FFFF;
+		}
 	};
 
 private:
 	DataArrayItem* mBlock;
 
 public:
-
 	// The highest number of elements used ever at one point of time
 	unsigned int mMaxUsedCount = 0;
 	// The maximum number of elements this DataArray can hold
@@ -74,7 +85,7 @@ public:
 			mFreeListHead++;
 		}
 		else
-			mFreeListHead = mBlock[aFreeListHead].mID;
+			mFreeListHead = (unsigned int)(unsigned short)(mBlock[aFreeListHead].mID);
 
 		aItem = mBlock + aFreeListHead;
 		memset(aItem, 0, sizeof(DataArrayItem));
@@ -104,32 +115,54 @@ public:
 		return aItem;
 	}
 
-	// Attempts to deallocate the item with the given ID if it exists.
-	void Dispose(unsigned int ID)
-	{
-
-	}
-
 	// Sets CurrentItem to the next ite in the array and returns true if an item was found.
-	bool Next(T** CurrentItem)
+	bool Next(DataArrayItem** CurrentItem)
 	{
+		unsigned int ID;
+		unsigned int Index;
+		if (*CurrentItem == nullptr)
+		{
+			*CurrentItem = mBlock[mFreeListHead];
+			goto CheckValidity;
+		}
 
+		ID = (*CurrentItem)->mID;
+		Index = DataArrayItem::GetIndex(ID);
+		while (mMaxUsedCount < Index)
+		{
+			Index++;
+			*CurrentItem = mBlock[Index];
+
+			if (IsAllocated(ID))
+				return true;
+		}
+
+	CheckValidity:
+		if ((*CurrentItem)->IsAllocated())
+			return true;
+		else
+		{
+			*CurrentItem = (DataArrayItem*)-1;
+			return false;
+		}
 	}
 
 	bool IsAllocated(DataArrayItem* Item)
 	{
+		// If the higher 16 bits are zero, the item is unallocated.
 		return Item->mID & 0xFFFF0000;
 	}
 
+	// Attempts to deallocate the item with the given ID if it exists. Returns true if the item was found and deallocated.
 	bool Deallocate(unsigned int ID)
 	{
 		auto aItem = Fetch(ID);
 		if (!aItem) return false;
 
-		auto aFreeListHead = mFreeListHead;
-		mFreeListHead = aItem->mID & 0x0000FFFF;
-		aItem->mID = aFreeListHead;
+		mFreeListHead = min(mFreeListHead, DataArrayItem::GetIndex(aItem->mID));
 		mSize--;
+
+		aItem->Deallocate();
 	}
 	
 	// Deallocates all the items but does not destroy the block.

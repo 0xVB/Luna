@@ -2,6 +2,17 @@
 // Defines all classes and structures needed
 #include "ConstEnums.h"
 
+union LunaValue {
+	unsigned int ui;
+	double d;
+	void* p;
+	float f;
+	bool b;
+	int i;
+
+	LunaValue() : d(0) {};
+};
+
 #pragma region PopStructs
 class PopString;
 class PopWString;
