@@ -124,4 +124,25 @@ public:
 	int mChocolateCollected;
 #pragma endregion
 
+#pragma region Functions
+	GridItem* AddLadder(int Column, int Lane);
+	GridItem* AddCrater(int Column, int Lane);
+	int CountGraves();
+
+	void SpawnZombiesFromPool();
+	void SpawnZombiesFromGrave();
+
+	Plant* NewPlant(int Column, int Lane, SeedType, SeedType ImitaterType);
+	void DoPlantingEffects(int Column, int Lane, Plant*);
+
+	Projectile* NewProjectile(int X, int Y, int RenderOrder, int Lane, ProjectileType);
+
+	int PlantingPixelToGridX(SeedType, int X, int Y);
+	int PlantingPixelToGridY(SeedType, int X, int Y);
+	int GridToPixelX(int Col, int Lane);
+	int GridToPixelY(int Col, int Lane);
+	int PixelToGridX(int X, int Y);
+	int PixelToGridY(int X, int Y);
+#pragma endregion
+
 };
