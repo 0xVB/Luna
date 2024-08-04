@@ -1,4 +1,4 @@
-#include "Luna/Job/TaskScheduler.hpp"
+#include "Luna/TaskScheduler.hpp"
 
 #include "Luna/Job/ModInitJob.hpp"
 

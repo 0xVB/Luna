@@ -2,8 +2,8 @@
 
 namespace Luna {
     enum ScriptIdentity {
-        core,   // high api permission level
-        mod,    // medium api permission level
-        util    // low api permission level
+        CORE_ID,   // high api permission level
+        MOD_ID,    // medium api permission level
+        UTIL_ID    // low api permission level
     };
 }

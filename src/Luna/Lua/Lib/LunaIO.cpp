@@ -1,13 +1,51 @@
 #include "Luna/Lua/Lib/LunaIO.hpp"
+#include "Luna/Application.hpp"
 
-int lua_print(lua_State* L)
-{
-	
+#include <lualib.h>
+#include <string>
+
+int printOut(lua_State* L, LogLevel level) {
+	int T = lua_gettop(L);
+	auto app = Luna::Application::getSingleton();
+	if (T == 0) {
+		app->getLogger()->log(level, "");
+		return 0;
+	}
+
+	std::string out = "";
+	for (int i = 1; i <= T; i++)
+	{
+		out += lua_tostring(L, i);
+	}
+	app->getLogger()->log(level, out.c_str());
+
 	return 0;
 }
 
-void Luna::Lua::Lib::IO::init(lua_State* L)
+int luaPrint(lua_State* L)
 {
-	lua_pushcfunction(L, lua_print, "print");
-	lua_setglobal(L, "print");
+	return printOut(L, LogLevel::none);
+}
+
+int luaWarn(lua_State* L)
+{
+	return printOut(L, LogLevel::warn);
+}
+
+int luaInfo(lua_State* L)
+{
+	return printOut(L, LogLevel::info);
+}
+
+luaL_Reg IOFuncs[] = {
+	{"print", luaPrint},
+	{"warn",  luaWarn},
+	{"info",  luaInfo},
+	{NULL, NULL},
+};
+
+
+void Luna::Lib::IO::openStatic(lua_State* L)
+{
+	luaL_register(L, "_G", IOFuncs);
 }

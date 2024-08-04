@@ -4,7 +4,7 @@
 #include <lua.h>
 
 
-namespace Luna::Lua::Lib::IO
+namespace Luna::Lib::IO
 {
-	void init(lua_State* state);
+	void openStatic(lua_State* L);
 }

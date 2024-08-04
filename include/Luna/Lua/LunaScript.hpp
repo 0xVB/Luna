@@ -10,7 +10,7 @@ namespace Luna {
     public:
         LunaScript(std::shared_ptr<ModParserInterface> mod, ProtectedSource source) : _mod(mod), _source(source) {};
         inline std::shared_ptr<ModParserInterface> getMod() { return _mod; }
-        inline ProtectedSource getSource() { return _source; }
+        inline ProtectedSource getBytecode() { return _source; }
     private:
         std::string _name;
         ProtectedSource _source;

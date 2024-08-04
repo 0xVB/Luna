@@ -2,7 +2,7 @@
 #include "Luna/ScriptContext.hpp"
 #include "Luna/IO/ConsoleLogger.hpp"
 #include "Luna/IO/FileLogger.hpp"
-#include "Luna/Job/TaskScheduler.hpp"
+#include "Luna/TaskScheduler.hpp"
 #include "Lunacy/Lunacy.hpp"
 #include <MinHook.h>
 

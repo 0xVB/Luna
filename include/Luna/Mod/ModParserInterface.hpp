@@ -5,6 +5,7 @@
 #include "Luna/Lua/LunaModule.hpp"
 #include <filesystem>
 
+// TODO: cache parsed data
 namespace Luna {
     class ModParserInterface {
         protected:

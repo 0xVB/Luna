@@ -15,6 +15,10 @@ namespace Luna {
         inline lua_State* getGlobalState() { return _gL; }
 
         int startScript(LunaScriptPtr script);
+
+        // lib methods
+        void openStatic(lua_State* L);
+        void openDynamic(lua_State* L);
     private:
         // global lua state
         lua_State* _gL;

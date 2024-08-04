@@ -16,7 +16,6 @@ ModInfoPtr FolderModParser::parseInfo()
 {
     auto info = std::shared_ptr<ModInfo>(new LocalModInfo(path.string()));
     info->setName(path.filename().string());
-    
 
     return info;
 }
