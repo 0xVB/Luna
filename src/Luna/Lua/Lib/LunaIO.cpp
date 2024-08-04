@@ -15,8 +15,11 @@ int printOut(lua_State* L, LogLevel level) {
 	std::string out = "";
 	for (int i = 1; i <= T; i++)
 	{
-		out += lua_tostring(L, i);
+		const char* s = luaL_tolstring(L, i, NULL); // convert to string using __tostring et al
+		out += s;
+		out += "\t";
 	}
+	out.pop_back();
 	app->getLogger()->log(level, out.c_str());
 
 	return 0;

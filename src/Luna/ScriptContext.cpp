@@ -68,6 +68,7 @@ int ScriptContext::startScript(LunaScriptPtr script)
 }
 
 void Luna::ScriptContext::openStatic(lua_State* L) {
+    luaL_openlibs(L);
     Lib::IO::openStatic(L);
 }
 
