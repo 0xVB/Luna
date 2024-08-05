@@ -1,5 +1,6 @@
 #pragma once
 #include "Lunacy/Plant.h"
+#include "Lunacy/Lawn.h"
 
 CONST DWORD FIRE = 0x466E00;
 __declspec(naked) void __thiscall Plant::Fire(Zombie*, int, bool)
@@ -62,4 +63,9 @@ __declspec(naked) void __thiscall Plant::PlayBodyReanim(const char*, ReanimLoopT
         call PLAYBODYREANIM
         ret 0x10
     }
+}
+
+void Plant::DoPlantingEffects()
+{
+    mLawn->DoPlantingEffects(mColumn, mRow, this);
 }

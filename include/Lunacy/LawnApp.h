@@ -86,7 +86,7 @@ public:
 #pragma endregion
 	static LawnApp* GetApp();
 
-	int LawnMessageBox(const char* Head, const char* Body, const char* B1, const char* B2, int ButtonMode = 1);
-	Reanimation* NewReanim(ReanimationType AnimType, float X, float Y, int RenderOrder);
-	ParticleSystem* __thiscall AddParticles(ParticleEffect Effect, float X, float Y, int Layer = 400000);
+	int LawnMessageBox(int ID, const char* Head, const char* Body, const char* B1, const char* B2, int ButtonMode = 1);
+	Reanimation* AddReanim(ReanimationType, float X, float Y, int Layer = 400000);
+	ParticleSystem* __thiscall AddParticles(ParticleEffect, float X, float Y, int Layer = 400000);
 };

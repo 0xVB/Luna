@@ -130,6 +130,7 @@ public:
 	int CountGraves();
 
 	void SpawnZombiesFromPool();
+	void SpawnZombiesFromSky();
 	void SpawnZombiesFromGrave();
 
 	Plant* NewPlant(int Column, int Lane, SeedType, SeedType ImitaterType);
@@ -143,6 +144,10 @@ public:
 	int GridToPixelY(int Col, int Lane);
 	int PixelToGridX(int X, int Y);
 	int PixelToGridY(int X, int Y);
+
+	Sexy::IVector2 PlantingPixelToGrid(SeedType, int X, int Y);
+	Sexy::IVector2 GridToPixel(int Col, int Lane);
+	Sexy::IVector2 PixelToGrid(int X, int Y);
 #pragma endregion
 
 };

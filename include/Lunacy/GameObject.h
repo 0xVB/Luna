@@ -5,6 +5,7 @@
 
 class GameObject
 {
+public:
 	LawnApp* mApp;
 	Lawn* mLawn;
 	int mX;

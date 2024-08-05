@@ -68,6 +68,7 @@ public:
 	void Fire(Zombie* Target = NULL, int Lane = -1, bool IsSecondary = false);
 	void SetSleeping(bool IsAsleep);
 	void PlayBodyReanim(const char* TrackName, ReanimLoopType = REANIM_LOOP, int BlendTime = 0, float AnimRate = 12.0);
+	void DoPlantingEffects();
 	bool MakeSun();
 };
 
