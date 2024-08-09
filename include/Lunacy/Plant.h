@@ -9,8 +9,24 @@ public:
 	class MagnetItem
 	{
 	public:
-		Sexy::FVector2 mPos;
-		Sexy::FVector2 mDestOffset;
+		union
+		{
+			struct
+			{
+				float mX;
+				float mY;
+			};
+			Sexy::FVector2 mPos;
+		};
+		union
+		{
+			struct
+			{
+				float mDestOffsetX;
+				float mDestOffsetY;
+			};
+			Sexy::FVector2 mDestOffset;
+		};
 		MagnetItemType mItemType;
 	};
 
@@ -30,9 +46,47 @@ public:
 	int mStateTimer;
 	int mActionTimer;
 	int mActionRate;
-	Sexy::IRect mPlantRect;
-	Sexy::IRect mPlantAttackRect;
-	Sexy::IVector2 mTarget;
+	union
+	{
+		struct
+		{
+			int mPlantX;
+			int mPlantY;
+			int mPlantW;
+			int mPlantH;
+		};
+		struct
+		{
+			Sexy::IVector2 mPlantPos;
+			Sexy::IVector2 mPlantSize;
+		};
+		Sexy::IRect mPlantRect;
+	};
+	union
+	{
+		struct
+		{
+			int mPlantAttackX;
+			int mPlantAttackY;
+			int mPlantAttackW;
+			int mPlantAttackH;
+		};
+		struct
+		{
+			Sexy::IVector2 mPlantAttackPos;
+			Sexy::IVector2 mPlantAttackSize;
+		};
+		Sexy::IRect mPlantAttackRect;
+	};
+	union
+	{
+		struct
+		{
+			int mTargetX;
+			int mTargetY;
+		};
+		Sexy::IVector2 mTarget;
+	};
 	int mStartLane;
 	ParticleSystemID mParticleID;
 	int mShootingTimer;
@@ -47,7 +101,15 @@ public:
 	int mEatenTimer;
 	int mGlowTimer;
 	int mHighlightTimer;
-	Sexy::FVector2 mShakeOffset;
+	union
+	{
+		struct
+		{
+			float mShakeOffsetX;
+			float mShakeOffsetY;
+		};
+		Sexy::FVector2 mShakeOffset;
+	};
 	MagnetItem mMagnetItems[5];
 	ZombieID mTargetZombieID;
 	int mWakingTimer;

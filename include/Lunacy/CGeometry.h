@@ -25,6 +25,16 @@ public:
 	Color(int = 0, int = 0, int = 0, int = 255);
 };
 
+class Sexy::SColor
+{
+	byte mRed;
+	byte mGreen;
+	byte mBlue;
+	byte mAlpha;
+
+	SColor(int = 0, int = 0, int = 0, int = 255);
+};
+
 class Sexy::Padding
 {
 public:

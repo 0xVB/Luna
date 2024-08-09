@@ -214,6 +214,13 @@ Sexy::Vector3<N> Sexy::Vector2<N>::To3D()
 
 template <typename N>
 template <typename T>
+float Sexy::Vector2<N>::GetDistance(Sexy::Vector3<T> V3)
+{
+	return (V3.Project() - *this).GetMagnitude();
+}
+
+template <typename N>
+template <typename T>
 Sexy::Vector2<N>::operator Sexy::Vector3<T>() const
 {
 	return Sexy::Vector3<T>((T)mX, (T)mY, 0);

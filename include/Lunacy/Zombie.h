@@ -9,8 +9,15 @@ class Zombie : GameObject
 public:
 	ZombieType mZombieType;
 	ZombiePhase mZombiePhase;
-	float mPosX;
-	float mPosY;
+	union
+	{
+		struct
+		{
+			float mPosX;
+			float mPosY;
+		};
+		Sexy::FVector2 mPos;
+	};
 	float mVelX;
 	int mAnimCounter;
 	int mGroanCounter;
@@ -34,8 +41,38 @@ public:
 	int mTargetCol;
 	float mAltitude;
 	bool mHitUmbrella;
-	Sexy::IRect mZombieRect;
-	Sexy::IRect mZombieAttackRect;
+	union
+	{
+		struct
+		{
+			int mZombieX;
+			int mZombieY;
+			int mZobmieW;
+			int mZombieH;
+		};
+		struct
+		{
+			Sexy::IVector2 mZombiePos;
+			Sexy::IVector2 mZombieSize;
+		};
+		Sexy::IRect mZombieRect;
+	};
+	union
+	{
+		struct
+		{
+			int mZombieAttackX;
+			int mZombieAttackY;
+			int mZombieAttackW;
+			int mZombieAttackH;
+		};
+		struct
+		{
+			Sexy::IVector2 mZombieAttackPos;
+			Sexy::IVector2 mZombieAttackSize;
+		};
+		Sexy::IRect mZombieAttackRect;
+	};
 	int mChilledCounter;
 	int mButteredCounter;
 	int mIceTrapCounter;
@@ -62,8 +99,15 @@ public:
 	ZombieID mRelatedZombieID;
 	ZombieID mFollowerZombieID[4];
 	bool mPlayingSong;
-	int mParticleOffsetX;
-	int mParticleOffsetY;
+	union
+	{
+		struct
+		{
+			int mParticleOffsetX;
+			int mParticleOffsetY;
+		};
+		Sexy::IVector2 mParticleOffset;
+	};
 	AttachmentID mAttachmentID;
 	int mSummonCounter;
 	ReanimationID mBodyReanimID;

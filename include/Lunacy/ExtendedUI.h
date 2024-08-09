@@ -22,7 +22,22 @@ class GameButton
 public:
 	LawnApp* mApp;
 	Sexy::UIElement* mParent;
-	Sexy::IRect mBounds;
+	union
+	{
+		struct
+		{
+			int mX;
+			int mY;
+			int mWidth;
+			int mHeight;
+		};
+		struct
+		{
+			Sexy::IVector2 mPosition;
+			Sexy::IVector2 mSize;
+		};
+		Sexy::IRect mBounds;
+	};
 	bool mIsOver;
 	bool mIsDown;
 	bool mDisabled;
@@ -57,7 +72,22 @@ public:
 	PopString mTitle;
 	PopString mLabel;
 	PopString mWarningText;
-	Sexy::IRect Bounds;
+	union
+	{
+		struct
+		{
+			int mX;
+			int mY;
+			int mWidth;
+			int mHeight;
+		};
+		struct
+		{
+			Sexy::IVector2 mPosition;
+			Sexy::IVector2 mSize;
+		};
+		Sexy::IRect mBounds;
+	};
 	bool mVisible;
 	bool mCenter;
 	int mMinLeft;

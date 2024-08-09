@@ -1,6 +1,5 @@
 #pragma once
-
-#include "ForwardDefinitions.h"
+#include "PopStructs.h"
 
 class Sexy::Buffer
 {

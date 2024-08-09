@@ -118,33 +118,46 @@ public:
 	// Sets CurrentItem to the next ite in the array and returns true if an item was found.
 	bool Next(DataArrayItem** CurrentItem)
 	{
-		unsigned int ID;
-		unsigned int Index;
-		if (*CurrentItem == nullptr)
-		{
-			*CurrentItem = mBlock[mFreeListHead];
-			goto CheckValidity;
-		}
+		auto MaxItem = mBlock + mMaxUsedCount;
+		DataArrayItem* Item = *CurrentItem;
 
-		ID = (*CurrentItem)->mID;
-		Index = DataArrayItem::GetIndex(ID);
-		while (mMaxUsedCount < Index)
-		{
-			Index++;
-			*CurrentItem = mBlock[Index];
-
-			if (IsAllocated(ID))
-				return true;
-		}
-
-	CheckValidity:
-		if ((*CurrentItem)->IsAllocated())
-			return true;
+		if (Item == nullptr)
+			Item = mBlock;
 		else
+			Item++;
+
+		while (Item <= MaxItem)
 		{
-			*CurrentItem = (DataArrayItem*)-1;
-			return false;
+			if (Item->IsAllocated())
+			{
+				*CurrentItem = Item;
+				return true;
+			}
+			Item++;
 		}
+
+		*CurrentItem = (DataArrayItem*)-1;
+		return false;
+	}
+	bool Next(T** CurrentItem)
+	{
+		return Next((DataArrayItem**)CurrentItem);
+	}
+	DataArrayItem* GetNext(DataArrayItem* Item = nullptr)
+	{
+		auto MaxItem = mBlock + mMaxUsedCount;
+		if (!Item)
+			Item = mBlock;
+		else Item++;
+
+		while (Item <= MaxItem)
+		{
+			if (Item->IsAllocated())
+				return Item;
+			Item++;
+		}
+
+		return nullptr;
 	}
 
 	bool IsAllocated(DataArrayItem* Item)

@@ -177,12 +177,14 @@ public:
 
 class Sexy::SharedImage
 {
+public:
 	DDImage* mImage;
 	int mRefCount;
 };
 
 class Sexy::SharedImageRef
 {
+public:
 	SharedImage* mSharedImage;
 	MemoryImage* mUnsharedImage;
 	bool mOwnsUnshared;

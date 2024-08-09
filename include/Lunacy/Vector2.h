@@ -44,6 +44,11 @@ public:
 	{
 		return sqrt(mX * mX + mY * mY);
 	}
+	// Returns the distance between this vector and the other vector.
+	float GetDistance(Vector2 V2)
+	{
+		return (V2 - *this).GetMagnitude();
+	}
 	// Returns a vector with equivalent direction but with the given new magnitude.
 	Vector2<float> SetMagnitude(float NewMag)
 	{
@@ -201,6 +206,9 @@ public:
 	
 	// To be implemented
 	Vector3<N> To3D();
+
+	template <typename T>
+	float GetDistance(Vector3<T>);
 
 	template <typename T>
 	operator Vector3<T>() const;

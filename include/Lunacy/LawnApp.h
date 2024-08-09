@@ -72,6 +72,7 @@ public:
 	TypingCheck* mSuperMowerCheck2;
 	TypingCheck* mFutureCheck;
 	TypingCheck* mPinataCheck;
+	TypingCheck* mDanceCheck;
 	TypingCheck* mDaisyCheck;
 	TypingCheck* mSukhbirCheck;
 
@@ -79,6 +80,7 @@ public:
 	bool mSuperMowerMode;
 	bool mFutureMode;
 	bool mPinataMode;
+	bool mDanceMode;
 	bool mDaisyMode;
 	bool mSukhbirMode;
 

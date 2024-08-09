@@ -32,8 +32,15 @@ public:
 	int mGridCelOffset[9][6][2];
 	int mGridCelFog[9][7];
 	bool mEnableGraveStones;
-	int mSpecialGraveStoneX;
-	int mSpecialGraveStoneY;
+	union
+	{
+		struct
+		{
+			int mSpecialGraveStoneX;
+			int mSpecialGraveStoneY;
+		};
+		Sexy::IVector2 mSpecialGraveStonePos;
+	};
 	float mFogOffset;
 	int mFogBlownCountDown;
 	PlantRowType mPlantRow[6];
@@ -48,13 +55,27 @@ public:
 	int mSunCountDown;
 	int mNumSunsFallen;
 	int mShakeCounter;
-	int mShakeAmountX;
-	int mShakeAmountY;
+	union
+	{
+		struct
+		{
+			int mShakeAmountX;
+			int mShakeAmountY;
+		};
+		Sexy::IVector2 mShakeAmount;
+	};
 	BackgroundType mBackground;
 	int mLevel;
 	int mSodPosition;
-	int mPrevMouseX;
-	int mPrevMouseY;
+	union
+	{
+		struct
+		{
+			int mPrevMouseX;
+			int mPrevMouseY;
+		};
+		Sexy::IVector2 mPrevMousePos;
+	};
 	int mSunMoney;
 	int mNumWaves;
 	int mMainCounter;
@@ -95,8 +116,15 @@ public:
 	bool mDroppedFirstCoin;
 	int mFinalWaveSoundCounter;
 	int mCobCannonCursorDelayCounter;
-	int mCobCannonMouseX;
-	int mCobCannonMouseY;
+	union
+	{
+		struct
+		{
+			int mCobCannonMouseX;
+			int mCobCannonMouseY;
+		};
+		Sexy::IVector2 mCobCannonMousePos;
+	};
 	bool mKilledYeti;
 	bool mMustacheMode;
 	bool mSuperMowerMode;
@@ -104,7 +132,7 @@ public:
 	bool mPinataMode;
 	bool mDaisyMode;
 	bool mSukhbirMode;
-	BoardResult mPrevBoardResult;
+	GameResult mPrevGameResult;
 	int mTriggeredLawnMowers;
 	int mPlayTimeActiveLevel;
 	int mPlayTimeInactiveLevel;
@@ -149,5 +177,4 @@ public:
 	Sexy::IVector2 GridToPixel(int Col, int Lane);
 	Sexy::IVector2 PixelToGrid(int X, int Y);
 #pragma endregion
-
 };
