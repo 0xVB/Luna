@@ -1,6 +1,7 @@
 #include "Lunacy/EffectSystem.h"
 #include "Lunacy/LawnApp.h"
 #include "Lunacy/Zombie.h"
+#include "Lunacy/Lawn.h"
 
 CONST DWORD UPDATE = 0x52AE60;
 __declspec(naked) void Zombie::Update()
@@ -228,4 +229,9 @@ void Zombie::Chill(int Chill, int Freeze)
 	mIceTrapCounter = max(Freeze, mIceTrapCounter);
 	mChilledCounter = max(Chill, mChilledCounter);
 	UpdateAnimSpeed();
+}
+
+Zombie* TryToGet(ZombieID ID)
+{
+	return LawnApp::GetApp()->mLawn->mZombies.Fetch((unsigned int)ID);
 }

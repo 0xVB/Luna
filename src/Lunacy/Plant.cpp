@@ -1,5 +1,6 @@
 #pragma once
 #include "Lunacy/CGeometry.h"
+#include "Lunacy/LawnApp.h"
 #include "Lunacy/Plant.h"
 #include "Lunacy/Lawn.h"
 
@@ -248,4 +249,9 @@ __declspec(naked) bool __stdcall Plant::IsUpgrade(SeedType)
 
         jmp ISUPGD
     }
+}
+
+Plant* TryToGet(PlantID ID)
+{
+    return LawnApp::GetApp()->mLawn->mPlants.Fetch((unsigned int)ID);
 }

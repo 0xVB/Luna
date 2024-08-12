@@ -212,4 +212,10 @@ class ReanimatorDefinition;
 class ReanimatorTrackInstance;
 class ReanimationHolder;
 class AttachEffect;
+class Attachment;
 class ParticleSystem;
+
+Reanimation* TryToGet(ReanimationID);
+Attachment* TryToGet(AttachmentID);
+Zombie* TryToGet(ZombieID);
+Plant* TryToGet(PlantID);
