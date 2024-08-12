@@ -122,3 +122,54 @@ __declspec(naked) AttachEffect* Reanimation::AttachParticleToTrack(const char*, 
 		jmp ATTPART
 	}
 }
+
+void Reanimation::SetTranslation(float X, float Y)
+{
+	mOverlayMatrix.m02 = X;
+	mOverlayMatrix.m12 = Y;
+}
+
+void Reanimation::TranslateBy(float X, float Y)
+{
+	mOverlayMatrix.m02 += X;
+	mOverlayMatrix.m12 += Y;
+}
+
+Sexy::FVector2 Reanimation::GetTranslation()
+{
+	return Sexy::FVector2(mOverlayMatrix.m02, mOverlayMatrix.m12);
+}
+
+void Reanimation::SetScale(float X, float Y)
+{
+	mOverlayMatrix.m00 = X;
+	mOverlayMatrix.m11 = Y;
+}
+
+void Reanimation::ScaleBy(float X, float Y)
+{
+	mOverlayMatrix.m00 *= X;
+	mOverlayMatrix.m11 *= Y;
+}
+
+Sexy::FVector2 Reanimation::GetScale()
+{
+	return Sexy::FVector2(mOverlayMatrix.m00, mOverlayMatrix.m11);
+}
+
+void Reanimation::SetSkew(float X, float Y)
+{
+	mOverlayMatrix.m01 = Y;
+	mOverlayMatrix.m10 = X;
+}
+
+void Reanimation::SkewBy(float X, float Y)
+{
+	mOverlayMatrix.m01 += Y;
+	mOverlayMatrix.m10 += X;
+}
+
+Sexy::FVector2 Reanimation::GetSkew()
+{
+	return Sexy::FVector2(mOverlayMatrix.m10, mOverlayMatrix.m01);
+}

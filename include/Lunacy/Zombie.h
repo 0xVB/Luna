@@ -144,7 +144,7 @@ public:
 	void PickRandomSpeed();
 	void UpdateAnimSpeed();
 	void Chill(int ChillTime, int FreezeTime);
-	void TakeDamage(int Amount, DamageFlag);
+	void TakeDamage(int Amount, DamageFlag = DAMAGE_CARRY_OVER);
 
 	void DropLoot();
 	void Die(bool DropLoot = true);

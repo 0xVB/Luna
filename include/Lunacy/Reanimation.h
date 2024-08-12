@@ -110,6 +110,15 @@ public:
 	void Initialize(float X, float Y, ReanimationType);
 	void Initialize(float X, float Y, ReanimatorDefinition*);
 	void Update();
+	void SetTranslation(float X, float Y);
+	void SetScale(float X, float Y);
+	void SetSkew(float X, float Y);
+	void TranslateBy(float X, float Y);
+	void ScaleBy(float X, float Y);
+	void SkewBy(float X, float Y);
+	Sexy::FVector2 GetTranslation();
+	Sexy::FVector2 GetScale();
+	Sexy::FVector2 GetSkew();
 	// void GetCurrentTransform(int TrackIndex, ReanimatorTransform* CurrentTransform);
 	// void GetTransformAtTime(int TrackIndex, ReanimatorTransform* Transform, ReanimatorFrameTime* Time);
 	// void MatrixFromTransform(const ReanimatorTransform& Out, Sexy::Matrix3& Matrix);
