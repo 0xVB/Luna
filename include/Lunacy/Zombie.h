@@ -4,8 +4,13 @@
 #include "GameObject.h"
 #include "CGeometry.h"
 
-class Zombie : GameObject
+class Zombie : public GameObject
 {
+private:
+	Reanimation* LoadReanimUnsafe(ReanimationType);
+	void DieNoLoot();
+	void DieLoot();
+
 public:
 	ZombieType mZombieType;
 	ZombiePhase mZombiePhase;
@@ -127,21 +132,29 @@ public:
 	ReanimationID mMoweredReanimID;
 	int mLastPortalX;
 
+	void Update();
+	void Draw(Sexy::Graphics*);
+
 	Zombie();
 
-	void ZombieInit(int Lane, ZombieType Type, unsigned char Variant, int FromWave = 0, Zombie* ParentZombie = nullptr);
-	void LoadReanim(ReanimationType);
+	void Init(int Lane = -1, ZombieType = (ZombieType)-1, unsigned char Variant = 0, int FromWave = -1, Zombie* ParentZombie = nullptr);
+	void Init(int Lane, ZombieType, unsigned char Variant, Zombie* ParentZombie, int FromWave);
+	
+	Reanimation* LoadReanim(ReanimationType);
 	void PickRandomSpeed();
+	void UpdateAnimSpeed();
+	void Chill(int ChillTime, int FreezeTime);
+	void TakeDamage(int Amount, DamageFlag);
 
-	void Update();
-	void Draw();
-	void Die();
+	void DropLoot();
+	void Die(bool DropLoot = true);
 	void BossDie();
 
 	void SetFuture(bool);
 	void SetMustache(bool);
+	void PreloadResources();
 
-	static void PreloadResources(ZombieType);
+	static void __stdcall PreloadResources(ZombieType);
 };
 
 class ZombieDefinition

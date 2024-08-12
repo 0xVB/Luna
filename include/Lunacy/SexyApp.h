@@ -5,8 +5,9 @@
 #include "Listeners.h"
 #include "Buffer.h"
 
-class Sexy::SexyAppBase : Sexy::ButtonListener, Sexy::DialogListener
+class Sexy::SexyAppBase : public Sexy::ButtonListener, public Sexy::DialogListener
 {
+public:
 #pragma region Fields
 	unsigned int mRandSeed;
 	PopString mCompanyName;

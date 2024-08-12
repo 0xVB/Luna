@@ -105,8 +105,8 @@ public:
 		auto MyExtents = mPosition + mSize;
 		auto OExtents = Other.mPosition + Other.mSize;
 
-		auto IntPos;
-		auto IntExt;
+		Vector2<N> IntPos;
+		Vector2<N> IntExt;
 
 		IntPos.mX = max(mX, Other.mX);
 		IntPos.mY = max(mY, Other.mY);
@@ -133,8 +133,8 @@ public:
 
 		return mX <= Other.mX &&
 			mY <= Other.mY &&
-			MyExtents.X >= OExtents.X &&
-			MyExtents.Y >= OExtents.Y;
+			MyExtents.mX >= OExtents.mX &&
+			MyExtents.mY >= OExtents.mY;
 	}
 	// Returns true if this rect is contained by the other rectangle completely.
 	bool ContainedBy(Rect Other)
@@ -206,6 +206,15 @@ public:
 	operator Rect<T>() const
 	{
 		return Rect<T>((T)mX, (T)mY, (T)mW, (T)mH);
+	}
+
+	Rect& operator=(const Rect& O)
+	{
+		mX = O.mX;
+		mY = O.mY;
+		mW = O.mW;
+		mH = O.mH;
+		return *this;
 	}
 };
 

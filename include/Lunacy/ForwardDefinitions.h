@@ -208,4 +208,8 @@ class CreditScreen;
 class ChallengeScreen;
 class SoundSystem;
 class Reanimation;
+class ReanimatorDefinition;
+class ReanimatorTrackInstance;
+class ReanimationHolder;
+class AttachEffect;
 class ParticleSystem;

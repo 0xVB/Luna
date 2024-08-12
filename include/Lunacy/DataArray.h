@@ -145,19 +145,11 @@ public:
 	}
 	DataArrayItem* GetNext(DataArrayItem* Item = nullptr)
 	{
-		auto MaxItem = mBlock + mMaxUsedCount;
-		if (!Item)
-			Item = mBlock;
-		else Item++;
+		DataArrayItem* Dummy = Item;
 
-		while (Item <= MaxItem)
-		{
-			if (Item->IsAllocated())
-				return Item;
-			Item++;
-		}
-
-		return nullptr;
+		if (Next(&Dummy))
+			return Dummy;
+		return NULL;
 	}
 
 	bool IsAllocated(DataArrayItem* Item)
@@ -208,4 +200,32 @@ public:
 	{
 
 	}
+};
+
+class Allocator
+{
+public:
+	void* mFreeList;
+	void* mBlockList;
+	int mGrowCount;
+	int mTotalItems;
+	int mItemSize;
+};
+
+template <typename T>
+class List
+{
+public:
+	class ListNode
+	{
+		T mValue;
+		ListNode* mNext;
+		ListNode* mPrev;
+	};
+
+
+	ListNode* mHead;
+	ListNode* mTail;
+	int mSize;
+	Allocator* mAllocator;
 };

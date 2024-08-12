@@ -152,17 +152,28 @@ public:
 	int mChocolateCollected;
 #pragma endregion
 
+	void Update();
+	void Draw(Sexy::Graphics* G);
 #pragma region Functions
+	GridItem* NewGridItem(GridItemType, int Lane, int Column);
 	GridItem* AddLadder(int Column, int Lane);
 	GridItem* AddCrater(int Column, int Lane);
+	GridItem* AddGrave(int Column, int Lane, bool DoEffects = true, bool KillPlants = true);
+
 	int CountGraves();
 
+	Pickup* NewPickup(int X, int Y, PickupType, PickupMotion = PICKUP_MOTION_COIN);
+	Pickup* NewPickup(PickupType, int X, int Y, PickupMotion = PICKUP_MOTION_COIN);
+	Pickup* NewPacket(SeedType, int X, int Y);
+
+	Zombie* NewZombie(ZombieType, int Lane, int FromWave = 0);
 	void SpawnZombiesFromPool();
 	void SpawnZombiesFromSky();
 	void SpawnZombiesFromGrave();
 
 	Plant* NewPlant(int Column, int Lane, SeedType, SeedType ImitaterType);
 	void DoPlantingEffects(int Column, int Lane, Plant*);
+	void KillPlantCell(int Col = -1, int Lane = -1);
 
 	Projectile* NewProjectile(int X, int Y, int RenderOrder, int Lane, ProjectileType);
 
@@ -176,5 +187,20 @@ public:
 	Sexy::IVector2 PlantingPixelToGrid(SeedType, int X, int Y);
 	Sexy::IVector2 GridToPixel(int Col, int Lane);
 	Sexy::IVector2 PixelToGrid(int X, int Y);
+
+	Sexy::IRect GridToPixelArea(int Col, int Lane, int HSize = 3, int VSize = 3);
+	Sexy::IRect PixelToGridArea(int X, int Y, int W = 100, int H = 100);
+
+	Projectile* GetNearestProjectile(Sexy::FVector2, float MinDistance = 0, ProjectileType Filter = (ProjectileType)-1, bool IsBlacklist = false);
+	GridItem* GetNearestGridItem(Sexy::FVector2, float MinDistance = 0, GridItemType = GRIDITEM_NONE, bool IsBlacklist = false);
+	Zombie* GetNearestZombie(Sexy::FVector2, float MinDistance = 0, ZombieType = (ZombieType)-1, bool IsBlacklist = false);
+	Pickup* GetNearestPickup(Sexy::FVector2, float MinDistance = 0, PickupType = PICKUP_NONE, bool IsBlacklist = false);
+	Plant* GetNearestPlant(Sexy::FVector2, float MinDistance = 0, SeedType = SEED_NONE, bool IsBlacklist = false);
+
+	std::list<Projectile*> GetProjectilesInArea(Sexy::IRect, ProjectileType = (ProjectileType)-1, bool IsBlacklist = false);
+	std::list<GridItem*> GetGridItemsInArea(Sexy::IRect, GridItemType = GRIDITEM_NONE, bool IsBlacklist = false);
+	std::list<Zombie*> GetZombiesInArea(Sexy::IRect, ZombieType = (ZombieType)-1, bool IsBlacklist = false);
+	std::list<Pickup*> GetPickupsInArea(Sexy::IRect, PickupType = PICKUP_NONE, bool IsBlacklist = false);
+	std::list<Plant*> GetPlantsInArea(Sexy::IRect, SeedType = SEED_NONE, bool IsBlacklist = false);
 #pragma endregion
 };

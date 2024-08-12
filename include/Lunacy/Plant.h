@@ -28,6 +28,8 @@ public:
 			Sexy::FVector2 mDestOffset;
 		};
 		MagnetItemType mItemType;
+		
+		MagnetItem(MagnetItemType = MAGNET_ITEM_NONE);
 	};
 
 #pragma region Fields
@@ -124,7 +126,10 @@ public:
 	bool mHighlighted;
 #pragma endregion
 
-	Plant();
+	void Update();
+	void Draw(Sexy::Graphics*);
+
+	Plant(SeedType = SEED_NONE);
 
 	void Die();
 	void Fire(Zombie* Target = NULL, int Lane = -1, bool IsSecondary = false);
@@ -132,6 +137,19 @@ public:
 	void PlayBodyReanim(const char* TrackName, ReanimLoopType = REANIM_LOOP, int BlendTime = 0, float AnimRate = 12.0);
 	void DoPlantingEffects();
 	bool MakeSun();
+	void Initialize();
+	void Initialize(int Col, int Row, SeedType, SeedType Imitater = SEED_NONE);
+	int GetRenderOrder();
+	ParticleSystem* AttachParticle(int X, int Y, int RenderPos, ParticleEffect);
+	void RemoveEffects();
+	void Squish();
+	void DrawShadow(Sexy::Graphics*, float X, float Y);
+	Zombie* FindTargetZombie(int Lane, bool IsSecondaryWeapon);
+	Zombie* FindTargetZombie(bool IsSecondaryWeapon = false);
+	
+	static bool __stdcall IsNocturnal(SeedType);
+	static bool __stdcall IsAquatic(SeedType);
+	static bool __stdcall IsUpgrade(SeedType);
 };
 
 class PlantDefinition

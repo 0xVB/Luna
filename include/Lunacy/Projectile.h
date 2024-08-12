@@ -8,8 +8,26 @@ public:
 	int mFrame;
 	int mNumFrames;
 	int mAnimCounter;
-	Sexy::FVector3 mPos;
-	Sexy::FVector3 mVel;
+	union
+	{
+		struct
+		{
+			float mPosX;
+			float mPosY;
+			float mPosZ;
+		};
+		Sexy::FVector3 mPos;
+	};
+	union
+	{
+		struct
+		{
+			float mVelX;
+			float mVelY;
+			float mVelZ;
+		};
+		Sexy::FVector3 mVel;
+	};
 	float mAccZ;
 	float mShadowY;
 	bool mDead;
@@ -28,6 +46,18 @@ public:
 	int mCobTargetRow;
 	ZombieID mTargetZombieID;
 	int mLastPortalX;
+
+	void Update();
+	void Draw(Sexy::Graphics*);
+
+	Projectile(ProjectileType = PROJECTILE_PEA);
+	void Die();
+
+	Plant* FindTargetPlant();
+	Zombie* FindTargetZombie();
+	Sexy::IRect GetHitbox();
+	void Collide(Zombie* = nullptr);
+	void ToFireball(int GridPos = -1);
 };
 
 class ProjectileDefinition
