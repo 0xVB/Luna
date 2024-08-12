@@ -146,6 +146,7 @@ __declspec(naked) void Zombie::TakeDamage(int, DamageFlag)
 		mov esi, ecx
 		mov eax, [esp + 0xC]
 		push [esp + 0x8]
+		call TAKEDAMAGE
 		pop esi
 		ret 0x8
 	}

@@ -11,7 +11,6 @@ struct FloatParameterTrackNode
 	TodCurves mDistribution;
 };
 
-
 struct FloatParameterTrack
 {
 	FloatParameterTrackNode* mNodes;
@@ -141,4 +140,17 @@ public:
 	DataArray<Particle> mParticles;
 	Allocator mParticleListNodeAllocator;
 	Allocator mEmitterListNodeAllocator;
+};
+
+class ParticleSystem
+{
+public:
+	ParticleEffect mEffectType;
+	ParticleDefinition* mParticleDef;
+	ParticleHolder* mParticleHolder;
+	List<enum ParticleEmitterID> mEmitterList;
+	bool mDead;
+	bool mIsAttachment;
+	int mRenderOrder;
+	bool mDontUpdate;
 };

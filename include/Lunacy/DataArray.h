@@ -218,6 +218,7 @@ class List
 public:
 	class ListNode
 	{
+	public:
 		T mValue;
 		ListNode* mNext;
 		ListNode* mPrev;
