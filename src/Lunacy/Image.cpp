@@ -1,4 +1,5 @@
 #include "Lunacy/Image.h"
+#include "Lunacy/CGeometry.h"
 #define FUNCTION const unsigned int
 
 FUNCTION IMAGE_CONSTRUCTOR = 0x588800;
@@ -15,6 +16,19 @@ using namespace Sexy;
 
 #pragma warning(push)
 #pragma warning(disable: 26495) // Disables warning C26495
+
+Image::bColor::bColor(Color aCol)
+{
+	a = aCol.mAlpha;
+	r = aCol.mRed;
+	g = aCol.mGreen;
+	b = aCol.mBlue;
+}
+
+Image::bColor::operator Sexy::Color() const
+{
+	return Color(r, g, b, a);
+}
 
 __declspec(naked) void __stdcall IMAGE_CONSTRUCT(Image*)
 {
@@ -51,6 +65,91 @@ Image::Image()
 Image::Image(const Image& Other)
 {
 	COPY_IMAGE(this, Other);
+}
+
+Image::bColor* MemoryImage::GetPixels()
+{
+	return (bColor*)GetBits();
+}
+
+DDImage* Image::GetHReflect()
+{
+	auto aImage = DDImage::New(mWidth, mHeight);
+	auto aMat = Matrix3();
+	auto aRect = IRect(0, 0, mWidth, mHeight);
+
+	aMat.SetScale(-1, 1);
+	aImage->BltMatrix(this, mWidth, 0, aMat, aRect, Color(255, 255, 255), 0, aRect, false);
+	return aImage;
+}
+
+DDImage* Image::GetVReflect()
+{
+	auto aImage = DDImage::New(mWidth, mHeight);
+	auto aMat = Matrix3();
+	auto aRect = IRect(0, 0, mWidth, mHeight);
+
+	aMat.SetScale(1, -1);
+	aImage->BltMatrix(this, 0, mHeight, aMat, aRect, Color(255, 255, 255), 0, aRect, false);
+	return aImage;
+}
+
+DDImage* Image::GetOReflect()
+{
+	auto aImage = DDImage::New(mWidth, mHeight);
+	auto aMat = Matrix3();
+	auto aRect = IRect(0, 0, mWidth, mHeight);
+
+	aMat.SetScale(-1, -1);
+	aImage->BltMatrix(this, mWidth, mHeight, aMat, aRect, Color(255, 255, 255), 0, aRect, false);
+	return aImage;
+}
+
+DDImage* Image::GetRotated(float r, int w, int h)
+{
+	w = (w == -1) ? mWidth : w;
+	h = (h == -1) ? mHeight : h;
+
+	auto aImage = DDImage::New(w, h);
+	auto aMat = Matrix3();
+	auto aRect = IRect(0, 0, mWidth, mHeight);
+
+	aMat.RotateByRadians(r);
+	aImage->BltMatrix(this, 0, 0, aMat, aRect, Color(255, 255, 255), 0, aRect, false);
+	return aImage;
+}
+
+DDImage* Image::GetScaled(int sx, int sy)
+{
+	auto aImage = DDImage::New(sx, sy);
+	auto aRect = IRect(0, 0, mWidth, mHeight);
+	aImage->StretchBlt(this, aRect, aRect, IRect(0, 0, sx, sy), Color(255, 255, 255), 0, false);
+	return aImage;
+}
+
+DDImage* Image::GetCropped(IRect src)
+{
+	auto aImage = DDImage::New(src.mW, src.mH);
+	aImage->StretchBlt(this, src, IRect(0, 0, src.mW, src.mH), IRect(0, 0, src.mW, src.mH), Color(255, 255, 255), 0, false);
+	return aImage;
+}
+
+DDImage* MemoryImage::Blend(MemoryImage* aMapImage, float Alpha, int X, int Y)
+{
+	auto aDestImage = DDImage::New(mWidth, mHeight);
+	auto aMap = aMapImage->GetPixels();
+	auto aDest = aDestImage->GetPixels();
+
+	for (int aPixel = 0; aPixel < mSize; aPixel++)
+	{
+		Color aMapPixel = aMap[aPixel];
+		Color aDestPixel = aDest[aPixel];
+		aDest[aPixel] = Color::FromHSV((float)(Alpha * aMapPixel.GetHue() + (1 - Alpha) * aDestPixel.GetHue()), aDestPixel.GetSaturation(), aDestPixel.GetBrightness());
+	}
+
+	aMapImage->CommitBits();
+	aDestImage->CommitBits();
+	return aDestImage;
 }
 
 __declspec(naked) void __stdcall MEMIMG_CONSTRUCT(MemoryImage*)
@@ -129,6 +228,15 @@ DDImage::DDImage()
 DDImage::DDImage(DDInterface* Interface)
 {
 	DDINT_CONSTRUCT(this, Interface);
+}
+
+DDImage* DDImage::New(int W, int H)
+{
+	auto NewImage = (DDImage*) new char[sizeof(DDImage)];
+	DDIMG_CONSTRUCT(NewImage);
+	NewImage->Create(W, H);
+
+	return NewImage;
 }
 
 #pragma warning(pop)

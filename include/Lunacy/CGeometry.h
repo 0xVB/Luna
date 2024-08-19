@@ -17,12 +17,33 @@
 class Sexy::Color
 {
 public:
+	// A dummy struct to serve as a return type for ToHSV
+	struct HSV
+	{
+		float mHue;
+		float mSat;
+		float mVal;
+		HSV(float, float, float);
+	};
+
 	int mRed;
 	int mGreen;
 	int mBlue;
 	int mAlpha;
 
 	Color(int = 0, int = 0, int = 0, int = 255);
+	Color(float, float, float, float = 1.0);// Creates a new color where 0.0f = 0 and 1.0f = 255.
+	Color(std::string HexString);// Uses the provided hex code to create a new color. Accepts with and without the # and shortened colors (shortened means #000 = #000000FF)
+
+	static Color FromHSV(float Hue, float Sat, float Val, float Alpha);
+	static Color FromHSV(int Hue, int Sat, int Val, int Alpha = 255);
+
+	float GetBrightness();// Returns the brightness of the color.
+	float GetSaturation();// Returns the saturation of the color.
+	float GetHue();// Returns the hue of the current color.
+	HSV ToHSV();// Returns the HSV of the current RGB color.
+
+	Color HueShift(int Amount);// Shifts the hue of the current color by the given amount
 };
 
 class Sexy::SColor
@@ -68,6 +89,30 @@ public:
 
 	Matrix3();
 	Matrix3(float, float, float, float, float, float, float, float, float);
+
+	void LoadIdentity();
+	void SetTranslation(float X, float Y);
+	void SetScale(float X, float Y);
+	void SetSkew(float X, float Y);
+	void TranslateBy(float X, float Y);
+	void ScaleBy(float X, float Y);
+	void SkewBy(float X, float Y);
+	void RotateByRadians(float Radians);
+	void RotateByDegrees(float Deg);
+	void SetRotationRadians(float Radians);
+	void SetRotationDegrees(float Deg);
+	void HorizontalReflect();
+	void VerticalReflect();
+	Sexy::FVector2 GetTranslation();
+	Sexy::FVector2 GetScale();
+	Sexy::FVector2 GetSkew();
+	float GetRotationRadians();
+	float GetRotationDegrees();
+
+	Matrix3 operator*(const Matrix3&) const;
+	FVector3 operator*(const FVector3&) const;
+	FVector2 operator*(const FVector2&) const;
+	const Matrix3& operator*=(const Matrix3&);
 };
 
 class Sexy::Ratio
@@ -128,3 +173,5 @@ public:
 	float v = 0;
 	unsigned int color = 0;
 };
+
+float Map(float Number, float OldMin, float OldMax, float NewMin = 0, float NewMax = 1);

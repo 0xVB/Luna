@@ -6,9 +6,33 @@ class Sexy::GraphicsState
 {
 public:
 	Sexy::Image* mDestImage;
-	FVector2 mTranslation;
-	FVector2 mScale;
-	FVector2 mScaleOrig;
+	union
+	{
+		struct
+		{
+			float mTransX;
+			float mTransY;
+		};
+		FVector2 mTranslation;
+	};
+	union
+	{
+		struct
+		{
+			float mScaleX;
+			float mScaleY;
+		};
+		FVector2 mScale;
+	};
+	union
+	{
+		struct
+		{
+			float mScaleOrigX;
+			float mScaleOrigY;
+		};
+		FVector2 mScaleOrig;
+	};
 	IRect mClipRect;
 	Color mColor;
 	Font* mFont;
@@ -18,6 +42,8 @@ public:
 	bool mWriteColoredString;
 	bool mLinearBlend;
 	bool mIs3D;
+
+	void CopyState(const GraphicsState*);
 };
 
 

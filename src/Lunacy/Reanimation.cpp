@@ -125,51 +125,75 @@ __declspec(naked) AttachEffect* Reanimation::AttachParticleToTrack(const char*, 
 
 void Reanimation::SetTranslation(float X, float Y)
 {
-	mOverlayMatrix.m02 = X;
-	mOverlayMatrix.m12 = Y;
+	mOverlayMatrix.SetTranslation(X, Y);
 }
 
 void Reanimation::TranslateBy(float X, float Y)
 {
-	mOverlayMatrix.m02 += X;
-	mOverlayMatrix.m12 += Y;
+	mOverlayMatrix.TranslateBy(X, Y);
 }
 
 Sexy::FVector2 Reanimation::GetTranslation()
 {
-	return Sexy::FVector2(mOverlayMatrix.m02, mOverlayMatrix.m12);
+	return mOverlayMatrix.GetTranslation();
 }
 
 void Reanimation::SetScale(float X, float Y)
 {
-	mOverlayMatrix.m00 = X;
-	mOverlayMatrix.m11 = Y;
+	mOverlayMatrix.SetScale(X, Y);
 }
 
 void Reanimation::ScaleBy(float X, float Y)
 {
-	mOverlayMatrix.m00 *= X;
-	mOverlayMatrix.m11 *= Y;
+	mOverlayMatrix.ScaleBy(X, Y);
 }
 
 Sexy::FVector2 Reanimation::GetScale()
 {
-	return Sexy::FVector2(mOverlayMatrix.m00, mOverlayMatrix.m11);
+	return mOverlayMatrix.GetScale();
 }
 
 void Reanimation::SetSkew(float X, float Y)
 {
-	mOverlayMatrix.m01 = Y;
-	mOverlayMatrix.m10 = X;
+	mOverlayMatrix.SetSkew(X, Y);
 }
 
 void Reanimation::SkewBy(float X, float Y)
 {
-	mOverlayMatrix.m01 += Y;
-	mOverlayMatrix.m10 += X;
+	mOverlayMatrix.SkewBy(X, Y);
 }
 
 Sexy::FVector2 Reanimation::GetSkew()
 {
-	return Sexy::FVector2(mOverlayMatrix.m10, mOverlayMatrix.m01);
+	return mOverlayMatrix.GetSkew();
+}
+
+void Reanimation::RotateByDegrees(float Deg)
+{
+	mOverlayMatrix.RotateByDegrees(Deg);
+}
+
+void Reanimation::RotateByRadians(float Rad)
+{
+	mOverlayMatrix.RotateByRadians(Rad);
+}
+
+void Reanimation::SetRotationDegrees(float Deg)
+{
+	mOverlayMatrix.SetRotationDegrees(Deg);
+}
+
+void Reanimation::SetRotationRadians(float Rad)
+{
+	mOverlayMatrix.SetRotationRadians(Rad);
+}
+
+float Reanimation::GetRotationDegrees()
+{
+	return mOverlayMatrix.GetRotationDegrees();
+}
+
+float Reanimation::GetRotationRadians()
+{
+	return mOverlayMatrix.GetRotationRadians();
 }

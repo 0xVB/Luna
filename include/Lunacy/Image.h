@@ -6,10 +6,28 @@
 class Sexy::Image
 {
 public:
+	struct bColor
+	{
+		unsigned char a;
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+
+		bColor(Color);
+		operator Color() const;
+	};
+
 	bool mDrawn;
 	PopString mFilePath;
-	int mWidth;
-	int mHeight;
+	union
+	{
+		struct
+		{
+			int mWidth;
+			int mHeight;
+		};
+		IVector2 mSize;
+	};
 	int mNumRows;
 	int mNumCols;
 	AnimInfo* mAnimInfo;
@@ -31,11 +49,18 @@ public:
 	virtual void Blt(Image* OtherImage, int X, int Y, const IRect& SrcRect, const Color& Color, int DrawMode) = 0;// 24
 	virtual void BltF(Image* OtherImage, float X, float Y, const IRect& SrcRect, const IRect& ClipRect, const Color& Color, int DrawMode) = 0;// 28
 	virtual void BltRotated(Image* OtherImage, float X, float Y, const IRect& SrcRect, const IRect& ClipRect, const Color& Color, int DrawMode, double Rotation, float RotCenterX, float RotCenterY) = 0;// 2C
-	virtual void StretchBlt(Image* OtherImage, const IRect& DestRectOrig, const IRect& SrcRectOrig, const IRect& ClipRect, const Color& Color, int DrawMode, bool FastStretch) = 0;// 30
+	virtual void StretchBlt(Image* OtherImage, const IRect& DestRect, const IRect& SrcRect, const IRect& ClipRect, const Color& Color, int DrawMode, bool FastStretch) = 0;// 30
 	virtual void BltMatrix(Image* OtherImage, float X, float Y, const Matrix3& Matrix, const IRect& ClipRect, const Color& Color, int DrawMode, const IRect& SrcRect, bool Blend) = 0;// 34
 	virtual void BltTrianglesTex(Image* Texture, const TriVertex& Vertices, int TriangleCount, const IRect& ClipRect, const Color& Color, int DrawMode, float Tx, float Ty, bool Blend) = 0;// 38
 	virtual void BltMirror(Image* OtherImage, int X, int Y, const IRect& SrcRect, const Color& Color, int DrawMode) = 0;// 3C
 	virtual void StretchBltMirror(Image* OtherImage, const IRect& DestOrig, const IRect& SrcOrig, const IRect& ClipRect, const Color& Color, int DrawMode, bool FastStretch) = 0;// 40
+
+	DDImage* GetHReflect();// Returns a new texture reflected across the y-axis.
+	DDImage* GetVReflect();// Returns a new texture reflected across the x-axis.
+	DDImage* GetOReflect();// Returns a new texture reflected across the origin.
+	DDImage* GetScaled(int NewWidth, int NewHeight);// Returns a new texture scaled to the new width and height.
+	DDImage* GetRotated(float Radians, int NewWidth = -1, int NewHeight = -1);// Returns a new texture rotated by the given angle in radians. Will use the image's default size if NewWidth and NewHeight aren't specified. They do not stretch the texture, but they determine the final size of the rotated texture to ensure it won't be clipped when rotated.
+	DDImage* GetCropped(IRect Source);// Returns a new texture cropped by the given rectangle region.
 };
 
 class Sexy::MemoryImage : public Sexy::Image
@@ -101,6 +126,9 @@ public:
 	virtual void SetImageMode(bool, bool) = 0;
 	virtual void SetVolatile(bool) = 0;
 	virtual bool Palletize() = 0;
+
+	bColor* GetPixels();
+	DDImage* Blend(MemoryImage* ColorMap, float Alpha = 0.35f, int X = 0, int Y = 0);
 };
 
 class Sexy::DDImage : public Sexy::MemoryImage
@@ -173,6 +201,8 @@ public:
 	virtual bool UnlockSurface() = 0;
 	virtual void SetSurface(IDirectDrawSurface*) = 0;
 	virtual void WriteToCache(const PopString&, const PopString&) = 0;
+
+	static DDImage* New(int Width = 800, int Height = 600);
 };
 
 class Sexy::SharedImage

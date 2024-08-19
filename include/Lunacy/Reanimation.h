@@ -116,9 +116,15 @@ public:
 	void TranslateBy(float X, float Y);
 	void ScaleBy(float X, float Y);
 	void SkewBy(float X, float Y);
+	void RotateByRadians(float Radians);
+	void RotateByDegrees(float Deg);
+	void SetRotationRadians(float Radians);
+	void SetRotationDegrees(float Deg);
 	Sexy::FVector2 GetTranslation();
 	Sexy::FVector2 GetScale();
 	Sexy::FVector2 GetSkew();
+	float GetRotationRadians();
+	float GetRotationDegrees();
 	// void GetCurrentTransform(int TrackIndex, ReanimatorTransform* CurrentTransform);
 	// void GetTransformAtTime(int TrackIndex, ReanimatorTransform* Transform, ReanimatorFrameTime* Time);
 	// void MatrixFromTransform(const ReanimatorTransform& Out, Sexy::Matrix3& Matrix);

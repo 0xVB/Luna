@@ -203,6 +203,13 @@ public:
 	{
 		return Vector2<T>((T)mX, (T)mY);
 	}
+
+	operator N() const
+	{
+		return mX * mY;
+	}
+
+	Rect<N> ToSize();
 	
 	// To be implemented
 	Vector3<N> To3D();

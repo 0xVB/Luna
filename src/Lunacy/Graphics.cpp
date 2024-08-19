@@ -16,14 +16,30 @@ FUNCTION DRAWSTRING = 0x587120;
 FUNCTION GETWORDHEIGHT = 0x588700;
 FUNCTION WRITEWORDWRAPPED = 0x588310;
 
-FUNCTION DRAWIMAGE = 0x587150;
-FUNCTION DRAWIMAGESCALED = 0x587520;
-FUNCTION DRAWIMAGESOURCED = 0x587270;
-
 FUNCTION DRAWIMAGECEL = 0x587E80;
 FUNCTION DRAWTRIANGLES = 0x587710;
 
 using Sexy::Graphics;
+
+void Sexy::GraphicsState::CopyState(const GraphicsState* State)
+{
+	mDestImage = State->mDestImage;
+	mTransX = State->mTransX;
+	mTransY = State->mTransY;
+	mClipRect = State->mClipRect;
+	mFont = State->mFont;
+	mColor = State->mColor;
+	mDrawMode = State->mDrawMode;
+	mColorizeImages = State->mColorizeImages;
+	mFastStretch = State->mFastStretch;
+	mWriteColoredString = State->mWriteColoredString;
+	mLinearBlend = State->mLinearBlend;
+	mScaleX = State->mScaleX;
+	mScaleY = State->mScaleY;
+	mScaleOrigX = State->mScaleOrigX;
+	mScaleOrigY = State->mScaleOrigY;
+	mIs3D = State->mIs3D;
+}
 
 void __declspec(naked) Graphics::PushState()
 {
@@ -95,61 +111,6 @@ void __declspec(naked) Graphics::FillRect(const IRect&)
 		call FILLRECTP
 		ret 4
 	}
-}
-
-void __declspec(naked) Graphics::DrawImage(Image*, int, int)
-{
-	__asm
-	{
-		push ebx
-
-		mov eax, ecx
-		mov ebx, [esp + 0x8]
-		push [esp + 0x10]
-		push [esp + 0x10]
-		call DRAWIMAGE
-		
-		pop ebx
-		ret 0xC
-	}
-}
-
-void __declspec(naked) Graphics::DrawImage(Image*, int, int, const IRect&)
-{
-	__asm
-	{
-		mov eax, [esp + 0x10]
-		push [esp + 0xC]
-		push [esp + 0xC]
-		push [esp + 0xC]
-		call DRAWIMAGESOURCED
-		ret 0x10
-	}
-}
-
-void __declspec(naked) Graphics::DrawImage(Image*, int, int, int, int)
-{
-	__asm
-	{
-		push edi
-
-		mov eax, ecx
-		mov edi, [esp + 0x8]
-		push [esp + 0x18]
-		push [esp + 0x18]
-		push [esp + 0x18]
-		push [esp + 0x18]
-		call DRAWIMAGESCALED
-
-		ret 0x14
-	}
-}
-
-void Graphics::DrawImage(Image* Img, int X, int Y, const IRect& Src, double Rotation, const IRect& Clip, Color* Col, int RotCenterX, int RotCenterY)
-{
-	// TODO: Implement this function. There is no default function for this.
-	// We need to implement Images before we can implement this.
-	mDestImage->BltRotated(Img, X, Y, Src, Clip, *Col, 1, Rotation, RotCenterX, RotCenterY);
 }
 
 void __declspec(naked) Graphics::DrawTriangles(Image*, const TriVertex&, int)
@@ -226,4 +187,24 @@ __declspec(naked) int Graphics::GetWrappedWordHeight(const PopString&, int, int)
 		pop ebx
 		ret 0xC
 	}
+}
+
+void Graphics::DrawImage(Image* aImage, int X, int Y, const IRect& src)
+{
+	mDestImage->StretchBlt(aImage, IRect(X, Y, src.mW, src.mH), src, mClipRect, mColorizeImages ? mColor : Color(255, 255, 255), mDrawMode, mFastStretch);
+}
+
+void Graphics::DrawImage(Image* aImage, int X, int Y, int W, int H)
+{
+	mDestImage->StretchBlt(aImage, IRect(X, Y, W, H), aImage->mSize.ToSize(), mClipRect, mColorizeImages ? mColor : Color(255, 255, 255), mDrawMode, mFastStretch);
+}
+
+void Graphics::DrawImage(Image* Img, int X, int Y, const IRect& Src, double Rotation, const IRect& Clip, Color* Col, int RotCenterX, int RotCenterY)
+{
+	mDestImage->BltRotated(Img, X, Y, Src, Clip, *Col, 1, Rotation, RotCenterX, RotCenterY);
+}
+
+void Graphics::DrawImage(Sexy::Image* aImage, int X, int Y)
+{
+	DrawImage(aImage, X, Y, aImage->mWidth, aImage->mHeight);
 }

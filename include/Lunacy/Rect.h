@@ -78,7 +78,7 @@ public:
 	// Returns the center of this rectangle.
 	Vector2<N> GetCenter()
 	{
-		return mPosition + mSize / 2;
+		return Vector2<N>(mPosition + mSize / 2.0f);
 	}
 	// Returns a rectangle with the same width and height, with its center set at the new center.
 	Rect SetCenter(Vector2<N> NewCenter)
@@ -223,4 +223,10 @@ template <typename T>
 Sexy::Vector2<N>::operator Sexy::Rect<T>() const
 {
 	return Sexy::Rect<T>((T)mX, (T)mY, 0, 0);
+}
+
+template <typename N>
+Sexy::Rect<N> Sexy::Vector2<N>::ToSize()
+{
+	return Rect<N>(0, 0, mX, mY);
 }
