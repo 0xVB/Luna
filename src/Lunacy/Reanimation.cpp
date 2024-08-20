@@ -1,4 +1,6 @@
 #include "Lunacy/Reanimation.h"
+#include "Lunacy/Graphics.h"
+#include "Lunacy/Image.h"
 
 CONST DWORD CONSTRUCT = 0x471920;
 __declspec(naked) void __stdcall Reanimation::CreateReanim(Reanimation*)
@@ -69,6 +71,15 @@ __declspec(naked) void Reanimation::Die()
 	__asm
 	{
 		jmp DIE
+	}
+}
+
+CONST DWORD DRAW = 0x472E40;
+__declspec(naked) void Reanimation::Draw(Sexy::Graphics*, int)
+{
+	__asm
+	{
+		jmp DRAW
 	}
 }
 
@@ -196,4 +207,41 @@ float Reanimation::GetRotationDegrees()
 float Reanimation::GetRotationRadians()
 {
 	return mOverlayMatrix.GetRotationRadians();
+}
+
+CONST DWORD DTRACK = 0x4723B0;
+__declspec(naked) bool Reanimation::DrawTrack(Sexy::Graphics*, int, Sexy::TriangleGroup*)
+{
+	__asm
+	{
+		pop edx// Ret
+		push ecx
+		push edx
+		jmp DTRACK
+	}
+}
+
+Sexy::DDImage* Reanimation::ExtractFrame(Sexy::DDImage* Out, int RenderGroup)
+{
+	if (!Out)
+		Out = Sexy::DDImage::New(200, 200);
+	auto G = Sexy::Graphics::New(Out->mWidth, Out->mHeight);
+
+	Sexy::TriangleGroup aTriangleGroup;
+	for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTrackCount; aTrackIndex++)
+	{
+		ReanimatorTrackInstance* aTrackInstance = &mTrackInstances[aTrackIndex];
+		if (aTrackInstance->mRenderGroup == RenderGroup)
+			bool aTrackDrawn = DrawTrack(G, aTrackIndex, &aTriangleGroup);
+	}
+	aTriangleGroup.DrawGroup(G);
+
+	Out->Blt(G->mDestImage, 0, 0, Out->mSize.ToSize(), Sexy::Color(255, 255, 255), 0);
+	Out->CommitBits();
+
+	auto aDest = G->mDestImage;
+	G->~Graphics();
+	aDest->~Image();
+
+	return Out;
 }

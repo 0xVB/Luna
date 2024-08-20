@@ -44,6 +44,7 @@ public:
 	bool mIs3D;
 
 	void CopyState(const GraphicsState*);
+	GraphicsState() {};
 };
 
 
@@ -64,11 +65,15 @@ public:
 	};
 
 	// Methods
+	Graphics() {};
 	virtual ~Graphics() {};
 
 	void PushState();
 	void PopState();
 	Graphics* Create();
+
+	static Graphics* New(Image* DestImage);
+	static Graphics* New(int Width, int Height);
 
 	// Drawing Functions
 	void FillRect(int X, int Y, int Width, int Height);

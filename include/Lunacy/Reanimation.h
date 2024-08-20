@@ -132,7 +132,63 @@ public:
 	AttachEffect* AttachParticleToTrack(const char* TrackName, ParticleSystem* ParticleSystem, float X, float Y);
 	void SetImageOverride(const char* TrackName, Sexy::Image* = nullptr);
 	Sexy::Image* GetImageOverride(const char* TrackName);
+	bool DrawTrack(Sexy::Graphics*, int TrackIndex, Sexy::TriangleGroup*);
+	void Draw(Sexy::Graphics*, int RenderGroup = 0);
 	void Die();
+
+	/// <summary>
+	/// THIS FUNCTION DOES NOT WORK!!
+	/// It's supposed to extract a single frame from the reanim and output it as an image, but it causes
+	/// SEVERE MEMORY LEAKS and has mediocre results. It's kept here to remind me to revisit it later.
+	/// </summary>
+	Sexy::DDImage* ExtractFrame(Sexy::DDImage* Out = nullptr, int RenderGroup = 0);
+};
+
+class ReanimatorTrack
+{
+public:
+	char* mName;
+	ReanimatorTransform* mTransforms;
+	int mTransformCount;
+};
+
+class ReanimAtlasImage
+{
+public:
+	union
+	{
+		struct
+		{
+			int mX;
+			int mY;
+			int mWidth;
+			int mHeight;
+		};
+		struct
+		{
+			Sexy::IVector2 mPos;
+			Sexy::IVector2 mSize;
+		};
+		Sexy::IRect mBounds;
+	};
+	Sexy::Image* mOriginalImage;
+};
+
+class ReanimAtlas
+{
+public:
+	ReanimAtlasImage mImageArray[64];
+	int mImageCount;
+	Sexy::MemoryImage* mMemoryImage;
+};
+
+class ReanimatorDefinition
+{
+public:
+	ReanimatorTrack* mTracks;
+	int mTrackCount;
+	float mFPS;
+	ReanimAtlas* mReanimAtlas;
 };
 
 class ReanimationHolder

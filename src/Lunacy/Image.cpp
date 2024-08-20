@@ -9,7 +9,7 @@ FUNCTION MEMIMG_CONSTRUCTOR = 0x5900F0;
 FUNCTION MEMIMG_APP_CONST = 0x590170;
 FUNCTION MEMIMG_COPY = 0x5901D0;
 
-FUNCTION DDIMG_CONSTRUCTOR = 0x56B890;
+FUNCTION DDIMG_CONSTRUCTOR = 0x56B910;
 FUNCTION DDINT_CONSTRUCTOR = 0x56B890;
 
 using namespace Sexy;
@@ -134,22 +134,40 @@ DDImage* Image::GetCropped(IRect src)
 	return aImage;
 }
 
-DDImage* MemoryImage::Blend(MemoryImage* aMapImage, float Alpha, int X, int Y)
+MemoryImage* MemoryImage::Blend(MemoryImage* aMapImage, MemoryImage* aDestImage, float sAlpha, int X, int Y)
 {
-	auto aDestImage = DDImage::New(mWidth, mHeight);
+	if (!aDestImage)
+		aDestImage = DDImage::New(mWidth, mHeight);
+
 	auto aMap = aMapImage->GetPixels();
 	auto aDest = aDestImage->GetPixels();
+	auto aSource = (aDestImage == this) ? aDest : GetPixels();
 
 	for (int aPixel = 0; aPixel < mSize; aPixel++)
 	{
+		auto aDestPixel = aDest + aPixel;
 		Color aMapPixel = aMap[aPixel];
-		Color aDestPixel = aDest[aPixel];
-		aDest[aPixel] = Color::FromHSV((float)(Alpha * aMapPixel.GetHue() + (1 - Alpha) * aDestPixel.GetHue()), aDestPixel.GetSaturation(), aDestPixel.GetBrightness());
+		Color aSourcePixel = aSource[aPixel];
+
+		auto Alpha = sAlpha * aMapPixel.mAlpha / 255.0f;
+		auto iAlpha = 1 - Alpha;
+		aDestPixel->a = aSourcePixel.mAlpha;
+		aDestPixel->r = aSourcePixel.mRed * iAlpha + aMapPixel.mRed * Alpha;
+		aDestPixel->g = aSourcePixel.mGreen * iAlpha + aMapPixel.mGreen * Alpha;
+		aDestPixel->b = aSourcePixel.mBlue * iAlpha + aMapPixel.mRed * Alpha;
 	}
 
 	aMapImage->CommitBits();
 	aDestImage->CommitBits();
+	if (aDestImage != this)
+		CommitBits();
+
 	return aDestImage;
+}
+
+void MemoryImage::BlendOnto(MemoryImage* aMapImage, float Alpha, int X, int Y)
+{
+	Blend(aMapImage, this, Alpha, X, Y);
 }
 
 __declspec(naked) void __stdcall MEMIMG_CONSTRUCT(MemoryImage*)

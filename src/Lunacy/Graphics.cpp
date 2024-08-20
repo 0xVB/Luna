@@ -191,12 +191,12 @@ __declspec(naked) int Graphics::GetWrappedWordHeight(const PopString&, int, int)
 
 void Graphics::DrawImage(Image* aImage, int X, int Y, const IRect& src)
 {
-	mDestImage->StretchBlt(aImage, IRect(X, Y, src.mW, src.mH), src, mClipRect, mColorizeImages ? mColor : Color(255, 255, 255), mDrawMode, mFastStretch);
+	mDestImage->StretchBlt(aImage, IRect(X + mTransX, Y + mTransY, src.mW * mScaleX, src.mH * mScaleY), src, mClipRect, mColorizeImages ? mColor : Color(255, 255, 255), mDrawMode, mFastStretch);
 }
 
 void Graphics::DrawImage(Image* aImage, int X, int Y, int W, int H)
 {
-	mDestImage->StretchBlt(aImage, IRect(X, Y, W, H), aImage->mSize.ToSize(), mClipRect, mColorizeImages ? mColor : Color(255, 255, 255), mDrawMode, mFastStretch);
+	mDestImage->StretchBlt(aImage, IRect(X + mTransX, Y + mTransY, W * mScaleX, H * mScaleY), aImage->mSize.ToSize(), mClipRect, mColorizeImages ? mColor : Color(255, 255, 255), mDrawMode, mFastStretch);
 }
 
 void Graphics::DrawImage(Image* Img, int X, int Y, const IRect& Src, double Rotation, const IRect& Clip, Color* Col, int RotCenterX, int RotCenterY)
@@ -207,4 +207,31 @@ void Graphics::DrawImage(Image* Img, int X, int Y, const IRect& Src, double Rota
 void Graphics::DrawImage(Sexy::Image* aImage, int X, int Y)
 {
 	DrawImage(aImage, X, Y, aImage->mWidth, aImage->mHeight);
+}
+
+CONST DWORD CONSTG = 0x586A30;
+__declspec(naked) void __stdcall GCONST(Graphics*, Sexy::Image*)
+{
+	__asm
+	{
+		pop edx// Ret
+		pop eax// G
+		pop ecx// Image
+		push eax
+		push edx
+		jmp CONSTG
+	}
+}
+Graphics* Graphics::New(Image* aDestImage)
+{
+	Graphics* G = new Graphics();
+	GCONST(G, aDestImage);
+	return G;
+}
+Graphics* Graphics::New(int w, int h)
+{
+	auto aDestImage = DDImage::New(w, h);
+	Graphics* G = new Graphics();
+	GCONST(G, aDestImage);
+	return G;
 }

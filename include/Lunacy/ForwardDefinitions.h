@@ -48,6 +48,7 @@ namespace Sexy
 	class Span;
 	class Edge;
 	class TriVertex;
+	struct TriangleGroup;
 
 	class SexyAppBase;
 	class SexyApp;

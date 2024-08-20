@@ -81,7 +81,7 @@ Sexy::Span::Span(int Y, int X, int W)
 	mWidth = W;
 }
 
-float Map(float n,  float n1, float x1, float n2, float x2)
+float Map(float n, float n1, float x1, float n2, float x2)
 {
 	return (n - n1) / (x1 - n1) * (x2 - n2) + n2;
 }
@@ -263,14 +263,6 @@ Sexy::Color::HSV::HSV(float h, float s, float v)
 	mVal = v;
 }
 
-Sexy::Color::Color(float r, float g, float b, float a)
-{
-	mRed = r * 255.0;
-	mGreen = g * 255.0;
-	mBlue = b * 255.0;
-	mAlpha = a * 255.0;
-}
-
 Sexy::Color::Color(std::string aHexString)
 {
 	// Remove the '#' if present
@@ -401,18 +393,18 @@ Sexy::Color Sexy::Color::FromHSV(int hue, int sat, int val, int alpha)
 
 	switch (i % 6)
 	{
-		case 0: r = v; g = t; b = p; break;
-		case 1: r = q; g = v; b = p; break;
-		case 2: r = p; g = v; b = t; break;
-		case 3: r = p; g = q; b = v; break;
-		case 4: r = t; g = p; b = v; break;
-		case 5: r = v; g = p; b = q; break;
+	case 0: r = v; g = t; b = p; break;
+	case 1: r = q; g = v; b = p; break;
+	case 2: r = p; g = v; b = t; break;
+	case 3: r = p; g = q; b = v; break;
+	case 4: r = t; g = p; b = v; break;
+	case 5: r = v; g = p; b = q; break;
 	}
 
 	return Color((int)(r * 255), (int)(g * 255), (int)(b * 255), alpha);
 }
 
-Sexy::Color Sexy::Color::FromHSV(float h, float s, float v, float a)
+Sexy::Color Sexy::Color::FromHSVf(float h, float s, float v, float a)
 {
 	float r = 0, g = 0, b = 0;
 	int i = (int)(h * 6);				// Sector 0 to 5
@@ -439,3 +431,73 @@ Sexy::Color Sexy::Color::HueShift(int aHue)
 	return FromHSV(GetHue() + (aHue / 360.0f), GetSaturation(), GetBrightness(), 1.0f);
 }
 
+Sexy::Color Sexy::Color::Lerp(Sexy::Color aColor, float a, AlphaLerpingConsideration ALC)
+{
+	if (ALC == ALC_ALPHA)
+		a *= (aColor.mAlpha / 255.0f);
+
+	float i = 1 - a;
+	return Color(
+		(mRed * i) + aColor.mRed * a,
+		(mBlue * i) + aColor.mBlue * a,
+		(mGreen * i) + aColor.mGreen * a,
+		(ALC == ALC_LERP) ? ((mAlpha * i) + aColor.mAlpha * a) : mAlpha
+	);
+}
+
+CONST DWORD TRIGCONST = 0x4461B0;
+CONST DWORD TRIGDRAW = 0x4461F0;
+CONST DWORD TRIGADD = 0x446300;
+
+__declspec(naked) void __stdcall CONSTRUCTTG(Sexy::TriangleGroup*)
+{
+	__asm
+	{
+		pop edx// Ret
+		pop eax
+		push edx
+		jmp TRIGCONST
+	}
+}
+Sexy::TriangleGroup::TriangleGroup()
+{
+	CONSTRUCTTG(this);
+}
+
+__declspec(naked) void Sexy::TriangleGroup::DrawGroup(Graphics*)
+{
+	__asm
+	{
+		push esi
+		mov esi, ecx
+		push[esp + 0x8]
+		call TRIGDRAW
+		pop esi
+		ret 0x4
+	}
+}
+__declspec(naked) void Sexy::TriangleGroup::AddTriangle(Graphics*, Image*, const Matrix3&, const IRect&, const Color&, int, const IRect&)
+{
+	/*
+	* edi: this*
+	* eax: Image*
+	* Then push in order
+	*/
+	__asm
+	{
+		push edi
+		mov edi, ecx
+		mov eax, [esp + 0xC]
+
+		push[esp + 0x20]// IRect
+		push[esp + 0x20]// int
+		push[esp + 0x20]// Color
+		push[esp + 0x20]// IRect
+		push[esp + 0x20]// Matrix3
+		push[esp + 0x1C]// G
+		call TRIGADD
+
+		pop edi
+		ret 0x1C
+	}
+}

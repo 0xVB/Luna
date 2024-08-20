@@ -8,10 +8,10 @@ class Sexy::Image
 public:
 	struct bColor
 	{
-		unsigned char a;
-		unsigned char r;
-		unsigned char g;
 		unsigned char b;
+		unsigned char g;
+		unsigned char r;
+		unsigned char a;
 
 		bColor(Color);
 		operator Color() const;
@@ -92,43 +92,28 @@ public:
 
 	virtual ~MemoryImage() {};
 
-	virtual bool PolyFill3D(const IVector2&, int, const IRect&, const Color&, int, int, int, bool) = 0;
-	virtual void FillRect(const IRect&, const Color&, int) = 0;
-	virtual void DrawRect(const IRect&, const Color&, int) = 0;
-	virtual void ClearRect(const IRect&) = 0;
-	virtual void DrawLine(long double, long double, long double, long double, const Color&, int) = 0;
-	virtual void DrawLineAA(long double, long double, long double, long double, const Color&, int) = 0;
-	virtual void FillScanLines(Span*, int, const Color&, int) = 0;
-	virtual void FillScanLinesWithCoverage(Span*, int, const Color&, int, const unsigned __int8*, int, int, int, int) = 0;
-	virtual void Blt(Image*, int, int, const IRect&, const Color&, int) = 0;
-	virtual void BltF(Image*, float, float, const IRect&, const IRect&, const Color&, int) = 0;
-	virtual void BltRotated(Image*, float, float, const IRect&, const IRect&, const Color&, int, long double, float, float) = 0;
-	virtual void StretchBlt(Image*, const IRect&, const IRect&, const IRect&, const Color&, int, bool) = 0;
-	virtual void BltMatrix(Image*, float, float, const Matrix3&, const IRect&, const Color&, int, const IRect&, bool) = 0;
-	virtual void BltTrianglesTex(Image*, const Sexy::TriVertex(*)[], int, const IRect&, const Color&, int, float, float, bool) = 0;
-	virtual void BltMirror(Image*, int, int, const IRect&, const Color&, int) = 0;
-	virtual void StretchBltMirror(Image*, const IRect&, const IRect&, const IRect&, const Color&, int, bool) = 0;
-	virtual void*  GetNativeAlphaData(Sexy::NativeDisplay*) = 0;
-	virtual unsigned __int8*  GetRLAlphaData() = 0;
-	virtual unsigned __int8*  GetRLAdditiveData(Sexy::NativeDisplay*) = 0;
-	virtual void PurgeBits() = 0;
-	virtual void DeleteSWBuffers() = 0;
-	virtual void Delete3DBuffers() = 0;
-	virtual void DeleteExtraBuffers() = 0;
-	virtual void ReInit() = 0;
-	virtual void BitsChanged() = 0;
-	virtual void CommitBits() = 0;
-	virtual void DeleteNativeData() = 0;
-	virtual void Clear() = 0;
-	virtual void SetBits(unsigned int*, int, int, bool) = 0;
-	virtual void Create(int, int) = 0;
-	virtual unsigned int*  GetBits() = 0;
-	virtual void SetImageMode(bool, bool) = 0;
-	virtual void SetVolatile(bool) = 0;
-	virtual bool Palletize() = 0;
+	virtual void*  GetNativeAlphaData(Sexy::NativeDisplay*) = 0;// 44
+	virtual unsigned __int8*  GetRLAlphaData() = 0;// 48
+	virtual unsigned __int8*  GetRLAdditiveData(Sexy::NativeDisplay*) = 0; // 4C
+	virtual void PurgeBits() = 0;// 50
+	virtual void DeleteSWBuffers() = 0; // 54
+	virtual void Delete3DBuffers() = 0;// 58
+	virtual void DeleteExtraBuffers() = 0;// 5C
+	virtual void ReInit() = 0;// 60
+	virtual void BitsChanged() = 0;// 64
+	virtual void CommitBits() = 0;// 68
+	virtual void DeleteNativeData() = 0;// 6C
+	virtual void Clear() = 0;// 70
+	virtual void SetBits(unsigned int*, int, int, bool) = 0;// 74
+	virtual void Create(int, int) = 0;// 78
+	virtual unsigned int*  GetBits() = 0;// 7C
+	virtual void SetImageMode(bool, bool) = 0;// 80
+	virtual void SetVolatile(bool) = 0;// 84
+	virtual bool Palletize() = 0;// 88
 
 	bColor* GetPixels();
-	DDImage* Blend(MemoryImage* ColorMap, float Alpha = 0.35f, int X = 0, int Y = 0);
+	MemoryImage* Blend(MemoryImage* ColorMap, MemoryImage* Destination = nullptr, float Alpha = 0.35f, int X = 0, int Y = 0);
+	void BlendOnto(MemoryImage* ColorMap, float Alpha = 0.35f, int X = 0, int Y = 0);
 };
 
 class Sexy::DDImage : public Sexy::MemoryImage
@@ -151,56 +136,22 @@ public:
 	// Virtual Functions
 	virtual ~DDImage() {};
 
-	virtual bool PolyFill3D(const IVector2&, int, const IRect&, const Color&, int, int, int, bool) = 0;
-	virtual void FillRect(const IRect&, const Color&, int) = 0;
-	virtual void DrawRect(const IRect&, const Color&, int) = 0;
-	virtual void ClearRect(const IRect&) = 0;
-	virtual void DrawLine(long double, long double, long double, long double, const Color&, int) = 0;
-	virtual void DrawLineAA(long double, long double, long double, long double, const Color&, int) = 0;
-	virtual void FillScanLines(Span*, int, const Color&, int) = 0;
-	virtual void FillScanLinesWithCoverage(Span*, int, const Color&, int, const unsigned __int8*, int, int, int, int) = 0;
-	virtual void Blt(Image*, int, int, const IRect&, const Color&, int) = 0;
-	virtual void BltF(Image*, float, float, const IRect&, const IRect&, const Color&, int) = 0;
-	virtual void BltRotated(Image*, float, float, const IRect&, const IRect&, const Color&, int, long double, float, float) = 0;
-	virtual void StretchBlt(Image*, const IRect&, const IRect&, const IRect&, const Color&, int, bool) = 0;
-	virtual void BltMatrix(Image*, float, float, const Matrix3&, const IRect&, const Color&, int, const IRect&, bool) = 0;
-	virtual void BltTrianglesTex(Image*, const Sexy::TriVertex(*)[], int, const IRect&, const Color&, int, float, float, bool) = 0;
-	virtual void BltMirror(Image*, int, int, const IRect&, const Color&, int) = 0;
-	virtual void StretchBltMirror(Image*, const IRect&, const IRect&, const IRect&, const Color&, int, bool) = 0;
-	virtual void*  GetNativeAlphaData(Sexy::NativeDisplay*) = 0;
-	virtual unsigned __int8*  GetRLAlphaData() = 0;
-	virtual unsigned __int8*  GetRLAdditiveData(Sexy::NativeDisplay*) = 0;
-	virtual void PurgeBits() = 0;
-	virtual void DeleteSWBuffers() = 0;
-	virtual void Delete3DBuffers() = 0;
-	virtual void DeleteExtraBuffers() = 0;
-	virtual void ReInit() = 0;
-	virtual void BitsChanged() = 0;
-	virtual void CommitBits() = 0;
-	virtual void DeleteNativeData() = 0;
-	virtual void Clear() = 0;
-	virtual void SetBits(unsigned int*, int, int, bool) = 0;
-	virtual void Create(int, int) = 0;
-	virtual unsigned int*  GetBits() = 0;
-	virtual void SetImageMode(bool, bool) = 0;
-	virtual void SetVolatile(bool) = 0;
-	virtual bool Palletize() = 0;
-	virtual void SetVideoMemory(bool) = 0;
-	virtual void RehupFirstPixelTrans() = 0;
-	virtual void NormalFillRect(const IRect&, const Color&) = 0;
-	virtual void AdditiveFillRect(const IRect&, const Color&) = 0;
-	virtual void NormalBlt(Image*, int, int, const IRect&, const Color&) = 0;
-	virtual void AdditiveBlt(Image*, int, int, const IRect&, const Color&) = 0;
-	virtual void NormalDrawLine(long double, long double, long double, long double, const Color&) = 0;
-	virtual void AdditiveDrawLine(long double, long double, long double, long double, const Color&) = 0;
-	virtual void NormalDrawLineAA(long double, long double, long double, long double, const Color&) = 0;
-	virtual void AdditiveDrawLineAA(long double, long double, long double, long double, const Color&) = 0;
-	virtual void NormalBltMirror(Image*, int, int, const IRect&, const Color&) = 0;
-	virtual void AdditiveBltMirror(Image*, int, int, const IRect&, const Color&) = 0;
-	virtual bool LockSurface() = 0;
-	virtual bool UnlockSurface() = 0;
-	virtual void SetSurface(IDirectDrawSurface*) = 0;
-	virtual void WriteToCache(const PopString&, const PopString&) = 0;
+	virtual void SetVideoMemory(bool) = 0;// 8C
+	virtual void RehupFirstPixelTrans() = 0;// 90
+	virtual void NormalFillRect(const IRect&, const Color&) = 0;// 94
+	virtual void AdditiveFillRect(const IRect&, const Color&) = 0;// 98
+	virtual void NormalBlt(Image*, int, int, const IRect&, const Color&) = 0;// 9C
+	virtual void AdditiveBlt(Image*, int, int, const IRect&, const Color&) = 0;// A0
+	virtual void NormalDrawLine(long double, long double, long double, long double, const Color&) = 0;// A4
+	virtual void AdditiveDrawLine(long double, long double, long double, long double, const Color&) = 0;// A8
+	virtual void NormalDrawLineAA(long double, long double, long double, long double, const Color&) = 0;// AC
+	virtual void AdditiveDrawLineAA(long double, long double, long double, long double, const Color&) = 0;// B0
+	virtual void NormalBltMirror(Image*, int, int, const IRect&, const Color&) = 0;// B4
+	virtual void AdditiveBltMirror(Image*, int, int, const IRect&, const Color&) = 0;// B8
+	virtual bool LockSurface() = 0;// BC
+	virtual bool UnlockSurface() = 0;// C0
+	virtual void SetSurface(IDirectDrawSurface*) = 0;// C4
+	virtual void WriteToCache(const PopString&, const PopString&) = 0;// C8
 
 	static DDImage* New(int Width = 800, int Height = 600);
 };

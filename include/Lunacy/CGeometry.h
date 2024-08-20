@@ -26,18 +26,25 @@ public:
 		HSV(float, float, float);
 	};
 
+	enum AlphaLerpingConsideration
+	{
+		ALC_NONE,// Does not lerp alpha at all.
+		ALC_LERP,// Lerps to alpha like it does every color.
+		ALC_ALPHA// The Alpha determines the strength of lerping. (Absolute Alpha = Alpha * Color Alpha)
+	};
+
 	int mRed;
 	int mGreen;
 	int mBlue;
 	int mAlpha;
 
 	Color(int = 0, int = 0, int = 0, int = 255);
-	Color(float, float, float, float = 1.0);// Creates a new color where 0.0f = 0 and 1.0f = 255.
 	Color(std::string HexString);// Uses the provided hex code to create a new color. Accepts with and without the # and shortened colors (shortened means #000 = #000000FF)
 
-	static Color FromHSV(float Hue, float Sat, float Val, float Alpha);
 	static Color FromHSV(int Hue, int Sat, int Val, int Alpha = 255);
+	static Color FromHSVf(float Hue, float Sat, float Val, float Alpha);
 
+	Color Lerp(Color, float Alpha = 0.5, AlphaLerpingConsideration = ALC_NONE);
 	float GetBrightness();// Returns the brightness of the color.
 	float GetSaturation();// Returns the saturation of the color.
 	float GetHue();// Returns the hue of the current color.
@@ -172,6 +179,18 @@ public:
 	float u = 0;
 	float v = 0;
 	unsigned int color = 0;
+};
+
+struct Sexy::TriangleGroup
+{
+	Image* mImage;
+	TriVertex mVertArray[256][3];
+	int mTriangleCount;
+	int mDrawMode;
+
+	TriangleGroup();
+	void DrawGroup(Graphics*);
+	void AddTriangle(Graphics*, Image*, const Matrix3&, const IRect& ClipRect, const Color&, int DrawMode, const IRect& SrcRect);
 };
 
 float Map(float Number, float OldMin, float OldMax, float NewMin = 0, float NewMax = 1);
