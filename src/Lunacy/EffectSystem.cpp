@@ -4,10 +4,10 @@
 
 Reanimation* TryToGet(ReanimationID ID)
 {
-	return LawnApp::GetApp()->mEffectSystem->mReanimationHolder->mReanimations.Fetch((unsigned int)ID);
+	return LawnApp::GetApp()->mEffectSystem->mReanimationHolder->Fetch((unsigned int)ID);
 }
 
 Attachment* TryToGet(AttachmentID ID)
 {
-	return LawnApp::GetApp()->mEffectSystem->mAttachmentHolder->mAttachments.Fetch((unsigned int)ID);
+	return LawnApp::GetApp()->mEffectSystem->mAttachmentHolder->Fetch((unsigned int)ID);
 }

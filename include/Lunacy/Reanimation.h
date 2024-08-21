@@ -191,8 +191,5 @@ public:
 	ReanimAtlas* mReanimAtlas;
 };
 
-class ReanimationHolder
-{
-public:
-	DataArray<Reanimation> mReanimations;
-};
+class ReanimationHolder : public DataArray<Reanimation>
+{ };

@@ -72,9 +72,9 @@ Image::bColor* MemoryImage::GetPixels()
 	return (bColor*)GetBits();
 }
 
-DDImage* Image::GetHReflect()
+MemoryImage* Image::GetHReflect()
 {
-	auto aImage = DDImage::New(mWidth, mHeight);
+	auto aImage = MemoryImage::New(mWidth, mHeight);
 	auto aMat = Matrix3();
 	auto aRect = IRect(0, 0, mWidth, mHeight);
 
@@ -83,9 +83,9 @@ DDImage* Image::GetHReflect()
 	return aImage;
 }
 
-DDImage* Image::GetVReflect()
+MemoryImage* Image::GetVReflect()
 {
-	auto aImage = DDImage::New(mWidth, mHeight);
+	auto aImage = MemoryImage::New(mWidth, mHeight);
 	auto aMat = Matrix3();
 	auto aRect = IRect(0, 0, mWidth, mHeight);
 
@@ -94,9 +94,9 @@ DDImage* Image::GetVReflect()
 	return aImage;
 }
 
-DDImage* Image::GetOReflect()
+MemoryImage* Image::GetOReflect()
 {
-	auto aImage = DDImage::New(mWidth, mHeight);
+	auto aImage = MemoryImage::New(mWidth, mHeight);
 	auto aMat = Matrix3();
 	auto aRect = IRect(0, 0, mWidth, mHeight);
 
@@ -105,12 +105,12 @@ DDImage* Image::GetOReflect()
 	return aImage;
 }
 
-DDImage* Image::GetRotated(float r, int w, int h)
+MemoryImage* Image::GetRotated(float r, int w, int h)
 {
 	w = (w == -1) ? mWidth : w;
 	h = (h == -1) ? mHeight : h;
 
-	auto aImage = DDImage::New(w, h);
+	auto aImage = MemoryImage::New(w, h);
 	auto aMat = Matrix3();
 	auto aRect = IRect(0, 0, mWidth, mHeight);
 
@@ -119,25 +119,30 @@ DDImage* Image::GetRotated(float r, int w, int h)
 	return aImage;
 }
 
-DDImage* Image::GetScaled(int sx, int sy)
+MemoryImage* Image::GetScaled(int sx, int sy)
 {
-	auto aImage = DDImage::New(sx, sy);
+	auto aImage = MemoryImage::New(sx, sy);
 	auto aRect = IRect(0, 0, mWidth, mHeight);
 	aImage->StretchBlt(this, aRect, aRect, IRect(0, 0, sx, sy), Color(255, 255, 255), 0, false);
 	return aImage;
 }
 
-DDImage* Image::GetCropped(IRect src)
+MemoryImage* Image::GetCropped(IRect src)
 {
-	auto aImage = DDImage::New(src.mW, src.mH);
+	auto aImage = MemoryImage::New(src.mW, src.mH);
 	aImage->StretchBlt(this, src, IRect(0, 0, src.mW, src.mH), IRect(0, 0, src.mW, src.mH), Color(255, 255, 255), 0, false);
 	return aImage;
+}
+
+void MemoryImage::CopyImage(MemoryImage* Other, bool CommitBits)
+{
+	SetBits(Other->GetBits(), Other->mWidth, Other->mHeight, CommitBits);
 }
 
 MemoryImage* MemoryImage::Blend(MemoryImage* aMapImage, MemoryImage* aDestImage, float sAlpha, int X, int Y)
 {
 	if (!aDestImage)
-		aDestImage = DDImage::New(mWidth, mHeight);
+		aDestImage = MemoryImage::New(mWidth, mHeight);
 
 	auto aMap = aMapImage->GetPixels();
 	auto aDest = aDestImage->GetPixels();
@@ -165,7 +170,7 @@ MemoryImage* MemoryImage::Blend(MemoryImage* aMapImage, MemoryImage* aDestImage,
 	return aDestImage;
 }
 
-void MemoryImage::BlendOnto(MemoryImage* aMapImage, float Alpha, int X, int Y)
+void MemoryImage::BlendWith(MemoryImage* aMapImage, float Alpha, int X, int Y)
 {
 	Blend(aMapImage, this, Alpha, X, Y);
 }
@@ -257,4 +262,17 @@ DDImage* DDImage::New(int W, int H)
 	return NewImage;
 }
 
+__declspec(naked) MemoryImage* __stdcall MemoryImage::New(int, int)
+{
+	__asm
+	{
+		push ebx
+		mov ecx, [esp + 0xC]
+		mov ebx, [esp + 0x8]
+		mov eax, 0x46F280
+		call eax
+		pop ebx
+		ret 0x8
+	}
+}
 #pragma warning(pop)

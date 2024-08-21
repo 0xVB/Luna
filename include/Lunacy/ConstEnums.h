@@ -1,12 +1,17 @@
 #pragma once
 
-enum ReanimationID { REANIMID_NULL };
-enum PlantID { PLANTID_NULL };
-enum ZombieID { ZOMBIEID_NULL };
 enum AttachmentID { ATTACHMENTID_NULL };
-enum ParticleSystemID { PARTICLESYSTEMID_NULL };
+enum ReanimationID { REANIMID_NULL };
+
 enum ParticleID { PARTICLEID_NULL };
+enum ParticleSystemID { PARTICLESYSTEMID_NULL };
 enum ParticleEmitterID { PARTICLEEMITTERID_NULL };
+
+enum LawnMowerID { LAWNMOWERID_NULL };
+enum GridItemID { GRIDITEMID_NULL };
+enum PickupID { PICKUPID_NULL };
+enum ZombieID { ZOMBIEID_NULL };
+enum PlantID { PLANTID_NULL };
 
 enum AdviceType
 {

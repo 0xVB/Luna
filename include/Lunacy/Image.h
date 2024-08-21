@@ -55,12 +55,12 @@ public:
 	virtual void BltMirror(Image* OtherImage, int X, int Y, const IRect& SrcRect, const Color& Color, int DrawMode) = 0;// 3C
 	virtual void StretchBltMirror(Image* OtherImage, const IRect& DestOrig, const IRect& SrcOrig, const IRect& ClipRect, const Color& Color, int DrawMode, bool FastStretch) = 0;// 40
 
-	DDImage* GetHReflect();// Returns a new texture reflected across the y-axis.
-	DDImage* GetVReflect();// Returns a new texture reflected across the x-axis.
-	DDImage* GetOReflect();// Returns a new texture reflected across the origin.
-	DDImage* GetScaled(int NewWidth, int NewHeight);// Returns a new texture scaled to the new width and height.
-	DDImage* GetRotated(float Radians, int NewWidth = -1, int NewHeight = -1);// Returns a new texture rotated by the given angle in radians. Will use the image's default size if NewWidth and NewHeight aren't specified. They do not stretch the texture, but they determine the final size of the rotated texture to ensure it won't be clipped when rotated.
-	DDImage* GetCropped(IRect Source);// Returns a new texture cropped by the given rectangle region.
+	MemoryImage* GetHReflect();// Returns a new texture reflected across the y-axis.
+	MemoryImage* GetVReflect();// Returns a new texture reflected across the x-axis.
+	MemoryImage* GetOReflect();// Returns a new texture reflected across the origin.
+	MemoryImage* GetScaled(int NewWidth, int NewHeight);// Returns a new texture scaled to the new width and height.
+	MemoryImage* GetRotated(float Radians, int NewWidth = -1, int NewHeight = -1);// Returns a new texture rotated by the given angle in radians. Will use the image's default size if NewWidth and NewHeight aren't specified. They do not stretch the texture, but they determine the final size of the rotated texture to ensure it won't be clipped when rotated.
+	MemoryImage* GetCropped(IRect Source);// Returns a new texture cropped by the given rectangle region.
 };
 
 class Sexy::MemoryImage : public Sexy::Image
@@ -111,9 +111,13 @@ public:
 	virtual void SetVolatile(bool) = 0;// 84
 	virtual bool Palletize() = 0;// 88
 
+	void CopyImage(MemoryImage* OtherImage, bool CommitBits = false);
+
 	bColor* GetPixels();
 	MemoryImage* Blend(MemoryImage* ColorMap, MemoryImage* Destination = nullptr, float Alpha = 0.35f, int X = 0, int Y = 0);
-	void BlendOnto(MemoryImage* ColorMap, float Alpha = 0.35f, int X = 0, int Y = 0);
+	void BlendWith(MemoryImage* ColorMap, float Alpha = 0.35f, int X = 0, int Y = 0);
+
+	static MemoryImage* __stdcall New(int Width = 800, int Height = 600);
 };
 
 class Sexy::DDImage : public Sexy::MemoryImage

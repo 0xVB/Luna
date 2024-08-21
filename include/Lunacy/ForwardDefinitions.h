@@ -218,5 +218,8 @@ class ParticleSystem;
 
 Reanimation* TryToGet(ReanimationID);
 Attachment* TryToGet(AttachmentID);
+LawnMower* TryToGet(LawnMowerID);
+GridItem* TryToGet(GridItemID);
+Pickup* TryToGet(PickupID);
 Zombie* TryToGet(ZombieID);
 Plant* TryToGet(PlantID);

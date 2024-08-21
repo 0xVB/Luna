@@ -206,7 +206,7 @@ void Zombie::Die(bool DropLoot)
 
 Reanimation* Zombie::LoadReanim(ReanimationType Type)
 {
-	auto Reanim = mApp->mEffectSystem->mReanimationHolder->mReanimations.Fetch(mBodyReanimID);
+	auto Reanim = mApp->mEffectSystem->mReanimationHolder->Fetch(mBodyReanimID);
 	if (Reanim)
 		Reanim->Die();
 	return LoadReanimUnsafe(Type);

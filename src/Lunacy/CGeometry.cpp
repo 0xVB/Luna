@@ -501,3 +501,42 @@ __declspec(naked) void Sexy::TriangleGroup::AddTriangle(Graphics*, Image*, const
 		ret 0x1C
 	}
 }
+
+float GetTicksToTarget(float iTarg, float iPos, float iVel, float iAcc)
+{
+	float Delta = iTarg - iPos;
+	float NextDelta = Delta;
+
+	if (iAcc == 0 && iVel == 0)
+		return -1;  // No movement possible, will never reach target
+	else if (iAcc == 0)
+		return (Delta / iVel);  // Simple linear motion (constant velocity), return ticks directly
+
+	float Ticks = 0;
+	bool AccelerationPointsToTarget = (Delta * iAcc) > 0;
+	// Since the acceleration points to the target, it will eventually hit the target so there's no reason to make
+	// a break check.
+
+	// Start the iteration to calculate the ticks
+Start:
+	Delta = iTarg - iPos;
+
+	if ((Delta > 0 && iVel > 0) || (Delta < 0 && iVel < 0) || AccelerationPointsToTarget)
+	{
+		// Perform the position and velocity update for one tick
+		iPos += iVel;
+		iVel += iAcc;
+		Ticks += 1;
+
+		NextDelta = iTarg - iPos;
+
+		// Check if we've crossed the target or exactly reached it
+		if ((Delta > 0 && NextDelta <= 0) || (Delta < 0 && NextDelta >= 0) || (NextDelta == 0))
+			return Ticks;  // Target reached
+
+		goto Start;
+	}
+
+	// If velocity is zero and acceleration doesn't point towards the target
+	return -1;
+}

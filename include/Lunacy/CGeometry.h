@@ -194,3 +194,4 @@ struct Sexy::TriangleGroup
 };
 
 float Map(float Number, float OldMin, float OldMax, float NewMin = 0, float NewMax = 1);
+float GetTicksToTarget(float TargetPosition, float InitialPosition, float Velocity, float Acceleration = 0.0f);
