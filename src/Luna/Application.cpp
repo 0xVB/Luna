@@ -13,11 +13,11 @@ using namespace Luna;
 
 Application::Application()
 {
-    #ifdef _DEBUG
+    //#ifdef _DEBUG
     logger = std::make_shared<IO::ConsoleLogger>();
-    #else
-    logger = std::make_shared<IO::FileLogger>("luna.log");
-    #endif
+    //#else
+    //logger = std::make_shared<IO::FileLogger>("luna.log");
+    //#endif
     localModExplorer = std::make_shared<LocalModExplorer>("mods");
     modHandler = std::make_shared<ModHandler>();
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "Associations.h"
 #include "CGeometry.h"
 #include <string>
 #include <map>
@@ -25,6 +26,12 @@ public:
 		Sexy::IRect mHitbox;
 	};
 	bool mVisible;
+
+protected:
+	char _cave[3];
+	AssociationManager* GetManager();
+
+public:
 	int mRow;
 	int mRenderOrder;
 
@@ -48,6 +55,26 @@ public:
 
 	operator Sexy::IVector2();
 	operator Sexy::IRect();
+
+	void AddTag(std::string TagName);
+	bool HasTag(std::string TagName);
+	void RemoveTag(std::string TagName);
+
+	void SetNumber(std::string Name, double);
+	double GetNumber(std::string Name);
+
+	void SetVector2(std::string Name, Sexy::FVector2);
+	Sexy::FVector2 GetVector2(std::string Name);
+
+	void SetVector3(std::string Name, Sexy::FVector3);
+	Sexy::FVector3 GetVector3(std::string Name);
+
+	void SetRect(std::string Name, Sexy::FRect);
+	Sexy::FRect GetRect(std::string Name);
+
+	void SetPointer(std::string Name, void*);
+	void* GetPointer(std::string Name);
+
 protected:
 	void ConstructGameObject();
-};
+};// 36U
