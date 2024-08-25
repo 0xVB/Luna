@@ -166,4 +166,9 @@ void* GameObject::GetPointer(std::string N)
 {
 	return GetManager()->Get(N).Pointer;
 }
+
+void GameObject::DestroyFields()
+{
+	DeleteAssociation(_cave);
+}
 #pragma endregion

@@ -74,6 +74,7 @@ public:
 
 	void SetPointer(std::string Name, void*);
 	void* GetPointer(std::string Name);
+	void DestroyFields();
 
 protected:
 	void ConstructGameObject();
