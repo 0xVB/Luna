@@ -1,6 +1,6 @@
 #include "Luna/Hook/LunaHook.hpp"
 
-usize getInstructionSize(const u8* bytes, i32** rel32 = nullptr)
+usize getInstructionSize(const u8* bytes, i32** rel32)
 {
 #define __nextByte *(bytes++)
 	const u8* startBytes = bytes;

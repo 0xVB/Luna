@@ -60,28 +60,28 @@ u8 LunaHookThread::Parameter::AddToBuffer(unsigned char* BufferStart, unsigned s
 	{
 		switch (mRegister)
 		{
-		case eax:
+		case EAX:
 			*BufferStart = 0x50;
 			return 1;
-		case ecx:
+		case ECX:
 			*BufferStart = 0x51;
 			return 1;
-		case edx:
+		case EDX:
 			*BufferStart = 0x52;
 			return 1;
-		case ebx:
+		case EBX:
 			*BufferStart = 0x53;
 			return 1;
-		case esp:
+		case ESP:
 			*BufferStart = 0x54;
 			return 1;
-		case ebp:
+		case EBP:
 			*BufferStart = 0x55;
 			return 1;
-		case esi:
+		case ESI:
 			*BufferStart = 0x56;
 			return 1;
-		case edi:
+		case EDI:
 			*BufferStart = 0x57;
 			return 1;
 		}
@@ -136,10 +136,10 @@ void __declspec(naked) LunaHookThread::LoadRegistersPreserveEAX()
 {
 	__asm
 	{
-		mov edx, [ecx + _edx]
-		mov ebx, [ecx + _ebx]
-		mov edi, [ecx + _edi]
-		mov ecx, [ecx + _ecx]
+		mov edx, [ecx + 0x14]// _edx
+		mov ebx, [ecx + 0x18]// _ebx
+		mov edi, [ecx + 0x28]// _edi
+		mov ecx, [ecx + 0x10]// _ecx
 		ret
 	}
 }
@@ -148,11 +148,11 @@ void __declspec(naked) LunaHookThread::LoadRegisters()
 {
 	__asm
 	{
-		mov eax, [ecx + _eax]
-		mov edx, [ecx + _edx]
-		mov ebx, [ecx + _ebx]
-		mov edi, [ecx + _edi]
-		mov ecx, [ecx + _ecx]
+		mov eax, [ecx + 0x0C]// _eax
+		mov edx, [ecx + 0x14]// _edx
+		mov ebx, [ecx + 0x18]// _ebx
+		mov edi, [ecx + 0x28]// _edi
+		mov ecx, [ecx + 0x10]// _ecx
 		ret
 	}
 }
