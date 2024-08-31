@@ -1,210 +1,440 @@
 #include "Luna/Hook/LunaHook.hpp"
 
-LunaHookThread::Parameter::Parameter(Register32 Register)
+#pragma region Internal
+class LunaHookThread::CodeBuffer
 {
-	mStackOffset = 0;
-	isRegister = true;
-	mRegister = Register;
-}
-
-LunaHookThread::Parameter::Parameter(unsigned char StackOffset)
-{
-	mStackOffset = StackOffset;
-}
-
-bool LunaHookThread::Parameter::IsRegisterParam()
-{
-	return isRegister;
-}
-
-bool LunaHookThread::Parameter::IsStackParam()
-{
-	return !isRegister;
-}
-
-LunaHookThread::FunctionSignature::FunctionSignature(DWORD Address, bool Returns)
-{
-	VirtualProtect((LPVOID)Address, 32, PAGE_EXECUTE_READWRITE, &mOldProt);
-
-	mAddress = Address;
-	hasReturn = Returns;
-	memset(&mParameters, 0, sizeof(mParameters));
-	mParameterCount = 0;
-
-	mOriginalCodeSize = 0;
-	while (mOriginalCodeSize < 5)
+	union
 	{
-		usize iSize = getInstructionSize((unsigned char*)Address);
-		mOriginalCodeSize += iSize;
-		Address += iSize;
+		void* vPtr;
+		unsigned char* cPtr;
+		unsigned short* sPtr;
+		unsigned int* iPtr;
+	};
+
+public:
+
+	DWORD oPtr;// Contains the original buffer pointer
+
+	CodeBuffer(size_t CodeSize)
+	{
+		vPtr = operator new(CodeSize);
+		oPtr = (DWORD)vPtr;
 	}
 
-	memcpy((void*)mAddress, mOriginalCode, mOriginalCodeSize);
-}
-
-void LunaHookThread::FunctionSignature::AddParameter(Register32 Register)
-{
-	mParameters[mParameterCount] = Parameter(Register);
-	mParameterCount++;
-}
-
-void LunaHookThread::FunctionSignature::AddParameter(unsigned char StackOffset)
-{
-	mParameters[mParameterCount] = Parameter(StackOffset);
-	mParameterCount++;
-}
-
-u8 LunaHookThread::Parameter::AddToBuffer(unsigned char* BufferStart, unsigned short StackOffset)
-{
-	if (IsRegisterParam())
+	void Copy(unsigned char* From, size_t Size)
 	{
-		switch (mRegister)
-		{
-		case EAX:
-			*BufferStart = 0x50;
-			return 1;
-		case ECX:
-			*BufferStart = 0x51;
-			return 1;
-		case EDX:
-			*BufferStart = 0x52;
-			return 1;
-		case EBX:
-			*BufferStart = 0x53;
-			return 1;
-		case ESP:
-			*BufferStart = 0x54;
-			return 1;
-		case EBP:
-			*BufferStart = 0x55;
-			return 1;
-		case ESI:
-			*BufferStart = 0x56;
-			return 1;
-		case EDI:
-			*BufferStart = 0x57;
-			return 1;
-		}
+		memcpy(vPtr, From, Size);
+		cPtr += Size;
 	}
 
-	*BufferStart = 0xFF;
-	BufferStart++;
+	void EncodePush(DWORD Value)
+	{
+		*cPtr = 0x68;// push opcode
+		cPtr++;
 
-	*BufferStart = 0x74;
-	BufferStart++;
+		*iPtr = Value;// Number
+		iPtr++;
+	}
 
-	*BufferStart = 0x24;
-	BufferStart++;
+	void EncodePush(LunaHookThread::Register32 Reg)
+	{
+		*cPtr = (0x50 + Reg);
+		cPtr++;
+	}
 
-	*BufferStart = mStackOffset + StackOffset;
-	return 4;
+	void EncodeStackPush(DWORD StackOffset)
+	{
+		*cPtr = 0xFF;
+		cPtr++;
+
+		*cPtr = 0x74;
+		cPtr++;
+
+		*cPtr = 0x24;
+		cPtr++;
+
+		*cPtr = StackOffset;
+		cPtr++;
+	}
+
+	void EncodeRet()
+	{
+		*cPtr = 0xC3;
+		cPtr++;
+	}
+
+	void EncodeRet(unsigned short pop)
+	{
+		*cPtr = 0xC2;
+		cPtr++;
+
+		*sPtr = pop;
+		sPtr++;
+	}
+
+	void EncodeJE(char JumpAmount)
+	{
+		*cPtr = 0x74;
+		cPtr++;
+
+		*cPtr = JumpAmount;
+		cPtr++;
+	}
+};
+#pragma endregion
+
+#pragma region Simple stuff
+LunaHookThread::LunaHookThread()
+{
+	for (int i = 0; i < NUM_REGISTERS; i++)
+		_registers[i] = 0;
+	_skip = false;
 }
 
-void __declspec(naked) LunaHookThread::SaveRegisters(DWORD, DWORD, DWORD)
+LunaHookThread* LunaHookThread::New()
 {
-	__asm
-	{
-		// eax
-		mov eax, [esp + 0x04]
-		mov [ecx + 0x08], eax
-
-		// ecx
-		mov eax, [esp + 0x08]
-		mov [ecx + 0x0C], eax
-
-		// edx
-		mov eax, [esp + 0x0C]
-		mov [ecx + 0x10], eax
-		
-		// Other Registers
-		mov [ecx + 0x14], ebx
-		mov [ecx + 0x18], esp
-		mov [ecx + 0x1C], ebp
-		mov [ecx + 0x20], esi
-		mov [ecx + 0x24], edi
-
-		// Restore Scratch
-		mov eax, [esp + 0x4]
-		mov ecx, [esp + 0x8]
-		mov edx, [esp + 0xC]
-
-		ret 0x0C
-	}
+	return new LunaHookThread();
 }
 
-void __declspec(naked) LunaHookThread::LoadRegistersPreserveEAX()
+LunaHookThread::FunctionSignature* LunaHookThread::NewFunction(DWORD Address)
 {
-	__asm
-	{
-		mov edx, [ecx + 0x14]// _edx
-		mov ebx, [ecx + 0x18]// _ebx
-		mov edi, [ecx + 0x28]// _edi
-		mov ecx, [ecx + 0x10]// _ecx
-		ret
-	}
-}
-
-void __declspec(naked) LunaHookThread::LoadRegisters()
-{
-	__asm
-	{
-		mov eax, [ecx + 0x0C]// _eax
-		mov edx, [ecx + 0x14]// _edx
-		mov ebx, [ecx + 0x18]// _ebx
-		mov edi, [ecx + 0x28]// _edi
-		mov ecx, [ecx + 0x10]// _ecx
-		ret
-	}
+	return FunctionSignature::New(this, Address);
 }
 
 void LunaHookThread::SetRegister(Register32 Reg, DWORD Value)
 {
-	_isChanged = true;
-	_mRegisters[Reg] = Value;
+	_registers[Reg] = Value;
 }
 
-void LunaHookThread::SetReturnAddress(DWORD Address)
+DWORD LunaHookThread::GetRegister(Register32 Reg)
 {
-	_isChanged = true;
-	_mReturnAddress = Address;
+	return _registers[Reg];
 }
 
-void LunaHookThread::FunctionSignature::Hook(void* DetourTo)
+// Parameter
+LunaHookThread::Parameter::Parameter(Register32 Reg)
 {
-	DWORD Detour = (DWORD)DetourTo;
-	unsigned char Middleman[512];
-	unsigned short BytesUsed = 3;
-	unsigned short StackOff = 0xC;
+	isRegister = true;
+	mRegister = Reg;
+}
 
-	// Push the parameters to SaveRegisters
-	Middleman[2] = 0x52;// push edx
-	Middleman[1] = 0x51;// push ecx
-	Middleman[0] = 0x50;// push eax
+LunaHookThread::Parameter::Parameter(u8 Reg)
+{
+	isRegister = false;
+	mStackOffset = Reg;
+}
 
-	// Absolute call to SaveRegisters
-	Middleman[BytesUsed++] = 0xB8; // mov eax, _parentThread + _SaveRegisters
-	*(DWORD*)(Middleman + BytesUsed) = (DWORD)_parentThread + _SaveRegisters;
-	BytesUsed += 4;
-
-	Middleman[BytesUsed++] = 0xFF; // call eax
-	Middleman[BytesUsed++] = 0xD0;
-
-	int CurrParamIndex = mParameterCount - 1;
-	while (CurrParamIndex >= 0)
+unsigned char LunaHookThread::Parameter::AddToBuffer(unsigned char* Buffer, unsigned short Offset)
+{
+	if (isRegister)
 	{
-		auto CurrParam = mParameters[CurrParamIndex];
-		BytesUsed += CurrParam.AddToBuffer(Middleman + BytesUsed, StackOff);
-		StackOff += 0x4;
-
-		CurrParamIndex--;
+		*Buffer = (0x50 + mRegister);
+		return 1;
 	}
 
-	// Absolute call to the detour function
-	Middleman[BytesUsed++] = 0xB8; // mov eax, Detour
-	*(DWORD*)(Middleman + BytesUsed) = Detour;
-	BytesUsed += 4;
+	*Buffer = 0xFF;
+	Buffer++;
 
-	Middleman[BytesUsed++] = 0xFF; // call eax
-	Middleman[BytesUsed++] = 0xD0;
+	*Buffer = 0x74;
+	Buffer++;
 
+	*Buffer = 0x24;
+	Buffer++;
+
+	*Buffer = mStackOffset + Offset;
+	return 4;
+}
+
+// Function Signature
+LunaHookThread::FunctionSignature::FunctionSignature()
+{
+	_parentThread = nullptr;
+
+	_addr = 0;
+	_oldProt = 0;
+	_paramCount = 0;
+	_origCodeSize = 0;
+
+	_paramCodeSize = 0;
+	_stackSize = 0;
+
+	memset(_parameters, 0, sizeof(_parameters));
+	memset(_origCode, 0, sizeof(_origCode));
+}
+
+void LunaHookThread::FunctionSignature::AddParameter(Register32 Reg)
+{
+	_parameters[_paramCount] = Parameter(Reg);
+	_paramCount++;
+}
+
+void LunaHookThread::FunctionSignature::AddParameter(u8 Offset)
+{
+	_parameters[_paramCount] = Parameter(Offset);
+	_paramCount++;
+}
+
+void LunaHookThread::FunctionSignature::AddParameter()
+{
+	GetStackSize();
+	AddParameter(_stackSize + 4U);
+}
+
+void LunaHookThread::FunctionSignature::AddStackParameters(u8 Count)
+{
+	for (int i = 0; i < Count; i++)
+		AddParameter();
+}
+
+LunaHookThread::FunctionSignature* LunaHookThread::FunctionSignature::New(LunaHookThread* Parent, DWORD Address)
+{
+	auto Signature = new FunctionSignature();
+	Signature->_parentThread = Parent;
+	Signature->_addr = Address;
+	return Signature;
+}
+
+void LunaHookThread::SetSkip(bool DoSkip)
+{
+	_skip = DoSkip >= 1;
+}
+
+size_t LunaHookThread::Parameter::GetCodeSize()
+{
+	if (isRegister) return 1;
+	return 4;
+}
+
+void LunaHookThread::FunctionSignature::GetParamCodeSize()
+{
+	_paramCodeSize = 0;
+	for (int i = 0; i < _paramCount; i++)
+		_paramCodeSize += _parameters[i].GetCodeSize();
+}
+
+void LunaHookThread::FunctionSignature::GetStackSize()
+{
+	_stackSize = 0;
+	for (int i = 0; i < _paramCount; i++)
+		_stackSize += _parameters[i].isStackParam() * 4;
+}
+
+void LunaHookThread::Parameter::Encode(CodeBuffer* Buffer, char StackOffset)
+{
+	if (isRegister)
+		Buffer->EncodePush(mRegister);
+	else
+		Buffer->EncodeStackPush(mStackOffset + StackOffset);
+}
+
+void LunaHookThread::SetReturn(DWORD Value)
+{
+	_registers[EAX] = Value;
+}
+#pragma endregion
+
+#pragma region Declarations
+#define _vtoffset  0U
+
+#define _rtable _vtoffset + 0x00U
+#define _eax _rtable + 0x00U
+#define _ecx _rtable + 0x04U
+#define _edx _rtable + 0x08U
+#define _ebx _rtable + 0x0CU
+
+#define _esp _rtable + 0x10U
+#define _ebp _rtable + 0x14U
+#define _esi _rtable + 0x18U
+#define _edi _rtable + 0x1CU
+#define _rtable_end _edi
+
+#define _skipad _rtable_end + 0x04U
+#pragma endregion
+
+
+// Complex stuff
+__declspec(naked) void LunaHookThread::DetourHeader(LunaHookThread*)
+{
+	__asm
+	{
+		push eax// +08
+		push ecx// +0C
+		push edx// +10
+
+		// edx: [esp + 0x00]
+		// ecx: [esp + 0x04]
+		// eax: [esp + 0x08]
+		// ret: [esp + 0x0C]
+		// self: [esp + 0x10]
+		mov ecx, [esp + 0x10]// this*
+		
+		mov [ecx + _eax], eax// 1
+		mov [ecx + _edx], edx// 2
+		mov [ecx + _ebx], ebx// 3
+		mov [ecx + _ebp], ebp// 4
+		mov [ecx + _esi], esi// 5
+		mov [ecx + _edi], edi// 6
+		// ecx & esp left
+
+		mov eax, [esp + 0x04]
+		mov [ecx + _ecx], eax// ecx saved
+
+		// params		:		+04
+		// ret addr		:		+04
+		// reg backup	:		+0C
+		// total		:		+14
+		mov eax, esp
+		add eax, 0x14
+		mov [ecx + _esp], eax// esp saved
+
+		xor al, al
+		mov byte ptr [ecx + _skipad], al// Restore _skip to false
+
+		// Restore registers
+		pop edx
+		pop ecx
+		pop eax
+		ret 0x4// Return and pop this*
+	}
+}
+
+__declspec(naked) void LunaHookThread::DetourFooter(LunaHookThread*)
+{
+	__asm
+	{
+		mov ecx, [esp + 0x04]// this*
+		push [ecx + _ecx]
+		push [ecx + _eax]
+
+		mov al, byte ptr [ecx + _skipad]
+		cmp al, 00
+
+		mov edx, [ecx + _edx]
+		mov ebx, [ecx + _ebx]
+		mov ebp, [ecx + _ebp]
+		mov esi, [ecx + _esi]
+		mov edi, [ecx + _edi]
+
+		pop eax
+		pop ecx
+		ret 0x4// Return and pop this*
+	}
+}
+
+#include <iostream>
+
+size_t GetHookSize(DWORD Address)
+{
+	size_t TotalSize = 0;
+	while (TotalSize < 5)
+	{
+		size_t iSize = getInstructionSize((const u8*)Address);
+		TotalSize += iSize;
+		Address += iSize;
+	}
+
+	std::cout << "HookSize: " << TotalSize << "\n";
+	return TotalSize;
+}
+
+void LunaHookThread::FunctionSignature::Finalize(void* DetourTo)
+{
+	/* Base Function:
+	* push parent														0x0005	(oPtr + 0x0000)
+	* push L0 (return address)											0x000A	(oPtr + 0x0005)
+	* push DetourHeader													0x000F	(oPtr + 0x000A)
+	* ret (absolute call to DetourHeader)								0x0010	(oPtr + 0x000F)
+	* 
+	* L0:
+	* [push all params]													0x0010	(oPtr + 0x0010) (L0)
+	* push L1 (return address)											0x0015	(oPtr + 0x0010 + _paramCodeSize)
+	* push DetourTo														0x001A	(oPtr + 0x0015 + _paramCodeSize)
+	* ret (absolute call to DetourTo)									0x001B	(oPtr + 0x001A + _paramCodeSize)
+	* 
+	* L1:
+	* push parent														0x0020	(oPtr + 0x001B + _paramCodeSize) (L1)
+	* push CHECK														0x0025	(oPtr + 0x0020 + _paramCodeSize)
+	* push DetourFooter													0x002A	(oPtr + 0x0025 + _paramCodeSize)
+	* ret (absolute call to DetourFooter)								0x002B	(oPtr + 0x002A + _paramCodeSize)
+	* 
+	* CHECK:
+	* je L2 (If _skip == false then go to original code instantly)		0x002D	(oPtr + 0x002B + _paramCodeSize) (CHECK)
+	* ret [amount of stack params] (Otherwise, go abort func and ret)	0x002E	(oPtr + 0x002D + _paramCodeSize)
+	* 
+	* L2:
+	* [original code]													0x002E	(oPtr + 0x002E + _paramCodeSize) (L2)
+	* push original function retpoint									0x0033	(oPtr + 0x002E + _paramCodeSize + _origCodeSize)
+	* ret																0x0034	(oPtr + 0x0033 + _paramCodeSize + _origCodeSize)
+	*																	(END)	(oPtr + 0x0034 + _paramCodeSize + _origCodeSize)
+	*/
+	// Base function size: 0x34 Bytes
+	// Total function size: Base + Param Code Size + Original Code Size
+	CONST DWORD BASE_FUNC_SIZE = 0x34;
+	std::cout << "_eax: " << _eax << "\n";
+	std::cout << "Parent: " << _parentThread << "\n";
+	// Unlock bytes near hook 
+	VirtualProtect((LPVOID)_addr, 0xFF, PAGE_EXECUTE_READWRITE, &_oldProt);
+	// Store size of code that needs to be saved
+	_origCodeSize = GetHookSize(_addr);
+	// Backup original code
+	memcpy(_origCode, (const void*)_addr, _origCodeSize);
+
+	// Calculate bytes required for param pushing and total stack size for this function's params
+	GetParamCodeSize();
+	GetStackSize();
+
+	// Total bytes that need to be allocated to instantiate the middleman function
+	size_t TotalFunctionSize = BASE_FUNC_SIZE + _origCodeSize + _paramCodeSize;
+	CodeBuffer Middleman = CodeBuffer(TotalFunctionSize);
+
+	// Start
+	Middleman.EncodePush((DWORD)_parentThread);
+	Middleman.EncodePush(Middleman.oPtr + 0x0010);
+	Middleman.EncodePush((DWORD)DetourHeader);
+	Middleman.EncodeRet();
+
+	// L0: Push all params
+	int cParam = _paramCount - 1;
+	size_t StackOffset = 0;
+	while (cParam >= 0)
+	{
+		auto aParam = _parameters[cParam];
+		aParam.Encode(&Middleman, StackOffset);
+		StackOffset += 0x4;
+		cParam--;
+	}
+	// Call DetourTo (the function being detoured to)
+	Middleman.EncodePush(Middleman.oPtr + 0x001B + _paramCodeSize);
+	Middleman.EncodePush((DWORD)DetourTo);
+	Middleman.EncodeRet();
+
+	// L1: Call DetourFooter, restore registers & perform the cmp _skip, 00
+	Middleman.EncodePush((DWORD)_parentThread);
+	Middleman.EncodePush(Middleman.oPtr + 0x002B + _paramCodeSize);
+	Middleman.EncodePush((DWORD)DetourFooter);
+	Middleman.EncodeRet();
+
+	// CHECK: Check if should skip vanilla code or not
+	Middleman.EncodeJE(3);// Skip the ret [Param Count]
+	Middleman.EncodeRet(_stackSize);// Pop _stackSize bytes off stack and return
+
+	// L2: Original function code & handle returning
+	Middleman.Copy(_origCode, _origCodeSize);// Copy original code & offset buffer ptr by _origCodeSize
+	Middleman.EncodePush(_addr + _origCodeSize);// Push address to return to to resume vanilla code after hook
+	Middleman.EncodeRet();// Return to original code & abort hook
+	// END
+	
+	// Make function jump to destination
+	DWORD rel32o = Middleman.oPtr - _addr - 5;// Relative offset
+	*(BYTE*)_addr = 0xE9;// Set to jmp
+	*(DWORD*)(_addr + 1) = rel32o;// Set relative offset
+	
+	for (DWORD cByte = _addr + 5; cByte < _addr + _origCodeSize; cByte++)
+		*(BYTE*)cByte = 0x90;// NOP
+
+	// Restore mem access
+	VirtualProtect((LPVOID)_addr, 0xFF, _oldProt, &_oldProt);
+
+	// Free signature memory after hook
+	delete this;
 }

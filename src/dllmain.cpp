@@ -4,7 +4,8 @@
 
 using Luna::Application;
 
-BOOL APIENTRY DllMain(
+BOOL APIENTRY DllMain
+(
     HMODULE ModuleHandle,
     DWORD  CallReason,
     LPVOID Reserved
@@ -15,7 +16,6 @@ BOOL APIENTRY DllMain(
 
     const auto app = Application::getSingleton();
     if (!app->initialize()) return FALSE;
-
     app->getLogger()->log(LogLevel::none, "Luna %s has been initialized.", LUNA_VERSION);
     
     return TRUE;
