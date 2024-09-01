@@ -5,6 +5,7 @@
 #include "Luna/Application.hpp"
 
 #include "Luna/Lua/Lib/LunaIO.hpp"
+#include "Luna/Lua/Lib/General.hpp"
 #include "Luna/Lua/Lib/Class/LunaClass.hpp"
 
 using namespace Luna;
@@ -35,7 +36,6 @@ ScriptContext* ScriptContext::getSingleton() {
     return &sc;
 }
 
-#include <iostream>
 int ScriptContext::startScript(LunaScriptPtr script)
 {
     // make new thread with StateUserdata
@@ -59,12 +59,12 @@ int ScriptContext::startScript(LunaScriptPtr script)
     openDynamic(LT);
 
     // run script
-    auto state = lua_pcall(LT, 0, 0, 0);
-    std::cout << "State: " << state << "\n";
+    auto state = lua_resume(LT, nullptr, 0);
     if (state == LUA_YIELD)
     {
-        TaskScheduler::getSingleton()->registerJob(new Luna::BasicLuaJob(_gL, LT, chunkName.c_str()));
-        Application::getSingleton()->getLogger()->log(LogLevel::info, "Scheduled.");
+        int delay = LuaToNum(LT, -1);
+        delay = (delay < 0) ? 0 : delay;
+        TaskScheduler::getSingleton()->registerJob(new Luna::BasicLuaJob(_gL, LT, delay, chunkName.c_str()));
     }
     else if (state != LUA_OK) {
 		if (lua_isstring(LT, -1)) {
@@ -78,27 +78,14 @@ int ScriptContext::startScript(LunaScriptPtr script)
    return LUA_OK;
 }
 
-int lua_wait(lua_State* L)
-{
-    closure_header();
-    int tdelta = LuaToNum(L, 1);
-    tdelta = (tdelta <= 0) ? 1 : tdelta;
-
-    while (tdelta > 0)
-    {
-        lua_yield(L, 0);
-        tdelta--;
-    }
-
-    return 0;
-}
-
 void Luna::ScriptContext::openStatic(lua_State* L) {
+    closure_header();
+
     luaL_openlibs(L);
     Lib::IO::openStatic(L);
+    Lib::General::openStatic(L);
 
-    lua_pushcclosure(L, lua_wait, "wait", 0);
-    lua_setglobal(L, "wait");
+    resetltop();
 }
 
 void Luna::ScriptContext::openDynamic(lua_State* L) {

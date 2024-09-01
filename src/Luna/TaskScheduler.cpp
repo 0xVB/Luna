@@ -30,18 +30,26 @@ void TaskScheduler::registerJob(Job* job) {
     _jobs.push_back(sharedJob);
 }
 
-BasicLuaJob::BasicLuaJob(lua_State* g, lua_State* l, const char* n) : Job(n)
+BasicLuaJob::BasicLuaJob(lua_State* g, lua_State* l, int del, const char* n) : Job(n)
 {
+    delay = del;
     gL = g;
     sL = l;
 }
 
 #include "Luna/Application.hpp"
+#include "Luna/Lua/Utils.hpp"
 void BasicLuaJob::run(TaskScheduler*)
 {
-    int state = lua_resume(gL, sL, 0);
+    delay--;
+    if (delay > 0) return;
+    int state = lua_resume(sL, nullptr, 0);
     if (state == LUA_YIELD)
+    {
+        delay = LuaToNum(sL, -1);
+        delay = (delay < 0) ? 0 : delay;
         return;
+    }
     else
         markForRemoval();
 

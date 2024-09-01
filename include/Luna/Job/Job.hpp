@@ -20,9 +20,10 @@ namespace Luna {
     {
         lua_State* gL;
         lua_State* sL;
+        int delay;
 
     public:
         virtual void run(TaskScheduler* ts) override;
-        BasicLuaJob(lua_State*, lua_State*, const char* n = "BASIC_LUA_JOB");
+        BasicLuaJob(lua_State*, lua_State*, int delay = 0, const char* n = "BASIC_LUA_JOB");
     };
 }
