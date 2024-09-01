@@ -87,6 +87,7 @@ public:
 	size_t mLawnAppSize = sizeof(LawnApp);
 #pragma endregion
 	static LawnApp* GetApp();
+	static void SetApp(DWORD);
 
 	int LawnMessageBox(int ID, const char* Head, const char* Body, const char* B1, const char* B2, int ButtonMode = 1);
 	Reanimation* AddReanim(ReanimationType, float X, float Y, int Layer = 400000);

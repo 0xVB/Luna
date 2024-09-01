@@ -3,11 +3,11 @@
 #include "Luna/IO/ConsoleLogger.hpp"
 #include "Luna/IO/FileLogger.hpp"
 #include "Luna/TaskScheduler.hpp"
+#include "Luna/Hook/LunaHook.hpp"
 #include "Lunacy/Lunacy.hpp"
-#include <MinHook.h>
 
-#define SEXY_FILE_EXISTS (LPVOID)0x5B0820
-#define GAME_UPDATE (LPVOID)0x539140
+CONST DWORD INIT_HOOK = 0x44E969;
+CONST DWORD GAME_UPDATE = 0x539140;
 
 using namespace Luna;
 
@@ -37,23 +37,15 @@ Application* Application::getSingleton()
     return &app;
 }
 
-
 typedef bool (__cdecl* SexyFileExistsCC)(void*);
 SexyFileExistsCC sexyFileExists = nullptr;
 
-bool __cdecl sexyFileExistsHook(void* base) {
-    auto res = sexyFileExists(base);
-    MH_RemoveHook(SEXY_FILE_EXISTS);
-    Application::onLawnAppInitialized();
-    return res;
-}
+// Call Application::onLawnAppInitialized(); on init
 
+LunaHookThread* HookThread;
 bool Application::initialize()
 {
-    if (MH_Initialize() != MH_OK) {
-        logger->log(LogLevel::error, "Failed to initialize MinHook");
-        return false;
-    }
+    HookThread = LunaHookThread::New();
     const auto sc = ScriptContext::getSingleton();
     if (!sc->initialize()) {
         logger->log(LogLevel::error, "Failed to initialize ScriptContext");
@@ -66,14 +58,8 @@ bool Application::initialize()
     modHandler->addMods(localModExplorer->getMods());
 
     if (!LawnApp::GetApp()) {
-        if (MH_CreateHook(SEXY_FILE_EXISTS, sexyFileExistsHook, (LPVOID*)&sexyFileExists) != MH_OK) {
-            logger->log(LogLevel::error, "Failed to create LawnApp hook");
-            return false;
-        }
-        if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK) {
-            logger->log(LogLevel::error, "Failed to enable LawnApp hook");
-            return false;
-        }
+        HookThread->NewFunction(INIT_HOOK)->Finalize(onLawnAppInitialized);
+        getLogger()->log(LogLevel::info, "Luna bootstrapped properly.");
     } 
     else
         // In this scenario LawnApp is already initialized probably due to luna begin bootstrapped in a non standard way
@@ -93,20 +79,17 @@ bool __declspec(naked) onUpdateHook(void* sexyWidgetManager) {
     }
 }
 
-void Application::onLawnAppInitialized() {
+void __stdcall Application::onLawnAppInitialized() {
+    const auto gApp = HookThread->GetRegister(HookThread->EAX);
     const auto app = Application::getSingleton();
+    LawnApp::SetApp(gApp);
+    HookThread->NewFunction(GAME_UPDATE)->Finalize(onGameUpdate);
+
     app->getLogger()->log(LogLevel::info, "Lawn application initialized %p", LawnApp::GetApp());
-    if (MH_CreateHook(GAME_UPDATE, onUpdateHook, (LPVOID*)&gameUpdate) != MH_OK) {
-        app->getLogger()->log(LogLevel::error, "Failed to create game update hook");
-        return;
-    }
-    if (MH_EnableHook(GAME_UPDATE) != MH_OK) {
-        app->getLogger()->log(LogLevel::error, "Failed to enable game update hook");
-    }
+    TaskScheduler::getSingleton()->update();
 }
 
-void Application::onGameUpdate() {
-    //const auto app = getSingleton();
+void __stdcall Application::onGameUpdate() {
     TaskScheduler::getSingleton()->update();
 }
 

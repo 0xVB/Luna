@@ -1,8 +1,11 @@
 #include "Luna/ScriptContext.hpp"
 #include "Luna/Lua/StateUserdata.hpp"
-#include "Luna/Lua/Lib/LunaIO.hpp"
 #include "Luna/Lua/StateUserdata.hpp"
+#include "Luna/TaskScheduler.hpp"
 #include "Luna/Application.hpp"
+
+#include "Luna/Lua/Lib/LunaIO.hpp"
+#include "Luna/Lua/Lib/Class/LunaClass.hpp"
 
 using namespace Luna;
 
@@ -32,6 +35,7 @@ ScriptContext* ScriptContext::getSingleton() {
     return &sc;
 }
 
+#include <iostream>
 int ScriptContext::startScript(LunaScriptPtr script)
 {
     // make new thread with StateUserdata
@@ -55,7 +59,14 @@ int ScriptContext::startScript(LunaScriptPtr script)
     openDynamic(LT);
 
     // run script
-    if (lua_pcall(LT, 0, LUA_MULTRET, 0) != LUA_OK) {
+    auto state = lua_pcall(LT, 0, 0, 0);
+    std::cout << "State: " << state << "\n";
+    if (state == LUA_YIELD)
+    {
+        TaskScheduler::getSingleton()->registerJob(new Luna::BasicLuaJob(_gL, LT, chunkName.c_str()));
+        Application::getSingleton()->getLogger()->log(LogLevel::info, "Scheduled.");
+    }
+    else if (state != LUA_OK) {
 		if (lua_isstring(LT, -1)) {
 			const char* error = lua_tostring(LT, -1);
 			Application::getSingleton()->getLogger()->log(LogLevel::error, "Error running script: %s", error);
@@ -67,11 +78,30 @@ int ScriptContext::startScript(LunaScriptPtr script)
    return LUA_OK;
 }
 
+int lua_wait(lua_State* L)
+{
+    closure_header();
+    int tdelta = LuaToNum(L, 1);
+    tdelta = (tdelta <= 0) ? 1 : tdelta;
+
+    while (tdelta > 0)
+    {
+        lua_yield(L, 0);
+        tdelta--;
+    }
+
+    return 0;
+}
+
 void Luna::ScriptContext::openStatic(lua_State* L) {
     luaL_openlibs(L);
     Lib::IO::openStatic(L);
+
+    lua_pushcclosure(L, lua_wait, "wait", 0);
+    lua_setglobal(L, "wait");
 }
 
 void Luna::ScriptContext::openDynamic(lua_State* L) {
-
+    Application::getSingleton()->getLogger()->log(LogLevel::info, "Loading Dynamic Libraries");
+    Lib::Class::openDynamic(L);
 }

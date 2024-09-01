@@ -13,6 +13,7 @@ void ModInitJob::run(TaskScheduler* ts) {
             continue;
         sc->startScript(mainScript);
     }
+
     // job can be removed from running jobs
     markForRemoval();
 }

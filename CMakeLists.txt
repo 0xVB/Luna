@@ -26,9 +26,6 @@ target_include_directories(Luna PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-add_subdirectory(libs/minhook)
-target_link_libraries(Luna PRIVATE minhook)
-
 add_subdirectory(libs/json)
 target_link_libraries(Luna PRIVATE nlohmann_json)
 

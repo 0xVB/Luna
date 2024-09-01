@@ -5,6 +5,11 @@ LawnApp* LawnApp::GetApp()
 	return *(LawnApp**)0x6A9EC0;
 }
 
+void LawnApp::SetApp(DWORD NewApp)
+{
+	*(DWORD*)0x6A9EC0 = NewApp;
+}
+
 CONST DWORD ADDPARTICLE = 0x453C80;
 __declspec(naked) ParticleSystem* LawnApp::AddParticles(ParticleEffect, float, float, int)
 {

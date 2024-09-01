@@ -7,8 +7,6 @@ project(
     LANGUAGES CXX
 )
 
-target_include_directories(minhook PRIVATE "include/")
-
 add_library(nlohmann_json INTERFACE
     "json.cpp" "include/json.hpp"
 )

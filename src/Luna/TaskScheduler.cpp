@@ -29,3 +29,28 @@ void TaskScheduler::registerJob(Job* job) {
     auto sharedJob = std::shared_ptr<Job>(job);
     _jobs.push_back(sharedJob);
 }
+
+BasicLuaJob::BasicLuaJob(lua_State* g, lua_State* l, const char* n) : Job(n)
+{
+    gL = g;
+    sL = l;
+}
+
+#include "Luna/Application.hpp"
+void BasicLuaJob::run(TaskScheduler*)
+{
+    int state = lua_resume(gL, sL, 0);
+    if (state == LUA_YIELD)
+        return;
+    else
+        markForRemoval();
+
+    if (state != LUA_OK)
+    {
+        if (lua_isstring(sL, -1)) {
+            const char* error = lua_tostring(sL, -1);
+            Application::getSingleton()->getLogger()->log(LogLevel::error, (std::string("Error in ") + getName() + ": " + error).c_str());
+        }
+        lua_close(sL);
+    }
+}

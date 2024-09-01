@@ -15,8 +15,8 @@ namespace Luna
         std::shared_ptr<IO::ILogger> getLogger();
 
         static Application* getSingleton();
-        static void onLawnAppInitialized();
-        static void onGameUpdate();
+        static void __stdcall onLawnAppInitialized();
+        static void __stdcall onGameUpdate();
         bool initialize();
 
         std::vector<ModParserPtr> getLoadedMods();

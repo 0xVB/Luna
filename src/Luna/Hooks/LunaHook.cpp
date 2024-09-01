@@ -321,8 +321,6 @@ __declspec(naked) void LunaHookThread::DetourFooter(LunaHookThread*)
 	}
 }
 
-#include <iostream>
-
 size_t GetHookSize(DWORD Address)
 {
 	size_t TotalSize = 0;
@@ -333,7 +331,6 @@ size_t GetHookSize(DWORD Address)
 		Address += iSize;
 	}
 
-	std::cout << "HookSize: " << TotalSize << "\n";
 	return TotalSize;
 }
 
@@ -370,8 +367,6 @@ void LunaHookThread::FunctionSignature::Finalize(void* DetourTo)
 	// Base function size: 0x34 Bytes
 	// Total function size: Base + Param Code Size + Original Code Size
 	CONST DWORD BASE_FUNC_SIZE = 0x34;
-	std::cout << "_eax: " << _eax << "\n";
-	std::cout << "Parent: " << _parentThread << "\n";
 	// Unlock bytes near hook 
 	VirtualProtect((LPVOID)_addr, 0xFF, PAGE_EXECUTE_READWRITE, &_oldProt);
 	// Store size of code that needs to be saved
