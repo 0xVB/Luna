@@ -27,7 +27,11 @@ public:
 		struct
 		{
 			int mCol;
-			int mLane;
+			union
+			{
+				int mLane;
+				int mRow;
+			};
 		};
 		Sexy::IVector2 GridPos;
 	};

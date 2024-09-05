@@ -32,20 +32,26 @@ protected:
 	AssociationManager* GetManager();
 
 public:
-	int mRow;
+	union
+	{
+		int mRow;
+		int mLane;
+	};
 	int mRenderOrder;
 
 	GameObject();
 	float DistanceFrom(Sexy::IVector2);
 	bool CollidesWith(Sexy::IRect);
+	int GetLane();
+	int GetColumn();
 
 	Sexy::IVector2 GetGridPos();
 
-	Projectile* GetNearestProjectile(float MinDist = 0, ProjectileType Filter = (ProjectileType)-1, bool IsBlacklist = false);
-	GridItem* GetNearestGridItem(float MinDist = 0, GridItemType = GRIDITEM_NONE, bool IsBlacklist = false);
-	Zombie* GetNearestZombie(float MinDist = 0, ZombieType = (ZombieType)-1, bool IsBlacklist = false);
-	Pickup* GetNearestPickup(float MinDist = 0, PickupType = PICKUP_NONE, bool IsBlacklist = false);
-	Plant* GetNearestPlant(float MinDist = 0, SeedType = SEED_NONE, bool IsBlacklist = false);
+	Projectile* GetNearestProjectile(float MinDist = 0, float MaxDist = 9e5, ProjectileType Filter = (ProjectileType)-1, bool IsBlacklist = false);
+	GridItem* GetNearestGridItem(float MinDist = 0, float MaxDist = 9e5, GridItemType = GRIDITEM_NONE, bool IsBlacklist = false);
+	Zombie* GetNearestZombie(float MinDist = 0, float MaxDist = 9e5, ZombieType = (ZombieType)-1, bool IsBlacklist = false);
+	Pickup* GetNearestPickup(float MinDist = 0, float MaxDist = 9e5, PickupType = PICKUP_NONE, bool IsBlacklist = false);
+	Plant* GetNearestPlant(float MinDist = 0, float MaxDist = 9e5, SeedType = SEED_NONE, bool IsBlacklist = false);
 
 	std::list<Projectile*> GetProjectilesAround(int LaneRange = 1, int ColRange = 1, ProjectileType = (ProjectileType)-1, bool IsBlacklist = false);
 	std::list<GridItem*> GetGridItemsAround(int LaneRange = 1, int ColRange = 1, GridItemType = GRIDITEM_NONE, bool IsBlacklist = false);

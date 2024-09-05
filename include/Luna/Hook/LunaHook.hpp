@@ -4,6 +4,12 @@
 #define i32 int
 usize getInstructionSize(const u8* bytes, i32** rel32 = nullptr);
 
+#define LUNAHOOK_MAX_PARAMS 128
+
+#ifndef LUNAHOOK_PARAM_COUNT
+#define LUNAHOOK_PARAM_COUNT LUNAHOOK_MAX_PARAMS
+#endif
+
 class LunaHookThread
 {
     LunaHookThread();
@@ -32,6 +38,7 @@ private:
     static void DetourFooter(LunaHookThread*);
     class CodeBuffer;
 public:
+    typedef unsigned int (__cdecl* LunaWrapper)(...);
 
     struct Parameter
     {
@@ -61,7 +68,7 @@ public:
         DWORD _addr;
         DWORD _oldProt;
         
-        Parameter _parameters[128];
+        Parameter _parameters[LUNAHOOK_PARAM_COUNT];
         unsigned char _paramCount;
         size_t _paramCodeSize;
         size_t _stackSize;
@@ -80,6 +87,7 @@ public:
         void AddStackParameters(u8 ParamCount);
         
         void Finalize(void* DetourTo);
+        LunaWrapper AllocateWrapper();
         static FunctionSignature* New(LunaHookThread*, DWORD Address);
     };
 

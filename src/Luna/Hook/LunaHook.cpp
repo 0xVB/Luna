@@ -36,6 +36,12 @@ public:
 		iPtr++;
 	}
 
+	void EncodePop(LunaHookThread::Register32 Reg)
+	{
+		*cPtr = (0x58 + Reg);
+		cPtr++;
+	}
+
 	void EncodePush(LunaHookThread::Register32 Reg)
 	{
 		*cPtr = (0x50 + Reg);
@@ -432,4 +438,78 @@ void LunaHookThread::FunctionSignature::Finalize(void* DetourTo)
 
 	// Free signature memory after hook
 	delete this;
+}
+
+LunaHookThread::LunaWrapper LunaHookThread::FunctionSignature::AllocateWrapper()
+{
+	/* Base Wrapper:
+	* push non-volatile registers (ebx, ebp, esi, edi)                // Preserving non-volatile registers
+	*
+	* mov & push params in correct order                              // Moving and pushing function parameters
+	* push L0                                                         // Pushing return address for cleanup (L0)
+	*
+	* original hook code                                               // Executing the code that was overwritten
+	*
+	* push funcaddr + hook code size                                   // Pushing the address to return to after the original function call
+	* ret                                                              // Returning from the function
+	*
+	* L0:
+	* pop non-volatile registers                                       // Restoring the saved registers
+	* add esp PopBytes                                                 // Cleaning up the stack if necessary (for __stdcall convention)
+	* ret                                                              // Returning from the wrapper
+	*/
+
+	// Unlock bytes near hook for execution
+	VirtualProtect((LPVOID)_addr, 0xFF, PAGE_EXECUTE_READWRITE, &_oldProt);
+
+	// Store size of the original code that was overwritten
+	_origCodeSize = GetHookSize(_addr);
+
+	// Backup the original code
+	memcpy(_origCode, (const void*)_addr, _origCodeSize);
+
+	// Calculate the total size of the generated wrapper
+	size_t WrapperSize = 0x20 + _paramCodeSize + _origCodeSize; // Base size + params + original overwritten code
+	CodeBuffer Wrapper(WrapperSize);
+
+	// 1. Push non-volatile registers (ebx, ebp, esi, edi)
+	Wrapper.EncodePush(EBX);
+	Wrapper.EncodePush(EBP);
+	Wrapper.EncodePush(ESI);
+	Wrapper.EncodePush(EDI);
+
+	// 2. Push all parameters in reverse order (stack parameters first, then registers)
+	int cParam = _paramCount - 1;
+	size_t StackOffset = 0;
+	while (cParam >= 0)
+	{
+		auto aParam = _parameters[cParam];
+		aParam.Encode(&Wrapper, StackOffset);
+		StackOffset += 0x4;
+		cParam--;
+	}
+
+	// 3. Push L0 (return address for cleanup after function call)
+	Wrapper.EncodePush(Wrapper.oPtr + 0x10 + _paramCodeSize);
+
+	// 4. Copy the original code (that was overwritten by the hook) into the wrapper
+	Wrapper.Copy(_origCode, _origCodeSize);
+
+	// 5. Push the original function return address (where the original function continues)
+	Wrapper.EncodePush(_addr + _origCodeSize);
+	Wrapper.EncodeRet();  // Return to the original function
+
+	// L0 (Cleanup section):
+	// 6. Restore non-volatile registers (pop them in reverse order)
+	Wrapper.EncodePop(EDI);
+	Wrapper.EncodePop(ESI);
+	Wrapper.EncodePop(EBP);
+	Wrapper.EncodePop(EBX);
+	Wrapper.EncodeRet();
+
+	// Restore memory protection for the original code
+	VirtualProtect((LPVOID)_addr, 0xFF, _oldProt, &_oldProt);
+
+	// Return the wrapper function (cast it as a LunaWrapper function pointer)
+	return (LunaWrapper)Wrapper.oPtr;
 }

@@ -13,6 +13,16 @@ enum PickupID { PICKUPID_NULL };
 enum ZombieID { ZOMBIEID_NULL };
 enum PlantID { PLANTID_NULL };
 
+enum ClickCode : signed int
+{
+    DOUBLE_RIGHTCLICK = -2,
+    RIGHTCLICK = -1,
+
+    LEFTCLICK = 1,
+    DOUBLE_LEFTCLICK = 2,
+
+    MOUSEWHEEL_CLICK = 3
+};
 enum AdviceType
 {
     ADVICE_NONE = -1,
@@ -800,6 +810,7 @@ enum ProjectileMotion
 };
 enum ProjectileType
 {
+    PROJECTILE_NONE = -1,
     PROJECTILE_PEA,
     PROJECTILE_SNOWPEA,
     PROJECTILE_CABBAGE,
@@ -1344,6 +1355,7 @@ enum ZombiePhase
 };
 enum ZombieType
 {
+    ZOMBIE_NONE = -1,
     ZOMBIE_INVALID = -1,
     ZOMBIE_NORMAL,
     ZOMBIE_FLAG,

@@ -71,7 +71,7 @@ public:
 	int mRight;
 	int mBottom;
 
-	Padding(int Left, int Top, int Right, int Bottom);
+	Padding(int Left = 0, int Top = 0, int Right = 0, int Bottom = 0);
 };
 
 class Sexy::Matrix3

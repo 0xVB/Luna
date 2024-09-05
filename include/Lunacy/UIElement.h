@@ -6,7 +6,11 @@ struct PopFlags
 {
 	int mFlagsAdded;
 	int mFlagsRemoved;
-	PopFlags(int Add = 0, int Rem = 0);
+	__inline PopFlags(int Add = 0, int Rem = 0)
+	{
+		mFlagsAdded = Add;
+		mFlagsRemoved = Rem;
+	}
 };
 
 struct PopModalFlags
@@ -96,7 +100,7 @@ public:
 #pragma endregion
 
 #pragma region Virtual functions
-	virtual ~UIElement() = 0;// 00
+	virtual ~UIElement() {};// 00
 	virtual void Unk5() {}; // 78
 	virtual void SetVisibile(bool Visible) {}; // 7C
 	virtual void SetColorsAlpha(int Colors[][4], int ColorNum) = 0;// 80

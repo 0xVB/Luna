@@ -22,6 +22,17 @@ void GameObject::ConstructGameObject()
 }
 
 #pragma region Convenience Stuff
+int GameObject::GetColumn()
+{
+	auto Center = mHitbox.GetCenter();
+	return mLawn->PixelToGridX(Center.mX, Center.mY);
+}
+int GameObject::GetLane()
+{
+	auto Center = mHitbox.GetCenter();
+	return mLawn->PixelToGridY(Center.mX, Center.mY);
+}
+
 float GameObject::DistanceFrom(Sexy::IVector2 Other)
 {
 	return Other.GetDistance(mHitbox.GetCenter());
@@ -43,25 +54,25 @@ Sexy::IVector2 GameObject::GetGridPos()
 	return mLawn->PixelToGrid(mX + mWidth / 2, mY + mHeight / 2);
 }
 
-Projectile* GameObject::GetNearestProjectile(float MinDist, ProjectileType Filter, bool IsBlacklist)
+Projectile* GameObject::GetNearestProjectile(float MinDist, float MaxDist, ProjectileType Filter, bool IsBlacklist)
 {
-	return mLawn->GetNearestProjectile(mHitbox.GetCenter(), MinDist, Filter, IsBlacklist);
+	return mLawn->GetNearestProjectile(mHitbox.GetCenter(), MinDist, MaxDist, Filter, IsBlacklist);
 }
-GridItem* GameObject::GetNearestGridItem(float MinDist, GridItemType Filter, bool IsBlacklist)
+GridItem* GameObject::GetNearestGridItem(float MinDist, float MaxDist, GridItemType Filter, bool IsBlacklist)
 {
-	return mLawn->GetNearestGridItem(mHitbox.GetCenter(), MinDist, Filter, IsBlacklist);
+	return mLawn->GetNearestGridItem(mHitbox.GetCenter(), MinDist, MaxDist, Filter, IsBlacklist);
 }
-Zombie* GameObject::GetNearestZombie(float MinDist, ZombieType Filter, bool IsBlacklist)
+Zombie* GameObject::GetNearestZombie(float MinDist, float MaxDist, ZombieType Filter, bool IsBlacklist)
 {
-	return mLawn->GetNearestZombie(mHitbox.GetCenter(), MinDist, Filter, IsBlacklist);
+	return mLawn->GetNearestZombie(mHitbox.GetCenter(), MinDist, MaxDist, Filter, IsBlacklist);
 }
-Pickup* GameObject::GetNearestPickup(float MinDist, PickupType Filter, bool IsBlacklist)
+Pickup* GameObject::GetNearestPickup(float MinDist, float MaxDist, PickupType Filter, bool IsBlacklist)
 {
-	return mLawn->GetNearestPickup(mHitbox.GetCenter(), MinDist, Filter, IsBlacklist);
+	return mLawn->GetNearestPickup(mHitbox.GetCenter(), MinDist, MaxDist, Filter, IsBlacklist);
 }
-Plant* GameObject::GetNearestPlant(float MinDist, SeedType Filter, bool IsBlacklist)
+Plant* GameObject::GetNearestPlant(float MinDist, float MaxDist, SeedType Filter, bool IsBlacklist)
 {
-	return mLawn->GetNearestPlant(mHitbox.GetCenter(), MinDist, Filter, IsBlacklist);
+	return mLawn->GetNearestPlant(mHitbox.GetCenter(), MinDist, MaxDist, Filter, IsBlacklist);
 }
 
 std::list<Projectile*> GameObject::GetProjectilesAround(int LR, int CR, ProjectileType T, bool B)

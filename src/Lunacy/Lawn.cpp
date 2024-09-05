@@ -160,6 +160,20 @@ __declspec(naked) Zombie* Lawn::NewZombie(ZombieType, int, int)
 		ret 0xC
 	}
 }
+void Lawn::KillAllZombies(int Col, int Row, ZombieType Type, bool DropLoot)
+{
+	auto aZombie = mZombies.GetNext();
+	while (aZombie)
+	{
+		if (Col != -1 && aZombie->GetColumn() != Col) goto Skip;
+		if (Row != -1 && aZombie->mRow != Row) goto Skip;
+		if (Type != ZOMBIE_NONE && aZombie->mZombieType != Type) goto Skip;
+		aZombie->TakeDamage(aZombie->GetTotalHealth());
+
+	Skip:
+		aZombie = mZombies.GetNext(aZombie);
+	}
+}
 
 GridItem* Lawn::NewGridItem(GridItemType Type, int Lane, int Column)
 {
@@ -259,18 +273,17 @@ int __declspec(naked) Lawn::GridToPixelY(int, int)
 	}
 }
 
-void Lawn::KillPlantCell(int C, int L)
+void Lawn::KillAllPlants(int Col, int Row, SeedType Type)
 {
 	auto aPlant = mPlants.GetNext();
 	while (aPlant)
 	{
-		if (aPlant->mColumn == C || C == -1)
-		{
-			if (aPlant->mRow == L || L == -1)
-			{
-				aPlant->Die();
-			}
-		}
+		if (Col != -1 && aPlant->mCol != Col) goto Skip;
+		if (Row != -1 && aPlant->mRow != Row) goto Skip;
+		if (Type != SEED_NONE && aPlant->mType != Type) goto Skip;
+		aPlant->Die();
+
+	Skip:
 		aPlant = mPlants.GetNext(aPlant);
 	}
 }
@@ -286,7 +299,7 @@ GridItem* Lawn::AddGrave(int Col, int Lane, bool DoEffects, bool KillPlants)
 	New->mGridY = Lane;
 	New->mGridItemCounter = 0;
 	if (DoEffects) New->DoGraveEffects();
-	if (KillPlants) KillPlantCell(Col, Lane);
+	if (KillPlants) KillAllPlants(Col, Lane);
 	return New;
 }
 
@@ -334,14 +347,14 @@ IRect Lawn::PixelToGridArea(int X, int Y, int W, int H)
 	return IRect(Start, End - Start);
 }
 
-Projectile* Lawn::GetNearestProjectile(FVector2 Point, float MinDist, ProjectileType Filter, bool IsBlacklist)
+Projectile* Lawn::GetNearestProjectile(FVector2 Point, float MinDist, float MaxDist, ProjectileType Filter, bool IsBlacklist)
 {
 	bool DoFilter = Filter != -1;
 	auto aProj = mProjectiles.GetNext();
 	float CurrentDist = 0;
 	
 	Projectile* ClosestProjectile = nullptr;
-	float SmallestDist = -1;
+	float SmallestDist = MaxDist;
 
 	while (aProj)
 	{
@@ -351,7 +364,10 @@ Projectile* Lawn::GetNearestProjectile(FVector2 Point, float MinDist, Projectile
 
 	Qualifies:
 		CurrentDist = aProj->DistanceFrom(Point);
-		if (!ClosestProjectile || ((CurrentDist < SmallestDist) && CurrentDist >= MinDist))
+		if (CurrentDist > MaxDist) goto Skip;
+		if (CurrentDist < MinDist) goto Skip;
+
+		if (!ClosestProjectile || (CurrentDist < SmallestDist))
 		{
 			ClosestProjectile = aProj;
 			SmallestDist = CurrentDist;
@@ -364,14 +380,14 @@ Projectile* Lawn::GetNearestProjectile(FVector2 Point, float MinDist, Projectile
 	return ClosestProjectile;
 }
 
-GridItem* Lawn::GetNearestGridItem(FVector2 Point, float MinDist, GridItemType Filter, bool IsBlacklist)
+GridItem* Lawn::GetNearestGridItem(FVector2 Point, float MinDist, float MaxDist, GridItemType Filter, bool IsBlacklist)
 {
 	bool DoFilter = Filter != -1;
 	auto aItem = mGridItems.GetNext();
 	float CurrentDist = 0;
 
 	GridItem* ClosestItem = nullptr;
-	float SmallestDist = -1;
+	float SmallestDist = MaxDist;
 
 	while (aItem)
 	{
@@ -381,7 +397,10 @@ GridItem* Lawn::GetNearestGridItem(FVector2 Point, float MinDist, GridItemType F
 
 	Qualifies:
 		CurrentDist = aItem->mPos.GetDistance(Point);
-		if (!ClosestItem || ((CurrentDist < SmallestDist) && CurrentDist >= MinDist))
+		if (CurrentDist > MaxDist) goto Skip;
+		if (CurrentDist < MinDist) goto Skip;
+
+		if (!ClosestItem || (CurrentDist < SmallestDist))
 		{
 			ClosestItem = aItem;
 			SmallestDist = CurrentDist;
@@ -394,14 +413,14 @@ GridItem* Lawn::GetNearestGridItem(FVector2 Point, float MinDist, GridItemType F
 	return ClosestItem;
 }
 
-Zombie* Lawn::GetNearestZombie(FVector2 Point, float MinDist, ZombieType Filter, bool IsBlacklist)
+Zombie* Lawn::GetNearestZombie(FVector2 Point, float MinDist, float MaxDist, ZombieType Filter, bool IsBlacklist)
 {
 	bool DoFilter = Filter != -1;
 	auto aZombie = mZombies.GetNext();
 	float CurrentDist = 0;
 
 	Zombie* ClosestZombie = nullptr;
-	float SmallestDist = -1;
+	float SmallestDist = MaxDist;
 
 	while (aZombie)
 	{
@@ -411,7 +430,10 @@ Zombie* Lawn::GetNearestZombie(FVector2 Point, float MinDist, ZombieType Filter,
 
 	Qualifies:
 		CurrentDist = aZombie->DistanceFrom(Point);
-		if (!ClosestZombie || ((CurrentDist < SmallestDist) && CurrentDist >= MinDist))
+		if (CurrentDist > MaxDist) goto Skip;
+		if (CurrentDist < MinDist) goto Skip;
+
+		if (!ClosestZombie || (CurrentDist < SmallestDist))
 		{
 			ClosestZombie = aZombie;
 			SmallestDist = CurrentDist;
@@ -424,14 +446,14 @@ Zombie* Lawn::GetNearestZombie(FVector2 Point, float MinDist, ZombieType Filter,
 	return ClosestZombie;
 }
 
-Pickup* Lawn::GetNearestPickup(FVector2 Point, float MinDist, PickupType Filter, bool IsBlacklist)
+Pickup* Lawn::GetNearestPickup(FVector2 Point, float MinDist, float MaxDist, PickupType Filter, bool IsBlacklist)
 {
 	bool DoFilter = Filter != -1;
 	auto aPickup = mPickups.GetNext();
 	float CurrentDist = 0;
 
 	Pickup* ClosestPickup = nullptr;
-	float SmallestDist = -1;
+	float SmallestDist = MaxDist;
 
 	while (aPickup)
 	{
@@ -441,7 +463,10 @@ Pickup* Lawn::GetNearestPickup(FVector2 Point, float MinDist, PickupType Filter,
 
 	Qualifies:
 		CurrentDist = aPickup->DistanceFrom(Point);
-		if (!ClosestPickup || ((CurrentDist < SmallestDist) && CurrentDist >= MinDist))
+		if (CurrentDist > MaxDist) goto Skip;
+		if (CurrentDist < MinDist) goto Skip;
+
+		if (!ClosestPickup || (CurrentDist < SmallestDist))
 		{
 			ClosestPickup = aPickup;
 			SmallestDist = CurrentDist;
@@ -454,14 +479,14 @@ Pickup* Lawn::GetNearestPickup(FVector2 Point, float MinDist, PickupType Filter,
 	return ClosestPickup;
 }
 
-Plant* Lawn::GetNearestPlant(FVector2 Point, float MinDist, SeedType Filter, bool IsBlacklist)
+Plant* Lawn::GetNearestPlant(FVector2 Point, float MinDist, float MaxDist, SeedType Filter, bool IsBlacklist)
 {
 	bool DoFilter = Filter != -1;
 	auto aPlant = mPlants.GetNext();
 	float CurrentDist = 0;
 
 	Plant* ClosestPlant = nullptr;
-	float SmallestDist = -1;
+	float SmallestDist = MaxDist;
 
 	while (aPlant)
 	{
@@ -471,7 +496,10 @@ Plant* Lawn::GetNearestPlant(FVector2 Point, float MinDist, SeedType Filter, boo
 
 	Qualifies:
 		CurrentDist = aPlant->DistanceFrom(Point);
-		if (!ClosestPlant || ((CurrentDist < SmallestDist) && CurrentDist >= MinDist))
+		if (CurrentDist > MaxDist) goto Skip;
+		if (CurrentDist < MinDist) goto Skip;
+
+		if (!ClosestPlant || (CurrentDist < SmallestDist))
 		{
 			ClosestPlant = aPlant;
 			SmallestDist = CurrentDist;
@@ -588,3 +616,459 @@ std::list<Plant*> Lawn::GetPlantsInArea(IRect Area, SeedType Type, bool IsBlackl
 	}
 	return List;
 }
+
+GridItem* Lawn::GetGridItemAt(int Col, int Row, GridItemType Type)
+{
+	auto aItem = mGridItems.GetNext();
+	while (aItem)
+	{
+		if (aItem->mCol != Col) goto Skip;
+		if (aItem->mRow != Row) goto Skip;
+		if (Type == GRIDITEM_NONE) return aItem;
+		if (aItem->mGridItemType == Type) return aItem;
+
+	Skip:
+		aItem = mGridItems.GetNext(aItem);
+	}
+
+	return nullptr;
+}
+
+Plant* Lawn::GetPlantAt(int Col, int Row, SeedType Type)
+{
+	auto aPlant = mPlants.GetNext();
+	while (aPlant)
+	{
+		if (aPlant->mCol != Col) goto Skip;
+		if (aPlant->mRow != Row) goto Skip;
+		if (Type == SEED_NONE) return aPlant;
+		if (aPlant->mType == Type) return aPlant;
+
+	Skip:
+		aPlant = mPlants.GetNext(aPlant);
+	}
+
+	return nullptr;
+}
+
+int Lawn::CountPlants(SeedType Filter)
+{
+	int Count = 0;
+	auto aPlant = mPlants.GetNext();
+	while (aPlant)
+	{
+		Count += (Filter == SEED_NONE) || (aPlant->mType == Filter);
+		aPlant = mPlants.GetNext(aPlant);
+	}
+	return Count;
+}
+
+#pragma region Base Functions
+__declspec(naked) void __stdcall ConstructLawn(Lawn*, LawnApp*)
+{
+	__asm
+	{
+		mov ecx, [esp + 0x8]
+		push [esp + 0x4]
+		mov eax, 0x407B50
+		call eax
+		ret 0x8
+	}
+}
+Lawn::Lawn(LawnApp* aApp)
+{
+	ConstructLawn(this, aApp);
+}
+
+__declspec(naked) void Lawn::Dispose()
+{
+	__asm
+	{
+		push esi
+		mov esi, ecx
+		mov ecx, 0x408A70
+		call ecx
+		pop esi
+		ret
+	}
+}
+__declspec(naked) bool Lawn::AreEnemiesOnScreen()
+{
+	__asm
+	{
+		mov edx, ecx
+		mov ecx, 0x408B00
+		jmp ecx
+	}
+}
+__declspec(naked) int Lawn::CountEnemiesOnScreen()
+{
+	__asm
+	{
+		push ebx
+		mov ebx, ecx
+		mov ecx, 0x408B60
+		call ecx
+		pop ebx
+		ret
+	}
+}
+__declspec(naked) int Lawn::CountLawnMowers()
+{
+	__asm
+	{
+		mov edx, ecx
+		mov ecx, 0x408BF0
+		jmp ecx
+	}
+}
+__declspec(naked) void Lawn::TrySaveGame()
+{
+	__asm
+	{
+		pop edx// ret
+		push ecx
+		push edx
+		mov edx, 0x408C30
+		jmp edx
+	}
+}
+__declspec(naked) bool Lawn::NeedSaveGame()
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, 0x408DA0
+		jmp ecx
+	}
+}
+__declspec(naked) bool Lawn::LoadGame(PopString& FileName)
+{
+	__asm
+	{
+		push edi
+		mov edi, ecx
+		mov eax, [esp + 0x8]
+		mov ecx, 0x408DE0
+		call ecx
+		pop edi
+		ret 0x4
+	}
+}
+__declspec(naked) GridItem* Lawn::GetRake()
+{
+	__asm
+	{
+		mov edx, ecx
+		mov ecx, 0x408E90
+		jmp ecx
+	}
+}
+__declspec(naked) bool Lawn::CanAddGraveAt(int, int)
+{
+	__asm
+	{
+		push ebx
+		push edi
+
+		mov edx, ecx
+		mov edi, [esp + 0x0C]
+		mov ebx, [esp + 0x10]
+		mov ecx, 0x408ED0
+		call ecx
+
+		pop edi
+		pop ebx
+		ret 0x8
+	}
+}
+__declspec(naked) int Lawn::GetNumWavesPerFlag()
+{
+	__asm
+	{
+		mov eax, 0x409050
+		jmp eax
+	}
+}
+__declspec(naked) bool Lawn::IsFlagWave(int)
+{
+	__asm
+	{
+		mov edx, ecx
+		mov ecx, 0x409080
+		jmp ecx
+	}
+}
+__declspec(naked) void Lawn::LoadBackground()
+{
+	__asm
+	{
+		push esi
+		mov esi, ecx
+		mov ecx, 0x40A160
+		call ecx
+		pop esi
+		ret
+	}
+}
+__declspec(naked) void Lawn::PickBackground()
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, 0x40A550
+		jmp ecx
+	}
+}
+__declspec(naked) void Lawn::InitZombieWavesForLevel(int)
+{
+	__asm
+	{
+		push edi
+		mov edi, ecx
+		mov edx, [esp + 0x8]
+		mov ecx, 0x40AB10
+		call ecx
+		pop edi
+		ret 0x4
+	}
+}
+__declspec(naked) void Lawn::InitZombieWaves()
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, 0x40ABB0
+		jmp ecx
+	}
+}
+__declspec(naked) void Lawn::SetEffectsPlaying(bool)
+{
+	__asm
+	{
+		push ebx
+		push edi
+
+		mov edi, ecx
+		mov ebx, [esp + 0xC]
+		mov ecx, 0x40ACB0
+		call ecx
+
+		pop edi
+		pop ebx
+		ret 0x4
+	}
+}
+__declspec(naked) void Lawn::InitSurvivalStage()
+{
+	__asm
+	{
+		pop eax
+		push ecx
+		push eax
+		mov ecx, 0x40AD60
+		jmp ecx
+	}
+}
+__declspec(naked) int Lawn::GetLevelRandSeed()
+{
+	__asm
+	{
+		mov eax, 0x40A110
+		jmp eax
+	}
+}
+__declspec(naked) void Lawn::GetShovelButtonRect(Sexy::IRect*)
+{
+	__asm
+	{
+		mov edx, ecx
+		mov eax, [esp + 0x4]
+		mov ecx, 0x40AE70
+		jmp ecx
+	}
+}
+__declspec(naked) void Lawn::GetZenButtonRect(GameObjectType, Sexy::IRect*)
+{
+	__asm
+	{
+		push edi
+
+		mov edi, [esp + 0xC]
+		push [esp + 0x8]
+		push ecx
+		mov ecx, 0x40AF00
+		call ecx
+
+		pop edi
+		ret 0x8
+	}
+}
+__declspec(naked) void Lawn::InitLevel()
+{
+	__asm
+	{
+		pop eax
+		push ecx
+		push eax
+		mov eax, 0x40AF90
+		jmp eax
+	}
+}
+__declspec(naked) void Lawn::PlaceRake()
+{
+	__asm
+	{
+		pop eax
+		push ecx
+		push eax
+		mov eax, 0x40B9C0
+		jmp eax
+	}
+}
+__declspec(naked) void Lawn::InitLawnMowers()
+{
+	__asm
+	{
+		pop eax
+		push ecx
+		push eax
+		mov eax, 0x40BC70
+		jmp eax
+	}
+}
+__declspec(naked) bool Lawn::ChooseSeedsForLevel()
+{
+	__asm
+	{
+		push edi
+		mov edi, ecx
+		mov ecx, 0x40BD30
+		call ecx
+		pop edi
+		ret
+	}
+}
+__declspec(naked) void Lawn::StartLevel()
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, 0x40BE00
+		jmp ecx
+	}
+}
+__declspec(naked) void Lawn::FadeOutLevel()
+{
+	__asm
+	{
+		mov eax, 0x40C3E0
+		jmp eax
+	}
+}
+__declspec(naked) bool Lawn::IsPlantEquipped()
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, 0x40CCE0
+		jmp ecx
+	}
+}
+__declspec(naked) SeedType Lawn::GetEquippedPlantType()
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, 0x40CD10
+		jmp ecx
+	}
+}
+__declspec(naked) void Lawn::RefreshEquippedSeed()
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, 0x40CD80
+		jmp ecx
+	}
+}
+constexpr unsigned int ISPOOLCELL = 0x40CE00;
+__declspec(naked) bool Lawn::IsPoolCell(int, int)
+{
+	__asm
+	{
+		mov edx, ecx
+		mov eax, [esp + 0x4]
+		mov ecx, [esp + 0x8]
+		call ISPOOLCELL
+		ret 0x8
+	}
+}
+constexpr unsigned int DOPLANTINGEFFECTS = 0x40CE60;
+__declspec(naked) bool __stdcall Lawn::CanZombieSpawnOnLevel(ZombieType, int)
+{
+	__asm
+	{
+		pop ecx// ret
+		pop eax
+		pop edx
+		push ecx
+		mov ecx, 0x40D660
+		jmp ecx
+	}
+}
+__declspec(naked) ZombieType Lawn::GetIntroducedZombieType()
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, 0x40D6F0
+		jmp ecx
+	}
+}
+__declspec(naked) bool Lawn::LaneCanHaveZombie(int, ZombieType)
+{
+	__asm
+	{
+		push esi
+		mov esi, ecx
+		push [esp + 0x8]
+		push [esp + 0x8]
+		mov ecx, 0x40DB20
+		call ecx
+		pop esi
+		ret 0x8
+	}
+}
+__declspec(naked) int Lawn::PickLaneForNewZombie(ZombieType)
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, 0x40DC50
+		jmp ecx
+	}
+}
+__declspec(naked) bool Lawn::CanAddBobsled()
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, 0x40DD90
+		jmp ecx
+	}
+}
+__declspec(naked) void Lawn::RemoveAllZombies()
+{
+	__asm
+	{
+		push edi
+		mov edi, ecx
+		mov ecx, 0x40DEA0
+		call ecx
+		pop edi
+		ret
+	}
+}
+#pragma endregion

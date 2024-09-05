@@ -34,7 +34,11 @@ public:
 
 #pragma region Fields
 	SeedType mType;
-	int mColumn;
+	union
+	{
+		int mColumn;
+		int mCol;
+	};
 	int mAnimTimer;
 	int mCurrentFrame;
 	int mTicksPerFrame;
@@ -89,7 +93,11 @@ public:
 		};
 		Sexy::IVector2 mTarget;
 	};
-	int mStartLane;
+	union
+	{
+		int mStartLane;
+		int mStartRow;
+	};
 	ParticleSystemID mParticleID;
 	int mShootingTimer;
 	ReanimationID mBodyReanimID;

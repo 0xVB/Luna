@@ -84,15 +84,70 @@ int def_tostring(lua_State* L)
 	return 1;
 }
 
+int def_tonumber(lua_State* L)
+{
+	closure_header();
+	GetSelf();
+
+	lua_pushstring(L, (self->iClass->className + " cannot be cast to a number.").c_str());
+	lua_error(L);
+}
+
+int def_typeof(lua_State* L)
+{
+	closure_header();
+	GetSelf();
+
+	lua_pushstring(L, self->iClass->className.c_str());
+	return 1;
+}
+
+int def_concat(lua_State* L)
+{
+	closure_header();
+	GetSelf();
+
+	lua_pushstring(L, (self->iClass->className + " cannot be concatenated.").c_str());
+	lua_error(L);
+}
+
+int def_iter(lua_State* L)
+{
+	closure_header();
+	GetSelf();
+
+	lua_pushstring(L, (self->iClass->className + " cannot be iterated.").c_str());
+	lua_error(L);
+}
+
+int def_call(lua_State* L)
+{
+	closure_header();
+	GetSelf();
+
+	lua_pushstring(L, (self->iClass->className + " cannot be called.").c_str());
+	lua_error(L);
+}
+
+int def_is(lua_State* L)
+{
+	closure_header();
+	GetSelf();
+
+	auto cname = LuaToStr(L, 1);
+	lua_pushboolean(L, (cname == self->iClass->className || self->iClass->subClasses.contains(cname)));
+	return 1;
+}
+
 lua_CFunction LunaClass::default_index = def_index;
 lua_CFunction LunaClass::default_newindex = def_newindex;
 lua_CFunction LunaClass::default_tostring = def_tostring;
-lua_CFunction LunaClass::default_tonumber = def_index;
-lua_CFunction LunaClass::default_typeof = def_index;
-lua_CFunction LunaClass::default_concat = def_index;
-lua_CFunction LunaClass::default_iter = def_index;
-lua_CFunction LunaClass::default_call = def_index;
-lua_CFunction LunaClass::default_is = def_index;
+lua_CFunction LunaClass::default_tonumber = def_tonumber;
+lua_CFunction LunaClass::default_typeof = def_typeof;
+lua_CFunction LunaClass::default_concat = def_concat;
+lua_CFunction LunaClass::default_iter = def_iter;
+lua_CFunction LunaClass::default_call = def_call;
+lua_CFunction LunaClass::default_is = def_is;
 
 lua_CFunction LunaClass::default_idiv = def_index;
 lua_CFunction LunaClass::default_unm = def_index;

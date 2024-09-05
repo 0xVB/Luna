@@ -107,3 +107,8 @@ __declspec(naked) void LawnMower::EnableSuperMower()
 		jmp ecx
 	}
 }
+
+LawnMower* TryToGet(LawnMowerID ID)
+{
+	return LawnApp::GetApp()->mLawn->mLawnMowers.Fetch(ID);
+}

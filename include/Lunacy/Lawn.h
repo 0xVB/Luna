@@ -4,6 +4,13 @@
 #include "Listeners.h"
 #include "UIElement.h"
 
+class HitResult
+{
+public:
+	GameObjectType mType;
+	void* aObject;
+};
+
 class Lawn : Sexy::UIElement, Sexy::ButtonListener
 {
 #pragma region Fields
@@ -159,6 +166,7 @@ public:
 	GridItem* AddLadder(int Column, int Lane);
 	GridItem* AddCrater(int Column, int Lane);
 	GridItem* AddGrave(int Column, int Lane, bool DoEffects = true, bool KillPlants = true);
+	GridItem* GetGridItemAt(int Col, int Row, GridItemType = GRIDITEM_NONE);
 
 	int CountGraves();
 
@@ -167,13 +175,17 @@ public:
 	Pickup* NewPacket(SeedType, int X, int Y);
 
 	Zombie* NewZombie(ZombieType, int Lane, int FromWave = 0);
+	void KillAllZombies(int Col = -1, int Row = -1, ZombieType = ZOMBIE_NONE, bool DropLoot = false);
+	void __inline KillAllZombies(ZombieType Type, int Col = -1, int Row = -1, bool DropLoot = false) { KillAllZombies(Col, Row, Type, DropLoot); }
 	void SpawnZombiesFromPool();
 	void SpawnZombiesFromSky();
 	void SpawnZombiesFromGrave();
 
 	Plant* NewPlant(int Column, int Lane, SeedType, SeedType ImitaterType);
 	void DoPlantingEffects(int Column, int Lane, Plant*);
-	void KillPlantCell(int Col = -1, int Lane = -1);
+	void KillAllPlants(int Col = -1, int Row = -1, SeedType = SEED_NONE);
+	void __inline KillAllPlants(SeedType Type, int Col = -1, int Row = -1) { KillAllPlants(Col, Row, Type); }
+	Plant* GetPlantAt(int Col, int Row, SeedType = SEED_NONE);
 
 	Projectile* NewProjectile(int X, int Y, int RenderOrder, int Lane, ProjectileType);
 
@@ -191,16 +203,173 @@ public:
 	Sexy::IRect GridToPixelArea(int Col, int Lane, int HSize = 3, int VSize = 3);
 	Sexy::IRect PixelToGridArea(int X, int Y, int W = 100, int H = 100);
 
-	Projectile* GetNearestProjectile(Sexy::FVector2, float MinDistance = 0, ProjectileType Filter = (ProjectileType)-1, bool IsBlacklist = false);
-	GridItem* GetNearestGridItem(Sexy::FVector2, float MinDistance = 0, GridItemType = GRIDITEM_NONE, bool IsBlacklist = false);
-	Zombie* GetNearestZombie(Sexy::FVector2, float MinDistance = 0, ZombieType = (ZombieType)-1, bool IsBlacklist = false);
-	Pickup* GetNearestPickup(Sexy::FVector2, float MinDistance = 0, PickupType = PICKUP_NONE, bool IsBlacklist = false);
-	Plant* GetNearestPlant(Sexy::FVector2, float MinDistance = 0, SeedType = SEED_NONE, bool IsBlacklist = false);
+	Projectile* GetNearestProjectile(Sexy::FVector2, float MinDistance = 0, float MaxDistance = 9e5, ProjectileType Filter = PROJECTILE_NONE, bool IsBlacklist = false);
+	GridItem* GetNearestGridItem(Sexy::FVector2, float MinDistance = 0, float MaxDistance = 9e5, GridItemType = GRIDITEM_NONE, bool IsBlacklist = false);
+	Zombie* GetNearestZombie(Sexy::FVector2, float MinDistance = 0, float MaxDistance = 9e5, ZombieType = ZOMBIE_NONE, bool IsBlacklist = false);
+	Pickup* GetNearestPickup(Sexy::FVector2, float MinDistance = 0, float MaxDistance = 9e5, PickupType = PICKUP_NONE, bool IsBlacklist = false);
+	Plant* GetNearestPlant(Sexy::FVector2, float MinDistance = 0, float MaxDistance = 9e5, SeedType = SEED_NONE, bool IsBlacklist = false);
 
-	std::list<Projectile*> GetProjectilesInArea(Sexy::IRect, ProjectileType = (ProjectileType)-1, bool IsBlacklist = false);
+	std::list<Projectile*> GetProjectilesInArea(Sexy::IRect, ProjectileType = PROJECTILE_NONE, bool IsBlacklist = false);
 	std::list<GridItem*> GetGridItemsInArea(Sexy::IRect, GridItemType = GRIDITEM_NONE, bool IsBlacklist = false);
-	std::list<Zombie*> GetZombiesInArea(Sexy::IRect, ZombieType = (ZombieType)-1, bool IsBlacklist = false);
+	std::list<Zombie*> GetZombiesInArea(Sexy::IRect, ZombieType = ZOMBIE_NONE, bool IsBlacklist = false);
 	std::list<Pickup*> GetPickupsInArea(Sexy::IRect, PickupType = PICKUP_NONE, bool IsBlacklist = false);
 	std::list<Plant*> GetPlantsInArea(Sexy::IRect, SeedType = SEED_NONE, bool IsBlacklist = false);
 #pragma endregion
+#pragma region Base Methods
+	Lawn(LawnApp*);
+	void Dispose();
+	
+	int CountPlants(SeedType = SEED_NONE);
+	bool AreEnemiesOnScreen();
+	int CountEnemiesOnScreen();
+	int CountLawnMowers();
+	
+	void TrySaveGame();
+	bool NeedSaveGame();
+	bool LoadGame(PopString& FileName);
+
+	GridItem* GetRake();
+	bool CanAddGraveAt(int Col, int Row);
+	
+	int GetNumWavesPerFlag();
+	bool IsFlagWave(int WaveNumber);
+
+	static bool __stdcall CanZombieSpawnOnLevel(ZombieType, int Level);
+	ZombieType GetIntroducedZombieType();
+	bool LaneCanHaveZombie(int Row, ZombieType);
+	void InitZombieWavesForLevel(int Level);
+	int PickLaneForNewZombie(ZombieType);
+	void RemoveZombiesForRepick();
+	void RemoveCutsceneZombies();
+	bool ChooseSeedsForLevel();
+	void InitSurvivalStage();
+	void RemoveAllZombies();
+	void PickZombieWaves();
+	void InitZombieWaves();
+	void InitLawnMowers();
+	bool CanAddBobsled();
+	void StartLevel();
+	void InitLevel();
+	void PlaceRake();
+
+	void SetEffectsPlaying(bool);
+	int GetLevelRandSeed();
+	void LoadBackground();
+	void PickBackground();
+
+	void GetShovelButtonRect(Sexy::IRect*);
+	void GetZenButtonRect(GameObjectType, Sexy::IRect*);
+	Sexy::IRect __inline GetShovelButtonRect()
+	{
+		Sexy::IRect aRect;
+		GetShovelButtonRect(&aRect);
+		return aRect;
+	}
+	Sexy::IRect __inline GetZenButtonRect(GameObjectType Type)
+	{
+		Sexy::IRect aRect;
+		GetZenButtonRect(Type, &aRect);
+		return aRect;
+	}
+
+	void FadeOutLevel();
+	bool IsPlantEquipped();
+	SeedType GetEquippedPlantType();
+	void RefreshEquippedSeed();
+
+	bool CanPlantAt(int Col, int Row, SeedType);
+	bool IsPoolCell(int Col, int Row);
+	bool IsIceCell(int Col, int Row);
+
+	GridItem* GridItemHitTest(int MouseX, int MouseY);
+	Zombie* ZombieHitTest(int MouseX, int MouseY);
+	Plant* PlantHitTest(int MouseX, int MouseY);
+	Plant* SpecialPlantHitTest(int MouseX, int MouseY);
+
+	bool MouseHitTest(int X, int Y, HitResult* Out);
+	void PickUpTool(GameObjectType);
+	bool CanInteractWithButtons();
+	void SetPause(bool);
+	void ClearCursor();
+
+	void UpdateMousePosition();
+	void UpdateToolTip();
+	void MouseDownWithPlant(int X, int Y, ClickCode);
+	void MouseDownWithTool(int X, int Y, ClickCode, CursorType);
+
+	void ShowTutorialArrow(int X, int Y);
+	void RemoveTutorialArrow();
+
+	int GetWaveHealth(int WaveIndex);
+	int __inline GetWaveHealth() { return GetWaveHealth(mCurrentWave); }
+	void SpawnNextWave();
+	void StopZombieSounds();
+	int GetSurvivalFlagsCompleted();
+	void ZombiesWon(Zombie*);
+	void __inline ZombiesWon() { ZombiesWon(NewZombie(ZOMBIE_NORMAL, 0)); }
+
+	bool IsFinalSurvivalStage();
+	bool LevelAwardDropped();
+	void UpdateSunSkyfall();
+	void UpdateZombieSpawning();
+	void UpdateIce();
+	void UpdateProgressMeter();
+	bool CanSpawnZombiesInLane(int Lane);
+	bool HasProgressMeter();
+	bool ProgressMeterHasFlags();
+
+	void ClearFogAroundPlant(Plant*, int Size);
+	void UpdateFog();
+
+	void DrawIce(Sexy::Graphics*);
+	void DrawBackground(Sexy::Graphics*);
+	void DrawProgressMeter(Sexy::Graphics*);
+	void DrawHouseDoorBottom(Sexy::Graphics*);
+	void DrawHouseDoorTop(Sexy::Graphics*);
+	void DrawLevelName(Sexy::Graphics*);
+	void DrawZenButtons(Sexy::Graphics*);
+	void DrawShovel(Sexy::Graphics*);
+	void DrawDebugText(Sexy::Graphics*);
+	void DrawObjectRects(Sexy::Graphics*);
+	void DrawFadeOut(Sexy::Graphics*);
+	void DrawTopRightUI(Sexy::Graphics*);
+	void DrawBottomUI(Sexy::Graphics*);
+	void DrawCoinBank(Sexy::Graphics*);
+	void DrawFog(Sexy::Graphics*);
+	void DrawTopUI(Sexy::Graphics*);
+
+	void SetMustacheMode(bool);
+	void SetFutureMode(bool);
+	void SetPinataMode(bool);
+	void SetDanceMode(bool);
+	void SetSuperMowerMode(bool);
+
+	void AddSun(int);
+	bool TakeSun(int);
+	bool CanTakeSun(int);
+	int GetSunBeingCollected();
+	int GetCoinsBeingCollected();
+	int GetNumSeedsInBank();
+
+	bool IsConveyorBeltLevel();
+	bool StageHasGraves();
+	bool IsNightStage();
+	bool StageHasRoof();
+	bool StageHasPool();
+	bool StageHasFog();
+	int LeftFogColumn();
+	bool StageHasZombiesWalkInFromRight();
+	int GetSeedPacketXPosition(int PacketIndex);
+	int GetSeedBankExtraWidth();
+
+	bool SeedNotRecommendedForLevel(SeedType);
+	bool CanDropLoot();
+	bool IsBungeeTargetingCell(int Col, int Row);
+	Zombie* GetZomboss();
+	void DoFwoosh(int Row);
+	void UpdateFwoosh();
+	bool PlantingRequirementsMet(SeedType);
+
+#pragma endregion
+
 };

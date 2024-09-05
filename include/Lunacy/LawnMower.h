@@ -48,8 +48,3 @@ public:
 
 	LawnMower(int Lane);
 };
-
-LawnMower* TryToGet(LawnMowerID ID)
-{
-	return LawnApp::GetApp()->mLawn->mLawnMowers.Fetch(ID);
-}
