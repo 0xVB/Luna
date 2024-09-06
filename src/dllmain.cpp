@@ -3,7 +3,6 @@
 #include <iostream>
 
 using Luna::Application;
-
 BOOL APIENTRY DllMain
 (
     HMODULE ModuleHandle,

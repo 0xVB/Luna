@@ -36,6 +36,12 @@ public:
 		iPtr++;
 	}
 
+	void EncodeByte(char Value)
+	{
+		*cPtr = Value;
+		cPtr++;
+	}
+
 	void EncodePop(LunaHookThread::Register32 Reg)
 	{
 		*cPtr = (0x58 + Reg);
@@ -231,6 +237,26 @@ void LunaHookThread::Parameter::Encode(CodeBuffer* Buffer, char StackOffset)
 		Buffer->EncodePush(mRegister);
 	else
 		Buffer->EncodeStackPush(mStackOffset + StackOffset);
+}
+
+char LunaHookThread::Parameter::EncodeIn(CodeBuffer* Buffer, char StackOffset)
+{
+	if (isRegister)
+	{
+		Buffer->EncodeByte(0x8B);
+		Buffer->EncodeByte(0x44 + 0x8 * mRegister);
+		Buffer->EncodeByte(0x24);
+		Buffer->EncodeByte(StackOffset);
+		return 0x00;
+	}
+	else
+	{
+		Buffer->EncodeByte(0xFF);
+		Buffer->EncodeByte(0x74);
+		Buffer->EncodeByte(0x24);
+		Buffer->EncodeByte(StackOffset);
+		return 0x04;
+	}
 }
 
 void LunaHookThread::SetReturn(DWORD Value)
@@ -443,20 +469,19 @@ void LunaHookThread::FunctionSignature::Finalize(void* DetourTo)
 LunaHookThread::LunaWrapper LunaHookThread::FunctionSignature::AllocateWrapper()
 {
 	/* Base Wrapper:
-	* push non-volatile registers (ebx, ebp, esi, edi)                // Preserving non-volatile registers
+	* push non-volatile registers (ebx, ebp, esi, edi)                // Preserving non-volatile registers (0x04)
 	*
-	* mov & push params in correct order                              // Moving and pushing function parameters
-	* push L0                                                         // Pushing return address for cleanup (L0)
+	* mov & push params in correct order                              // Moving and pushing function parameters (_paramCodeSize)
+	* push L0                                                         // Pushing return address for cleanup (L0) (0x05)
 	*
-	* original hook code                                               // Executing the code that was overwritten
+	* original hook code                                               // Executing the code that was overwritten (_origCodeSize)
 	*
-	* push funcaddr + hook code size                                   // Pushing the address to return to after the original function call
-	* ret                                                              // Returning from the function
+	* push funcaddr + hook code size                                   // Pushing the address to return to after the original function call (0x05)
+	* ret                                                              // Returning from the function (0x01)
 	*
 	* L0:
-	* pop non-volatile registers                                       // Restoring the saved registers
-	* add esp PopBytes                                                 // Cleaning up the stack if necessary (for __stdcall convention)
-	* ret                                                              // Returning from the wrapper
+	* pop non-volatile registers                                       // Restoring the saved registers (0x04)
+	* ret                                                              // Returning from the wrapper (0x01)
 	*/
 
 	// Unlock bytes near hook for execution
@@ -468,8 +493,11 @@ LunaHookThread::LunaWrapper LunaHookThread::FunctionSignature::AllocateWrapper()
 	// Backup the original code
 	memcpy(_origCode, (const void*)_addr, _origCodeSize);
 
+	// Calculate _paramCodeSize
+	_paramCodeSize = _paramCount * 4;
+
 	// Calculate the total size of the generated wrapper
-	size_t WrapperSize = 0x20 + _paramCodeSize + _origCodeSize; // Base size + params + original overwritten code
+	size_t WrapperSize = 0x0F + _paramCodeSize + _origCodeSize; // Base size + params + original overwritten code
 	CodeBuffer Wrapper(WrapperSize);
 
 	// 1. Push non-volatile registers (ebx, ebp, esi, edi)
@@ -480,17 +508,23 @@ LunaHookThread::LunaWrapper LunaHookThread::FunctionSignature::AllocateWrapper()
 
 	// 2. Push all parameters in reverse order (stack parameters first, then registers)
 	int cParam = _paramCount - 1;
-	size_t StackOffset = 0;
+	size_t StackOffset = 0x14;// non-volatile registers padded the stack by 0x10 bytes. Return address +0x04 bytes.
 	while (cParam >= 0)
 	{
+		// Param = StackOffset + 0x4 * ParamIndex
+		size_t ParamLocation = StackOffset + (0x04 * cParam);// Location of the parameter on the stack
 		auto aParam = _parameters[cParam];
-		aParam.Encode(&Wrapper, StackOffset);
-		StackOffset += 0x4;
+		StackOffset += aParam.EncodeIn(&Wrapper, ParamLocation);
 		cParam--;
+
+		// aParam._isRegister:
+		// Encodes a mov reg, [esp + ParamLocation] and returns 0
+		// else:
+		// Encodes a push [esp + ParamLocation] and returns 4
 	}
 
 	// 3. Push L0 (return address for cleanup after function call)
-	Wrapper.EncodePush(Wrapper.oPtr + 0x10 + _paramCodeSize);
+	Wrapper.EncodePush(Wrapper.oPtr + 0x0F + _paramCodeSize + _origCodeSize);
 
 	// 4. Copy the original code (that was overwritten by the hook) into the wrapper
 	Wrapper.Copy(_origCode, _origCodeSize);
@@ -512,4 +546,11 @@ LunaHookThread::LunaWrapper LunaHookThread::FunctionSignature::AllocateWrapper()
 
 	// Return the wrapper function (cast it as a LunaWrapper function pointer)
 	return (LunaWrapper)Wrapper.oPtr;
+}
+
+LunaHookThread::LunaWrapper LunaHookThread::FunctionSignature::FinalizeAndWrap(void* DetourTo)
+{
+	auto Wrapper = AllocateWrapper();
+	Finalize(DetourTo);
+	return Wrapper;
 }

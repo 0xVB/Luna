@@ -164,6 +164,7 @@ public:
 		GetTrackPosition(TrackName, out.mX, out.mY);
 		return out;
 	}
+	int GetBobsledPosition();
 
 	void DropLoot();
 	void Die(bool DropLoot = true);
@@ -196,6 +197,9 @@ public:
 	void ReanimIgnoreClipRect(const char* TrackName, bool DoIgnore = true);
 	void EnableClipping();
 	void LoadPlainZombieReanim();
+	void TrySpawnLevelAward();
+	void RemoveIceTrap();
+	void HitIceTrap();
 
 	void PickBungeeZombieTarget(int Column = -1);
 	void BungeeDropZombie(Zombie*, int Col, int Row);
@@ -258,6 +262,11 @@ public:
 	void UpdateZombiePosition();
 	void UpdateZombieInChimney();
 	void UpdateZombieHighGround();
+	void UpdateZombieChimney();
+	void BossPlayIdle();
+	void DrawBossFireBall(Sexy::Graphics*);
+	void UpdateDamageStates(DamageFlag);
+	void UpdateActions();
 
 	bool IsTangleKelpTarget();
 	bool IsWalkingBackwards();
@@ -268,13 +277,14 @@ public:
 	bool IsOnBoard();
 	bool IsFlying();
 
-	void DropShield();
+	void DropShield(DamageFlag);
+	void DropHelm(DamageFlag);
+	void DropHead(DamageFlag);
+	void DropArm(DamageFlag);
 	void DropFlag();
 	void DropPole();
-	void DropHead();
-	void DropArm();
 
-	bool CanTargetPlant(ZombieAttackType, Plant*);
+	bool CanTargetPlant(Plant*, ZombieAttackType = ZombieAttackType::ATTACKTYPE_CHEW);
 	Plant* FindPlantTarget(ZombieAttackType);
 	Zombie* FindZombieTarget();
 	void StartWalking(int BlendTime);

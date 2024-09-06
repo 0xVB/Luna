@@ -281,20 +281,25 @@ public:
 	bool IsPoolCell(int Col, int Row);
 	bool IsIceCell(int Col, int Row);
 
+	void PlantHitTest(int MouseX, int MouseY, HitResult*);
+	void MouseHitTest(int, int, HitResult*);
+
 	GridItem* GridItemHitTest(int MouseX, int MouseY);
 	Zombie* ZombieHitTest(int MouseX, int MouseY);
 	Plant* PlantHitTest(int MouseX, int MouseY);
 	Plant* SpecialPlantHitTest(int MouseX, int MouseY);
 
-	bool MouseHitTest(int X, int Y, HitResult* Out);
 	void PickUpTool(GameObjectType);
 	bool CanInteractWithButtons();
 	void SetPause(bool);
 	void ClearCursor();
+	void HighlightPlantsForMouse(int X, int Y);
+	void PickSpecialGraveStone();
 
 	void UpdateMousePosition();
 	void UpdateToolTip();
 	void MouseDownWithPlant(int X, int Y, ClickCode);
+	void MouseDownCobcannonFire(int X, int Y, ClickCode);
 	void MouseDownWithTool(int X, int Y, ClickCode, CursorType);
 
 	void ShowTutorialArrow(int X, int Y);
@@ -309,6 +314,9 @@ public:
 	void __inline ZombiesWon() { ZombiesWon(NewZombie(ZOMBIE_NORMAL, 0)); }
 
 	bool IsFinalSurvivalStage();
+	bool IsFinalScaryPotterStage();
+	bool IsSurvivalStageWithRepick();
+	bool IsLastStandStageWithRepick();
 	bool LevelAwardDropped();
 	void UpdateSunSkyfall();
 	void UpdateZombieSpawning();
@@ -321,7 +329,8 @@ public:
 	void ClearFogAroundPlant(Plant*, int Size);
 	void UpdateFog();
 
-	void DrawIce(Sexy::Graphics*);
+	void DrawZenWheelBarrowButton(Sexy::Graphics*, int YOffset);
+	void DrawIce(Sexy::Graphics*, int Lane);
 	void DrawBackground(Sexy::Graphics*);
 	void DrawProgressMeter(Sexy::Graphics*);
 	void DrawHouseDoorBottom(Sexy::Graphics*);
@@ -350,6 +359,8 @@ public:
 	int GetSunBeingCollected();
 	int GetCoinsBeingCollected();
 	int GetNumSeedsInBank();
+	int GetNumWavesPerSurvivalStage();
+	void RemoveParticleSystemByType(ParticleEffect);
 
 	bool IsConveyorBeltLevel();
 	bool StageHasGraves();
@@ -361,6 +372,7 @@ public:
 	bool StageHasZombiesWalkInFromRight();
 	int GetSeedPacketXPosition(int PacketIndex);
 	int GetSeedBankExtraWidth();
+	Plant* FindUmbrellaPlant(int Col, int Row);
 
 	bool SeedNotRecommendedForLevel(SeedType);
 	bool CanDropLoot();
@@ -369,6 +381,8 @@ public:
 	void DoFwoosh(int Row);
 	void UpdateFwoosh();
 	bool PlantingRequirementsMet(SeedType);
+	bool PlantUsesAcceleratedPricing(SeedType);
+	int GetCurrentPlantCost(SeedType Type, SeedType ImitaterType = SeedType::SEED_NONE);
 
 #pragma endregion
 

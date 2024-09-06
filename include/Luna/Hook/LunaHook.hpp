@@ -37,6 +37,7 @@ private:
     static void DetourHeader(LunaHookThread*);
     static void DetourFooter(LunaHookThread*);
     class CodeBuffer;
+
 public:
     typedef unsigned int (__cdecl* LunaWrapper)(...);
 
@@ -58,6 +59,7 @@ public:
         size_t GetCodeSize();
         unsigned char AddToBuffer(unsigned char* BufferStart, unsigned short StackOffset);
         void Encode(CodeBuffer*, char StackOffset = 0);
+        char EncodeIn(CodeBuffer*, char StackOffset);
         Parameter(u8 StackOffset = 0);
         Parameter(Register32);
     };
@@ -88,6 +90,7 @@ public:
         
         void Finalize(void* DetourTo);
         LunaWrapper AllocateWrapper();
+        LunaWrapper FinalizeAndWrap(void* DetourTo);
         static FunctionSignature* New(LunaHookThread*, DWORD Address);
     };
 
