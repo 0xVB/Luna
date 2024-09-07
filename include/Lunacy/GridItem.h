@@ -73,4 +73,10 @@ public:
 	void DoGraveEffects();
 	void OpenPortal();
 	void ClosePortal();
+
+	Sexy::IVector2 GetHitbox();
+
+	std::list<GridItem*> GetGridItemsAround(int ColRange, int RowRange, GridItemType = GRIDITEM_NONE, bool IsBlacklist = false);
+	std::list<Zombie*> GetZombiesAround(int ColRange, int RowRange, ZombieType = ZOMBIE_NONE, bool IsBlacklist = false);
+	std::list<Plant*> GetPlantsAround(int ColRange, int RowRange, SeedType = SEED_NONE, bool IsBlacklist = false);
 };

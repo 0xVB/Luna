@@ -27,8 +27,10 @@ public:
 
 	Rect(N X = 0, N Y = 0, N W = 0, N H = 0)
 	{
-		mPosition = Vector2<N>(0, 0);
-		mSize = Vector2<N>(0, 0);
+		mX = X;
+		mY = Y;
+		mW = W;
+		mH = H;
 	}
 
 	Rect(Vector2<N> Position, Vector2<N> Size)
