@@ -28,9 +28,13 @@ GridItem::GridItem(GridItemType Type)
 	mMotionTrailCount = 0;
 }
 
-Sexy::IVector2 GridItem::GetHitbox()
+Sexy::IRect GridItem::GetHitbox()
 {
 	return mLawn->GridToPixelArea(mCol, mRow, 1, 1);
+}
+Sexy::IVector2 GridItem::GetCenter()
+{
+	return GetHitbox().GetCenter();
 }
 
 std::list<GridItem*> GridItem::GetGridItemsAround(int ColRange, int RowRange, GridItemType Type, bool Blacklist)

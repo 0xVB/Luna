@@ -29,3 +29,35 @@ public:
 	int mRainCounter;
 	int mTreeOfWisdomTalkIndex;
 };
+
+class ChallengeDefinition
+{
+private:
+	static ChallengeDefinition* _gDefArray;
+	static ChallengeDefinition* _gDefArrayEnd;
+	static unsigned int _gUsedDefs;
+	static unsigned int _gMaxDefs;
+	static size_t _gDefSize;
+
+	static unsigned int _aEndRefCount;
+	static unsigned int _aEndRefs[];
+
+	static unsigned int _aRefCount;
+	static unsigned int _aRefs[];
+
+	ChallengeDefinition();
+	ChallengeDefinition(GameMode, ChallengePage, int IconIndex, int Row, int Col, const char* Name);
+
+public:
+	GameMode mChallengeMode;
+	int mChallengeIconIndex;
+	ChallengePage mPage;
+	int mRow;
+	int mCol;
+	const char* mChallengeName;
+
+	static ChallengeDefinition* Reallocate(unsigned int NewCapacity);
+	static ChallengeDefinition* AddChallenge(const char* Name, ChallengePage, int Row, int Col);
+	static ChallengeDefinition* GetDefinition(GameMode);
+	static ChallengeDefinition* GetDefinitions();
+};

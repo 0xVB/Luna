@@ -9,6 +9,7 @@
 #include "UIRoot.h"
 #include "Image.h"
 
+#include "SeedBank.h"
 #include "Challange.h"
 #include "Projectile.h"
 #include "LawnMower.h"

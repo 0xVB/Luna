@@ -74,7 +74,8 @@ public:
 	void OpenPortal();
 	void ClosePortal();
 
-	Sexy::IVector2 GetHitbox();
+	Sexy::IRect GetHitbox();
+	Sexy::IVector2 GetCenter();
 
 	std::list<GridItem*> GetGridItemsAround(int ColRange, int RowRange, GridItemType = GRIDITEM_NONE, bool IsBlacklist = false);
 	std::list<Zombie*> GetZombiesAround(int ColRange, int RowRange, ZombieType = ZOMBIE_NONE, bool IsBlacklist = false);
