@@ -1934,8 +1934,8 @@ __declspec(naked) void Lawn::AddSun(int)
 	__asm
 	{
 
-		mov ecx, [esp + 0x4]
 		mov eax, ecx
+		mov ecx, [esp + 0x4]
 		call LAWN_ADDSUNMONEY
 
 		ret 0x4
@@ -2338,10 +2338,11 @@ __declspec(naked) void Lawn::MouseDownWithPlant(int, int, ClickCode)
 	__asm
 	{
 
-		mov ecx, [esp + 0xC]
+		mov eax, [esp + 0xC]
 		push[esp + 0x8]
 		push[esp + 0x8]
 		push ecx
+		mov ecx, eax
 		call LAWN_MOUSEDOWNWITHPLANT
 
 		ret 0xC
@@ -2354,11 +2355,11 @@ __declspec(naked) void Lawn::MouseDownWithTool(int, int, ClickCode, CursorType)
 	__asm
 	{
 
-		push[esp + 0x10]
-		push[esp + 0x10]
+		push [esp + 0x10]
+		push [esp + 0x10]
+		mov eax, ecx
 		mov ecx, [esp + 0x10]
 		mov edx, [esp + 0xC]
-		mov eax, ecx
 		call LAWN_MOUSEDOWNWITHTOOL
 
 		ret 0x10

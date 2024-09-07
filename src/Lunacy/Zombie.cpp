@@ -1276,8 +1276,8 @@ __declspec(naked) void Zombie::EatPlant(Plant*)
 	__asm
 	{
 
-		mov ecx, [esp + 0x4]
 		push ecx
+		mov ecx, [esp + 0x4]
 		call ZOMBIE_EATPLANT
 
 		ret 0x4
