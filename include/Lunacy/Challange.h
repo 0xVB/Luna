@@ -61,3 +61,23 @@ public:
 	static ChallengeDefinition* GetDefinition(GameMode);
 	static ChallengeDefinition* GetDefinitions();
 };
+
+#include "ExtendedUI.h"
+#include "UIElement.h"
+#include "Listeners.h"
+class ChallengeScreen : public Sexy::UIElement, public Sexy::ButtonListener
+{
+public:
+	LawnButton* mBackButton;
+	Sexy::UIButton* mPageButton[4];
+	Sexy::UIButton* mChallengeButton[70];
+	LawnApp* mApp;
+	UIToolTip* mToolTip;
+	ChallengePage mPageIndex;
+	bool mCheatEnableChallenges;
+	UnlockingState mUnlockState;
+	int mUnlockStateCounter;
+	int mUnlockChallengeIndex;
+	float mLockShakeX;
+	float mLockShakeY;
+};

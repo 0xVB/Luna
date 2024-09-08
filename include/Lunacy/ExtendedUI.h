@@ -1,6 +1,5 @@
 #pragma once
-#include "CGeometry.h"
-#include "UIElement.h"
+#include "UIElements.h"
 
 class UIMessage
 {
@@ -95,3 +94,13 @@ public:
 	int mGetsLinesWidth;
 	int mWarningFlashCounter;
 };
+
+class LawnButton : public Sexy::DialogButton
+{
+public:
+	Sexy::Font* mHiliteFont;
+	int mTextDownOffsetX;
+	int mTextDownOffsetY;
+};
+
+class LawnStoneButton : public Sexy::DialogButton{};

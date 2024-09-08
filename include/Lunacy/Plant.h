@@ -158,6 +158,9 @@ public:
 	static bool __stdcall IsNocturnal(SeedType);
 	static bool __stdcall IsAquatic(SeedType);
 	static bool __stdcall IsUpgrade(SeedType);
+
+	std::list<GridItem*> GetGridItemsAround(int ColRange = 1, int RowRange = 1, GridItemType = GRIDITEM_NONE, bool Blacklist = false);
+	std::list<Plant*> GetPlantsAround(int ColRange = 1, int RowRange = 1, SeedType = SEED_NONE, bool Blacklist = false);
 };
 
 class PlantDefinition

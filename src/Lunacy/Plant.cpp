@@ -214,6 +214,51 @@ Plant::MagnetItem::MagnetItem(MagnetItemType Type)
     mDestOffsetY = 0;
 }
 
+#include "Lunacy/GridItem.h"
+std::list<Plant*> Plant::GetPlantsAround(int ColRange, int RowRange, SeedType Type, bool Blacklist)
+{
+    auto List = std::list<Plant*>();
+    auto aItem = mLawn->mPlants.GetNext();
+
+    while (aItem)
+    {
+        if (Type == SEED_NONE) goto Qualifies;
+        if (Blacklist && aItem->mType == Type) goto Skip;
+        if (!Blacklist && aItem->mType != Type) goto Skip;
+
+    Qualifies:
+        if (abs(aItem->mCol - mCol) <= ColRange && abs(aItem->mRow - mRow) <= RowRange)
+            List.push_back(aItem);
+
+    Skip:
+        aItem = mLawn->mPlants.GetNext(aItem);
+    }
+
+    return List;
+}
+
+std::list<GridItem*> Plant::GetGridItemsAround(int ColRange, int RowRange, GridItemType Type, bool Blacklist)
+{
+    auto List = std::list<GridItem*>();
+    auto aItem = mLawn->mGridItems.GetNext();
+
+    while (aItem)
+    {
+        if (Type == SEED_NONE) goto Qualifies;
+        if (Blacklist && aItem->mGridItemType == Type) goto Skip;
+        if (!Blacklist && aItem->mGridItemType != Type) goto Skip;
+
+    Qualifies:
+        if (abs(aItem->mCol - mCol) <= ColRange && abs(aItem->mRow - mRow) <= RowRange)
+            List.push_back(aItem);
+
+    Skip:
+        aItem = mLawn->mGridItems.GetNext(aItem);
+    }
+
+    return List;
+}
+
 CONST DWORD ISNOCT = 0x467E60;
 CONST DWORD ISAQUA = 0x467EA0;
 CONST DWORD ISUPGD = 0x467EC0;
