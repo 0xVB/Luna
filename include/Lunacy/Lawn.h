@@ -7,8 +7,8 @@
 class HitResult
 {
 public:
-	GameObjectType mType;
 	void* aObject;
+	GameObjectType mType;
 };
 
 class Lawn : Sexy::UIElement, Sexy::ButtonListener

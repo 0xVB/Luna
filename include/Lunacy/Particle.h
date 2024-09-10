@@ -83,9 +83,26 @@ public:
 
 class ParticleDefinition
 {
+private:
+	static unsigned int* _gParticleDefSize;
+	static unsigned int _gParticleDefCapacity;
+	static ParticleDefinition** _gParticleDefs;
+
+	static unsigned int* _gEmitterDefSize;
+	static EmitterDefinition** _gEmitterDefs;
+
 public:
 	EmitterDefinition* mEmitterDefs;
 	int mEmitterDefCount;
+
+	static ParticleDefinition* GetDefinitions();
+	static ParticleDefinition* GetDefinition(ParticleEffect);
+
+	// Reallocates the ParticleDefinition array to allow you to create new particles.
+	// Warning: calling this function when there are any particles in the game will cause a crash.
+	// Call it only during the game's loading when there are no particles present.
+	static ParticleDefinition* Reallocate(unsigned int NewCapacity);
+	static ParticleDefinition* CloneParticle(ParticleEffect);
 };
 
 class ParticleEmitter

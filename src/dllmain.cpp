@@ -1,4 +1,5 @@
 ﻿#include "Luna/Application.hpp"
+#include "Lunacy/Lunacy.hpp"
 #include <windows.h>
 #include <iostream>
 
@@ -16,6 +17,6 @@ BOOL APIENTRY DllMain
     const auto app = Application::getSingleton();
     if (!app->initialize()) return FALSE;
     app->getLogger()->log(LogLevel::none, "Luna %s has been initialized.", LUNA_VERSION);
-    
+
     return TRUE;
 }
