@@ -3,21 +3,23 @@
 #include "Luna/IO/ConsoleLogger.hpp"
 #include "Luna/IO/FileLogger.hpp"
 #include "Luna/TaskScheduler.hpp"
-#include "Luna/Hook/LunaHook.hpp"
 #include "Lunacy/Lunacy.hpp"
+
+#define DBG_CONSOLE
 
 CONST DWORD INIT_HOOK = 0x44E969;
 CONST DWORD GAME_UPDATE = 0x539140;
 
 using namespace Luna;
+LunaHookThread* Luna::gLunaThread = nullptr;
 
 Application::Application()
 {
-    //#ifdef _DEBUG
+    #ifdef DBG_CONSOLE
     logger = std::make_shared<IO::ConsoleLogger>();
-    //#else
-    //logger = std::make_shared<IO::FileLogger>("luna.log");
-    //#endif
+    #else
+    logger = std::make_shared<IO::FileLogger>("luna.log");
+    #endif
     localModExplorer = std::make_shared<LocalModExplorer>("mods");
     modHandler = std::make_shared<ModHandler>();
 }
@@ -42,11 +44,11 @@ SexyFileExistsCC sexyFileExists = nullptr;
 
 // Call Application::onLawnAppInitialized(); on init
 
-LunaHookThread* HookThread;
 bool Application::initialize()
 {
-    HookThread = LunaHookThread::New();
     const auto sc = ScriptContext::getSingleton();
+    Luna::gLunaThread = LunaHookThread::New();
+
     if (!sc->initialize()) {
         logger->log(LogLevel::error, "Failed to initialize ScriptContext");
         return false;
@@ -58,7 +60,7 @@ bool Application::initialize()
     modHandler->addMods(localModExplorer->getMods());
 
     if (!LawnApp::GetApp()) {
-        HookThread->NewFunction(INIT_HOOK)->Finalize(onLawnAppInitialized);
+        gLunaThread->NewFunction(INIT_HOOK)->Finalize(onLawnAppInitialized);
         getLogger()->log(LogLevel::info, "Luna bootstrapped properly.");
     } 
     else
@@ -68,22 +70,15 @@ bool Application::initialize()
     return true;
 }
 
-
 typedef bool (* gameUpdateCC)(void*);
 gameUpdateCC gameUpdate = nullptr;
 
-bool __declspec(naked) onUpdateHook(void* sexyWidgetManager) {
-    __asm {
-        call Application::onGameUpdate;
-        jmp[gameUpdate];
-    }
-}
-
 void __stdcall Application::onLawnAppInitialized() {
-    const auto gApp = HookThread->GetRegister(HookThread->EAX);
+    const auto gApp = gLunaThread->GetRegister(gLunaThread->EAX);
     const auto app = Application::getSingleton();
+
     LawnApp::SetApp(gApp);
-    HookThread->NewFunction(GAME_UPDATE)->Finalize(onGameUpdate);
+    gLunaThread->NewFunction(GAME_UPDATE)->Finalize(onGameUpdate);
 
     app->getLogger()->log(LogLevel::info, "Lawn application initialized %p", LawnApp::GetApp());
     TaskScheduler::getSingleton()->update();

@@ -6,7 +6,9 @@ enum ReanimationID { REANIMID_NULL };
 enum ParticleID { PARTICLEID_NULL };
 enum ParticleSystemID { PARTICLESYSTEMID_NULL };
 enum ParticleEmitterID { PARTICLEEMITTERID_NULL };
+enum TrailID { TRAILID_NULL };
 
+enum ProjectileID { PROJECTILEID_NULL };
 enum LawnMowerID { LAWNMOWERID_NULL };
 enum GridItemID { GRIDITEMID_NULL };
 enum PickupID { PICKUPID_NULL };

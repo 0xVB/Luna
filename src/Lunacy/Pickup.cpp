@@ -1,6 +1,12 @@
 #pragma once
 #include "Lunacy/LawnApp.h"
 #include "Lunacy/Pickup.h"
+#include "Lunacy/Lawn.h"
+
+Pickup* TryToGet(PickupID aID)
+{
+	return LawnApp::GetApp()->mLawn->mPickups.Fetch(aID);
+}
 
 CONST DWORD UPDATE = 0x431500;
 __declspec(naked) void Pickup::Update()

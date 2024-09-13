@@ -1,5 +1,4 @@
 #pragma once
-#include "Associations.h"
 #include "CGeometry.h"
 #include <string>
 #include <map>
@@ -29,7 +28,6 @@ public:
 
 protected:
 	char _cave[3];
-	AssociationManager* GetManager();
 
 public:
 	union

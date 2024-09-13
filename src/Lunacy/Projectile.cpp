@@ -1,6 +1,13 @@
+#include "Lunacy/LawnApp.h"
 #include "Lunacy/Projectile.h"
 #include "Lunacy/Attachment.h"
 #include "Lunacy/Zombie.h"
+#include "Lunacy/Lawn.h"
+
+Projectile* TryToGet(ProjectileID aID)
+{
+	return LawnApp::GetApp()->mLawn->mProjectiles.Fetch(aID);
+}
 
 CONST DWORD UPDATE = 0x46E460;
 __declspec(naked) void Projectile::Update()

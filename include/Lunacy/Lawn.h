@@ -10,7 +10,6 @@ public:
 	void* aObject;
 	GameObjectType mType;
 };
-
 class Lawn : Sexy::UIElement, Sexy::ButtonListener
 {
 #pragma region Fields
@@ -162,6 +161,8 @@ public:
 	void Update();
 	void Draw(Sexy::Graphics* G);
 #pragma region Functions
+	static void MoveZombossTo(unsigned char Level);
+
 	GridItem* NewGridItem(GridItemType, int Lane, int Column);
 	GridItem* AddLadder(int Column, int Lane);
 	GridItem* AddCrater(int Column, int Lane);

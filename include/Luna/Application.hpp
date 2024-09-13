@@ -1,12 +1,14 @@
 #pragma once
 
 #include "IO/ILogger.hpp"
+#include "Luna/Hook/LunaHook.hpp"
 #include "Mod/LocalModExplorer.hpp"
 #include "Mod/ModHandler.hpp"
 #include <memory>
 
 namespace Luna
 {
+    extern LunaHookThread* gLunaThread;
     class Application {
     public:
         Application();

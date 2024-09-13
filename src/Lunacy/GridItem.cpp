@@ -4,6 +4,11 @@
 #include "Lunacy/Plant.h"
 #include "Lunacy/Lawn.h"
 
+GridItem* TryToGet(GridItemID aID)
+{
+	return LawnApp::GetApp()->mLawn->mGridItems.Fetch(aID);
+}
+
 GridItem::GridItem(GridItemType Type)
 {
 	mApp = LawnApp::GetApp();

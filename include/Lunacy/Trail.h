@@ -39,8 +39,4 @@ public:
 	Sexy::Color mColorOverride;
 };
 
-class TrailHolder
-{
-public:
-	DataArray<Trail> mTrails;
-};
+class TrailHolder : public DataArray<Trail> { };
