@@ -1,6 +1,6 @@
-#include "Lunacy/GeneralUtils.h"
+#include "Lunacy/MemUtils.hpp"
 
-void Patch(DWORD Address, std::string Bytes)
+void Mem::WriteAOB(DWORD Address, std::string Bytes)
 {
 	// Bytes format example: "8B C8 50 E8 42 F7 03 00 84 C0 58 74 69 90"
 	unsigned char* aPtr = (unsigned char*)Address;
@@ -28,10 +28,28 @@ void Patch(DWORD Address, std::string Bytes)
 	VirtualProtect((LPVOID)Address, ByteCount, old, &temp);
 }
 
-void OverwriteByte(DWORD Address, unsigned char Level)
+void Mem::WriteByte(DWORD Address, unsigned char Level)
 {
 	DWORD old, temp;
 	VirtualProtect((LPVOID)Address, 1, PAGE_EXECUTE_READWRITE, &old);
 	*(unsigned char*)Address = Level;
 	VirtualProtect((LPVOID)Address, 1, old, &temp);
+}
+
+void Mem::Unlock(const void* Address, size_t Size)
+{
+	DWORD OLD;
+	VirtualProtect((LPVOID)Address, Size, PAGE_EXECUTE_READWRITE, &OLD);
+}
+
+void Mem::Unlock(void* Address, size_t Size)
+{
+	DWORD OLD;
+	VirtualProtect((LPVOID)Address, Size, PAGE_EXECUTE_READWRITE, &OLD);
+}
+
+VOID Mem::Unlock (DWORD Address, size_t Size)
+{
+	DWORD OLD;
+	VirtualProtect((LPVOID)Address, Size, PAGE_EXECUTE_READWRITE, &OLD);
 }

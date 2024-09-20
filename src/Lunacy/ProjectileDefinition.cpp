@@ -1,5 +1,5 @@
 #include "Lunacy/Projectile.h"
-
+#include "Lunacy/Reallocators/Consts.h"
 
 ProjectileDefinition::ProjectileDefinition()
 {
@@ -57,34 +57,11 @@ ProjectileDefinition* ProjectileDefinition::GetProjectileDefinition(ProjectileTy
 
 ProjectileDefinition* ProjectileDefinition::Reallocate(unsigned int NewCapacity)
 {
-	ProjectileDefinition* NewArray = (ProjectileDefinition*)operator new(sizeof(ProjectileDefinition) * NewCapacity);
-	memset(NewArray, 0, NewCapacity * sizeof(ProjectileDefinition));
-	memcpy(NewArray, _gDefArray, _gDefSize);
 
-	unsigned int NewDefAddress = (unsigned int)NewArray;
-
-	for (int i = 0; i < _aRefCount; i++)
-	{
-		auto RefP = (unsigned int*)_aRefs[i];
-		unsigned int Ref;
-
-		DWORD OldProt;
-		VirtualProtect(RefP, 4, PAGE_EXECUTE_READWRITE, &OldProt);
-		Ref = *RefP;
-
-		unsigned int Offset = Ref - (unsigned int)_gDefArray;
-		Ref = NewDefAddress + Offset;
-		*RefP = Ref;
-		VirtualProtect(RefP, 4, OldProt, &OldProt);
-	}
-
-	if (_gDefArray != GLOBAL_DEFS)
-		delete _gDefArray;
-
-	_gDefArray = NewArray;
-	_gDefArrayEnd = NewArray + NewCapacity;
+	_gDefArray = (ProjectileDefinition*)Constants::ProjDef::REALLOCATE(NewCapacity);
+	_gDefArrayEnd = _gDefArray + NewCapacity;
 	_gDefSize = (unsigned int)_gDefArrayEnd - (unsigned int)_gDefArray;
 	_gMaxDefs = NewCapacity;
 
-	return NewArray;
+	return _gDefArray;
 }

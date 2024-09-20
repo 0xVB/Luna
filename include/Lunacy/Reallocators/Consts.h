@@ -1,0 +1,229 @@
+#pragma once
+#include <Windows.h>
+#include "Lunacy/Plant.h"
+#include "Lunacy/Zombie.h"
+#include "Lunacy/Projectile.h"
+#include "Lunacy/Reanimation.h"
+
+#define STATIC static
+#define EXTERN extern
+
+CONST UINT MAX_LEVELS = 50;// The number of levels in Adventure Mode
+
+// Addresses \\
+
+namespace Constants
+{
+	STATIC BYTE* MAX_LEVEL_ADDR = (BYTE*)0x452339;
+
+	namespace PlantDef
+	{
+		CONST DWORD PLANT_DEFINITIONS = 0x69F2B0;
+		CONST DWORD PLANT_DEF_END = 0x69FA24;
+		CONST DWORD PLANT_DEF_SIZE = PLANT_DEF_END - PLANT_DEFINITIONS;
+
+		CONST DWORD REFCOUNT = 62;
+		CONST DWORD REFS[] = {
+			0x4024C0,
+			0x4397B0,
+			0x4397C4,
+			0x439C9F,
+			0x439CB6,
+			0x439CCA,
+			0x439CE7,
+			0x439CFE,
+			0x439D24,
+			0x439D3B,
+			0x439D4F,
+			0x439D63,
+			0x439D77,
+			0x439D94,
+			0x439DB4,
+			0x439DCB,
+			0x439DDF,
+			0x439DFC,
+			0x439E13,
+			0x439E30,
+			0x439E50,
+			0x439E67,
+			0x439E7B,
+			0x43A032,
+			0x43A049,
+			0x43A05D,
+			0x43A071,
+			0x43A085,
+			0x43A099,
+			0x43A0BF,
+			0x43A0D6,
+			0x45DCBF,
+			0x45FF69,
+			0x45FF73,
+			0x463F4A,
+			0x465AFB,
+			0x466290,
+			0x4662F8,
+			0x467B99,
+			0x467BA4,
+			0x467C29,
+			0x467C82,
+			0x467C89,
+			0x467DD3,
+			0x467E4E,
+			0x467E59,
+			0x4681E6,
+			0x46F5F2,
+			0x486DF6,
+			0x486E02,
+			0x488F68,
+			0x488F79,
+			0x48BE52,
+			0x48BE68,
+			0x48BE7B,
+			0x48BEB1,
+			0x48BECF,
+			0x48BEE7,
+			0x48BEFC,
+			0x48BF11,
+			0x48BF26,
+			0x48BF3B
+		};
+		EXTERN PlantDefinition* NEW_DEFS;
+		VOID* REALLOCATE(DWORD NEW_COUNT);
+	}
+
+	namespace ProjDef
+	{
+		CONST DWORD PROJ_DEFINITIONS = 0x69F1C0;
+		CONST DWORD PROJ_DEF_END = 0x69F268;
+		CONST DWORD PROJ_DEF_SIZE = PROJ_DEF_END - PROJ_DEFINITIONS;
+
+		CONST DWORD REFCOUNT = 5;
+		CONST DWORD REFS[] = {
+			0x46CFE1,
+			0x46D3AB,
+			0x46D79C,
+			0x46E076,
+			0x46E578
+		};
+		EXTERN ProjectileDefinition* NEW_DEFS;
+		VOID* REALLOCATE(DWORD NEW_COUNT);
+	}
+
+	namespace ReanimDef
+	{
+		CONST DWORD G_OG_REANIM_PARAM = 0x6A1340;// The real param array
+		CONST DWORD G_OG_REANIM_PARAM_END = 0x6A19F4;// Just to calculate the size
+		CONST DWORD G_OG_REANIM_PARAM_SIZE = G_OG_REANIM_PARAM_END - G_OG_REANIM_PARAM;// Size of param array
+		CONST DWORD OG_REANIM_COUNT = 0x8F;
+		CONST DWORD REANIM_COUNT_REFS[] = {
+			0x48153C,
+			0x47377E,
+			0x4814F3
+		};
+		CONST DWORD PARAM_REFS[] = {
+			0x4737A5,
+			0x4737F5
+		};
+
+		CONST DWORD PARAMREFCOUNT = 2;
+		CONST DWORD REANIMCREFCOUNT = 3;
+
+		STATIC CONST ReanimatorDefinition** DEFINITIONS = (CONST ReanimatorDefinition**)0x6A9EE8;
+		EXTERN ReanimationParams* NEW_PARAMS;
+		VOID* REALLOCATE(DWORD NEW_COUNT);
+	}
+
+	namespace ZombieDef
+	{
+		CONST DWORD ZOMBIE_DEFINITIONS = 0x69DA80;
+		CONST DWORD ZOMBIE_DEF_END = 0x69DE1C;
+		CONST DWORD ZOMBIE_DEF_SIZE = ZOMBIE_DEF_END - ZOMBIE_DEFINITIONS;
+
+		CONST DWORD REFCOUNT = 77;
+		CONST DWORD REFS[] = {
+			0x4030FE,
+			0x4032B9,
+			0x403460,
+			0x40349E,
+			0x403A37,
+			0x403A87,
+			0x403B51,
+			0x403B6E,
+			0x409274,
+			0x4095A1,
+			0x4095D6,
+			0x40960B,
+			0x409640,
+			0x409678,
+			0x4097D6,
+			0x40981A,
+			0x409A04,
+			0x409A6A,
+			0x409B32,
+			0x409B67,
+			0x409B9C,
+			0x409BD1,
+			0x409C06,
+			0x409C3B,
+			0x409C70,
+			0x409CA5,
+			0x409CDA,
+			0x409D12,
+			0x409D6E,
+			0x409DA3,
+			0x409DD8,
+			0x409E0D,
+			0x409E42,
+			0x409E77,
+			0x409EAC,
+			0x409EE1,
+			0x409F16,
+			0x409F4E,
+			0x409FA8,
+			0x409FD5,
+			0x40A002,
+			0x40A02F,
+			0x40A05F,
+			0x40A0CF,
+			0x40D66F,
+			0x40D698,
+			0x40D70F,
+			0x40D72F,
+			0x40D777,
+			0x40D77D,
+			0x40D7A6,
+			0x40D7E5,
+			0x40D8CB,
+			0x40F059,
+			0x40F060,
+			0x412A5E,
+			0x412CC1,
+			0x412DAC,
+			0x425D3A,
+			0x439B29,
+			0x439B58,
+			0x439B8A,
+			0x439BBC,
+			0x439C00,
+			0x439C32,
+			0x439C64,
+			0x439F4A,
+			0x439F8A,
+			0x439FBC,
+			0x439FEE,
+			0x4556C9,
+			0x455879,
+			0x46F91F,
+			0x5227B1,
+			0x530209,
+			0x5369EF,
+			0x536A62
+		};
+		EXTERN ZombieDefinition* NEW_DEFS;
+		VOID* REALLOCATE(DWORD NEW_COUNT);
+	}
+	VOID UNLOCK(CONST VOID* ADDR, size_t S = 4);
+	VOID UNLOCK(VOID* ADDR, size_t S = 4);
+	VOID UNLOCK(DWORD ADDR, size_t S = 4);
+	VOID UNLOCK();
+}

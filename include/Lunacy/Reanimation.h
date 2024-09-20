@@ -182,13 +182,59 @@ public:
 	Sexy::MemoryImage* mMemoryImage;
 };
 
+class ReanimationParams
+{
+public:
+	ReanimationType mType;
+	const char* mFileName;
+	int mParamFlags;
+
+	__inline ReanimationParams(ReanimationType Type, const char* FileName, int ParamFlags = 0)
+	{
+		mType = Type;
+		mFileName = FileName;
+		mParamFlags = ParamFlags;
+	}
+};
+
 class ReanimatorDefinition
 {
+private:
+	constexpr static ReanimatorDefinition** _defs = (ReanimatorDefinition**)0x6A9EE8;
+	static ReanimationParams* _newParams;
+
+	constexpr static DWORD _paramArray = 0x6A1340;
+	constexpr static DWORD _paramArrayEnd = 0x6A19F4;
+	constexpr static DWORD _paramArraySize = _paramArrayEnd - _paramArray;
+
+	constexpr static DWORD _paramCount = 0x8F;
+	constexpr static DWORD _countRefs[] =
+	{
+		0x48153C,
+		0x47377E,
+		0x4814F3
+	};
+
+	constexpr static DWORD _paramRefs[] =
+	{
+		0x4737A5,
+		0x4737F5
+	};
+
 public:
 	ReanimatorTrack* mTracks;
 	int mTrackCount;
 	float mFPS;
 	ReanimAtlas* mReanimAtlas;
+
+	// Must be called ONLY ONCE before ReanimatorLoadDefinitions.
+	static void Reallocate(unsigned int NewCapacity);
+
+	// Creates a new reanimation with the given ReanimationType.
+	// Do not include the extension or the parent folder in the name.
+	// Ex: "reanim\\Zombie" is valid, "compiled\\reanim\\Zombie.reanim.compiled" is not.
+	// Reallocate MUST be called before this function can be called.
+	static ReanimationParams* NewReanim(ReanimationType, const char* CompiledFileName);
 };
 
 class ReanimationHolder : public DataArray<Reanimation>

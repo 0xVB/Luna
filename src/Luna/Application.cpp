@@ -80,10 +80,15 @@ void __stdcall Application::onLawnAppInitialized() {
     LawnApp::SetApp(gApp);
     gLunaThread->NewFunction(GAME_UPDATE)->Finalize(onGameUpdate);
 
+    ReanimatorDefinition::Reallocate(NUM_REANIMS + 1);
+    ReanimatorDefinition::NewReanim(NUM_REANIMS, "reanim\\Zombie_yeti.reanim");
+    ZombieDefinition::GetZombieDefinition(ZOMBIE_TRAFFIC_CONE)->mReanimationType = NUM_REANIMS;
+
     app->getLogger()->log(LogLevel::info, "Lawn application initialized %p", LawnApp::GetApp());
     TaskScheduler::getSingleton()->update();
 }
 
+bool Preloaded = true;
 void __stdcall Application::onGameUpdate() {
     TaskScheduler::getSingleton()->update();
 }
